@@ -1,0 +1,47 @@
+<li class="article-index {% if template == 'index' and posts_per_row == 2 %}desktop-6 tablet-3{% elsif template == 'index' and posts_per_row == 3 %}desktop-4 tablet-2{% endif %} mobile-3">
+  <div class="article-image {% if template == 'index' and posts_per_row == 1 %}desktop-5 tablet-2{% else %}desktop-12 tablet-6{% endif %} mobile-3">
+    {% if article.image %}
+      <a href="{{ article.url }}">
+        {% render 'basic-responsive-image', type: article.image, data_widths: '[180, 360, 540, 720, 900]' %}
+        <noscript>
+          <img src="{{ article.image | img_url: '800x' }}" alt="{{ article.image.alt }}">
+        </noscript>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="rte excerpt {% if template == 'index' and posts_per_row == 1 %}desktop-7 tablet-4{% else %}desktop-12 tablet-6{% endif %} mobile-3">
+    {% if section.settings.show_above %}
+      {% if section.settings.show_date or section.settings.show_author %}
+        <p class="posted">{% if section.settings.show_date %}{{ article.published_at | date: format: 'month_date_year'}}{% endif %}{% if section.settings.show_date and section.settings.show_author %} – {% endif %}{% if section.settings.show_author %}{{ article.author }}{% endif %}</p>
+      {% endif %}
+    {% endif %}
+    <h3 class="post-title">
+      <a href="{{ article.url }}">{{ article.title }}</a>
+    </h3>
+    {% unless section.settings.show_above %}
+      {% if section.settings.show_date or section.settings.show_author %}
+        <p class="posted">{% if section.settings.show_date %}{{ article.published_at | date: format: 'month_date_year'}}{% endif %}{% if section.settings.show_date and section.settings.show_author %} – {% endif %}{% if section.settings.show_author %}{{ article.author }}{% endif %}</p>
+      {% endif %}
+    {% endunless %}
+    <div class="article-headline">
+      <p class="rte">
+        {{ article.excerpt_or_content | strip_html | truncatewords: 60 }}
+      </p>
+      <a href="{{ article.url }}">
+        {{ 'blogs.article.read_more' | t }}
+        <svg width="18px" height="7px" viewBox="0 0 27 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g transform="translate(-1291.000000, -306.000000)" fill="#353535" fill-rule="nonzero" id="Footer---Light">
+                    <g transform="translate(0.000000, 120.000000)">
+                        <g id="Email-input" transform="translate(940.000000, 168.000000)">
+                            <path id="Line-2" d="M368.309343,18.8190816 L377.519864,24 L368.309343,29.1809184 L367.819082,28.3093429 L374.589,24.5 L351.5,24.5 L351.5,23.5 L374.593,23.5 L367.819082,19.6906571 L368.309343,18.8190816 Z"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg>
+      </a>
+    </div>
+  </div>
+</li>

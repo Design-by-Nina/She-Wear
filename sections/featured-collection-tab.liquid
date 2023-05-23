@@ -1,0 +1,283 @@
+<section class="homepage-featured-collection-{{ section.id }}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}" data-section-id="{{ section.id }}" data-section-type="featured-collection" >
+  {%- assign collection = collections[section.settings.collection] -%}
+  {%- assign prod_limit = section.settings.limit -%}
+  {%- assign grid = section.settings.grid -%}
+
+  <article class="row">
+    {% if section.settings.heading != blank %}
+      <h2 class="section-title desktop-12 tablet-6 mobile-3" style="text-align:left;">
+        <a href="{{ collection.url }}">
+          {{ section.settings.heading | escape }}
+        </a>
+      </h2>
+      <div class="clear"></div>
+    {% endif %}
+
+    {% if section.settings.carousel %}{%- assign is_carousel = true -%}{%- endif -%}
+    {% capture slideshow_config %}{
+    "wrapAround":true,
+    "cellAlign": "left",
+    "dragThreshold":"15",
+    "pauseAutoPlayOnHover":false,
+    "freeScroll": true,
+    "contain": true,
+    "prevNextButtons": true,
+    "pageDots": false
+    }{% endcapture %}
+
+    {% case section.settings.grid %}
+    {% when 2 %}
+    {%- assign prod_grid = 50 -%}
+    {% when 3 %}
+    {%- assign prod_grid = 33.333 -%}
+    {% when 4 %}
+    {%- assign prod_grid = 25 -%}
+    {% when 5 %}
+    {%- assign prod_grid = 20 -%}
+    {% endcase %}
+
+    {%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
+
+     <div class="page-width-slider">
+       <div class="desktop-12 tablet-6 mobile-3">
+    <div class="collection-tab flex">
+        {%- for block in section.blocks -%}
+            {%- assign collection = collections[block.settings.collection] -%}  
+    <div class="collection-tab-heading {% if forloop.first %}is-active{% endif %}" data-id="{{ block.id }}"> <span> {{ block.settings.title }} </span></div>
+       {%- endfor -%} 
+    </div>
+  </div>
+
+ {%- for block in section.blocks -%}     
+        {%- assign collection = collections[block.settings.collection] -%}  
+         <div class="collection-tab-content {% if forloop.first %}tab-active{% endif %}" data-id="{{ block.id }}" >
+          <div class="collection-slider-main">
+            <div class="grid-overflow-wrapper">
+      <div class="product-loop{% if is_carousel %} flickity__section js-carousel featured__collection-carousel{% endif %}"{% if is_carousel %} data-flickity='{{ slideshow_config }}'{% endif %}>
+        {% for product in collection.products limit: prod_limit  %}
+{% if product.handle contains "docapp-free-gift-" %}{% continue %}{% endif %}
+         <center>
+          <div class="featured__collection-product product-index" id="prod-{{ product.id }}" data-alpha="{{ product.title }}" data-price="{{ product.price }}" data-product-id="{{ product.id }}">
+            {% render 'product-listing', product: product %}
+          </div>
+           </center>
+        {% endfor %}
+        {% if block.settings.collection == blank %}
+          {% render 'onboard-product', prod_limit: prod_limit, grid: grid %}
+        {% endif %}
+      </div>
+ </div>
+<div class=" mt5 text-center">
+  <a class="button" href="{{ collection.url }}">VIEW ALL</a>
+</div>
+              
+    </div>
+    </div>
+    {%- endfor -%} 
+
+   
+
+     </div>
+    
+  </article>
+
+  <style>
+.collection-tab{width: fit-content;      overflow: hidden;    border: 1px solid #BDBDBD;  margin:0 0 25px;   border-radius: 100px;    padding: 5px!important;}
+.collection-tab-heading {
+    font-size: 13px;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 100px;
+    padding: 5px 19px;
+    letter-spacing: 0;
+  position: relative;
+} 
+.collection-tab-heading span{   position: relative; z-index:2;}
+    
+.collection-tab-heading.is-active, .collection-tab-heading.is-active span  {       color: #fff;}
+.collection-tab-heading:after {
+    content: "";
+    width: 100%;
+    height: 35px;
+    position: absolute;
+    left: -50px;
+    top: 0;
+    border-radius: 25px;
+    z-index: 1;
+    transition: all ease 0.4s;
+}
+.collection-tab-heading.is-active:after {
+    background: #000;
+    color: #fff;
+    left: 0;
+}
+    
+.collection-tab-content {    display: none;}    
+.collection-tab-content.tab-active {
+    display: block;
+}    
+    
+    section.homepage-featured-collection-{{ section.id }} {
+      padding: 20px 0;
+    }
+    section.homepage-featured-collection-{{ section.id }} {
+      background: {{ section.settings.background_color }};
+    }
+    section.homepage-featured-collection-{{ section.id }} h2.section-title a {
+      color: {{ section.settings.heading_color }} !important;
+    }
+    section.homepage-featured-collection-{{ section.id }} .product-info,
+    section.homepage-featured-collection-{{ section.id }} .product-info a {
+      color: {{ section.settings.product_info_color }} !important;
+    }
+    .homepage-featured-collection-{{ section.id }} .product-loop {
+      width: 100%;
+      margin: 0 auto;
+    }
+    {% if is_carousel %}
+      .homepage-featured-collection-{{ section.id }} .featured__collection-carousel .featured__collection-product {
+        width: {{ prod_grid }}%;
+        box-sizing: border-box !important;
+        padding: 0 15px;
+      }
+      @media screen and (max-width: 740px) {
+        .homepage-featured-collection-{{ section.id }} .featured__collection-carousel .featured__collection-product {
+          width: 50%;
+        }
+      }
+    {% else %}
+      .homepage-featured-collection-{{ section.id }} .product-loop {
+        display: grid;
+        grid-template-columns: repeat({{ grid }}, {{ prod_grid }}%);
+      }
+      .homepage-featured-collection-{{ section.id }} .featured__collection-product {
+        box-sizing: border-box !important;
+        padding: 0 15px;
+      }
+      @media screen and (max-width: 740px) {
+        .homepage-featured-collection-{{ section.id }} .product-loop {
+          grid-template-columns: repeat(2, 50%);
+        }
+      }
+    {% endif %}
+
+.flex{ display: -webkit-box;  display: -moz-box;  display: -ms-flexbox;  display: -webkit-flex;  display: flex;}
+.flex-flow{-webkit-flex-flow: row wrap;	 flex-flow: row wrap;   -ms-flex-flow: row wrap;}
+.align-item-start{-webkit-box-align: flex-start;  -moz-box-align: flex-start;  -ms-flex-align: flex-start;  -webkit-align-items: flex-start;  align-items: flex-start;}
+.align-item-center{-webkit-box-align: center;  -moz-box-align: center;  -ms-flex-align: center;  -webkit-align-items: center;  align-items: center;}
+.align-item-end{-webkit-box-align: end;  -moz-box-align: end;  -ms-flex-align:end;  -webkit-align-items:end;  align-items:end;}
+.space-between{  -webkit-box-pack: space-between;  -moz-box-pack: space-between;  -ms-flex-pack: space-between;  -webkit-justify-content: space-between;  justify-content: space-between;}
+.justify-center{  -webkit-box-pack: center;  -moz-box-pack: center;  -ms-flex-pack: center;  -webkit-justify-content: center;  justify-content: center; }
+.justify-center-end{  -webkit-box-pack: end;  -moz-box-pack: end;  -ms-flex-pack: end;  -webkit-justify-content: end;  justify-content: end; }
+.flex-direction-column{ -webkit-flex-direction: column;   -moz-flex-direction: column;    -ms-flex-direction: column;    -o-flex-direction: column;    flex-direction: column;}
+
+  @media screen and (max-width: 1007px) {
+  .collection-slider-main {
+    margin: 0 -10px;
+}
+ .grid-overflow-wrapper .featured__collection-product {
+    padding: 0 10px !important;
+}
+.grid-overflow-wrapper {
+    overflow: hidden;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;     width: 100%;     
+} 
+    .grid-overflow-wrapper .product-loop{white-space: nowrap;     display: flex;}
+      .grid-overflow-wrapper .product-loop center{    width: 39vw;     flex: 0 0 39vw;    display: inline-block;     float: none;    white-space: normal;}
+  }
+    
+     @media screen and (max-width: 740px) {
+.collection-tab-heading {
+    font-size: 11px;
+   
+    padding: 5px 12px;
+    letter-spacing: 0;
+}
+.grid-overflow-wrapper .featured__collection-product {
+    padding: 0 6px !important;
+}
+  .collection-slider-main {
+    margin: 0 -6px;
+}
+       .collection-tab-heading:after{height:30px;}
+    .collection-tab-heading:after{left-35px;}   
+     } 
+    
+  </style>
+
+</section>
+{% schema %}
+{
+  "name": "Featured collection Tab",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured collection"
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Products per row",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "min": 2,
+      "max": 30,
+      "step": 1,
+      "label": "Products shown",
+      "default": 3
+    },
+    {
+       "type": "color",
+       "id": "heading_color",
+       "label": "Heading color",
+       "default": "#000"
+    },
+    {
+       "type": "color",
+       "id": "product_info_color",
+       "label": "Product info color",
+       "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#fff"
+    }
+  ],
+      "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+      {
+        "type": "collection",
+        "id": "collection",
+        "label": "collection select"
+       },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "info": "If none is set, collection title is used."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection Tab",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

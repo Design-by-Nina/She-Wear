@@ -1,0 +1,9 @@
+{% capture 'hide' %}
+{% if product.type contains "Gift Card" %} style="display:none"{% endif %}
+{% endcapture %}
+<div class="product-size_switch_block"{{hide}}>
+  <div class="switch_block-1">
+    <span id="product-size_dimension_1">AU</span>
+    <span id="product-size_dimension_2">EU</span>
+  </div>
+</div>

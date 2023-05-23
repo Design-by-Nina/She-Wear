@@ -1,0 +1,77 @@
+<div class="product-index-inner">
+  {% if product.available %}
+    {% for col in product.collections %}
+      {% if col.handle == 'new' %}
+        <div class="new icn">{{ 'products.general.new' | t }}</div>
+      {% endif %}
+    {% endfor %}
+
+    {% if product.price < product.compare_at_price %}
+      <div class="sale-item icn">
+        {{ 'products.general.sale' | t }}
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="so icn">{{ 'products.general.sold' | t }}</div>
+  {% endif %}
+
+  <div class="prod-image">
+    <a href="{{ product.url | within: collection }}" title="{{ product.title | escape }}">
+      <div class="reveal">
+        {%- assign preview_image = product.featured_media.preview_image -%}
+        {%- assign second_image = product.media[1] -%}
+        {% assign image_box_ratio = preview_image.height | append: ".0" | times: 1 | divided_by: preview_image.width | times: 100 | append: "%" %}
+        {% assign img_url = preview_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+
+        <div class="box-ratio" style="padding-bottom: {{ image_box_ratio }};">
+          <img class="lazyload lazyload-fade {% if settings.image_flip and product.images.size > 1 %}first-image{% endif %}"
+            data-src="{{ img_url }}"
+            data-sizes="auto"
+            data-original="{{ preview_image | img_url: '500x' }}"
+            alt="{{ preview_image.alt | escape }}">
+        </div>
+        <noscript>
+          <img src="{{ preview_image | img_url: '1024x' }}" alt="{{ preview_image.alt | escape }}">
+        </noscript>
+
+        {% if settings.image_flip and product.media.size > 1 and second_image.media_type == 'image' %}
+          <div class="hidden">
+             {% render 'basic-responsive-image', type: product.media[1], data_widths: '[180, 360, 540, 720, 900]' %}
+             <noscript>
+               <img src="{{ product.media[1] | img_url: '500x' }}" alt="{{ product.media[1].alt | escape }}">
+             </noscript>
+           </div>
+        {% elsif settings.image_flip and product.media.size > 1 and second_image.media_type != 'image' %}
+          <div class="hidden">
+             {% render 'basic-responsive-image', type: product.media[1].preview_image, data_widths: '[180, 360, 540, 720, 900]' %}
+             <noscript>
+               <img src="{{ product.media[1].preview_image | img_url: '500x' }}" alt="{{ product.media[1].preview_image.alt | escape }}">
+             </noscript>
+           </div>
+        {% endif %}
+      </div>
+    </a>
+  </div>
+
+  {% if settings.quickview and template != 'search' %}
+    <button class="quick-view-{{ product.id }} product-listing__quickview-trigger js-modal-open js-quickview-trigger" type="button" name="button" data-wau-modal-target="quickview" data-product-url="{{ product.url }}?view=quick">{{ 'products.general.quick_view' | t }}</button>
+  {% endif %}
+</div>
+
+<div class="product-info">
+  <div class="product-info-inner">
+    <h4 class="product-title">
+      <a href="{{ product.url | within: collection }}">
+        {{ product.title }}
+      </a>
+    </h4>
+   <!-- {% if settings.vendor %}
+      <p class="product-vendor">{{ product.vendor }}</p>
+    {% endif %} -->
+
+    {% comment %}{% render 'product-price-listing', product: product %}{% endcomment %}
+
+  </div>
+</div>
+

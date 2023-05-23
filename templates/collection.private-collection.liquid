@@ -1,0 +1,5 @@
+{% if customer.tags contains 'subscriber' %}
+{% section 'collection'%}
+{% else %}
+{{ page.no-access.content }}
+{% endif %}

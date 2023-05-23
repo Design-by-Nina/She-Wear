@@ -1,0 +1,170 @@
+{% assign has_products = false %}
+{% assign has_articles = false %}
+{% assign has_pages = false %}
+
+{% paginate search.results by 24 %}
+  <div id="page" class="desktop-12 tablet-6 mobile-3">
+    <h1>{{ 'general.search.title' | t }}</h1>
+    <div id="search-bar" class="desktop-6 desktop-push-3 tablet-6 mobile-3">
+      <form action="{{ routes.search_url }}" method="get">
+        {% if search.performed %}
+          {% if search.results_count == 0 %}
+            <p>{{ 'general.search.no_results_html' | t: terms: search.terms }}</p>
+          {% else %}
+            <p>{{ 'general.search.results_for_html' | t: terms: search.terms }}</p>
+          {% endif %}
+        {% endif %}
+        <div class="search-form">
+          <input
+            type="text"
+            name="q"
+            id="q"
+            placeholder="{{ 'general.search.placeholder' | t }}"/>
+          <button type="submit">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% if search.performed %}
+
+  {% for item in search.results %}
+    {% if item.object_type == 'product' %}
+     {% assign has_products = true %}
+    {% endif %}
+    {% if item.object_type == 'article' %}
+     {% assign has_articles = true %}
+    {% endif %}
+    {% if item.object_type == 'page' %}
+     {% assign has_pages = true %}
+    {% endif %}
+  {% endfor %}
+
+  {% if has_products %}
+    <div id="search-products" class="desktop-12 tablet-6 mobile-3">
+      <h2 class="section-title">{{ 'general.search.products' | t }}</h2>
+      <div id="product-loop">
+      {% for item in search.results %}
+        {% if item.object_type == 'product' %}
+          <div
+            class="product-index desktop-3 tablet-2 mobile-half{% cycle ' first', '', '', ' last' %}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}"
+            id="prod-{{ item.id }}"
+            data-alpha="{{ item.title }}"
+            data-price="{{ item.price }}">
+            {% render 'product-listing', product: item, collection: collection %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  {% if section.settings.show_articles and has_articles %}
+    <div id="search-articles" class="desktop-12 tablet-6 mobile-3">
+      <h2 class="section-title">{{ 'general.search.articles' | t }}</h2>
+      {% for item in search.results %}
+        {% if item.object_type == 'article' %}
+        <div class="search-article desktop-3 tablet-2 mobile-half{% cycle ' first', '', '', ' last' %}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}">
+          <!--'item' is an article All article object properties can be accessed. -->
+          {% if item.image %}
+            <div class="prod-image">
+              <a href="{{ item.url }}" title="{{ item.title | escape }}">
+                {%- render 'basic-responsive-image', type: item.image, data_widths: '[180, 360, 540, 720, 900]'  -%}
+                <noscript>
+                  <img src="{{ item.image | img_url: '800x' }}" alt="{{ item.image.alt }}">
+                </noscript>
+              </a>
+            </div>
+          {% endif %}
+          <div class="product-info">
+            <h4 class="page-info"><a href="{{ item.url }}">{{ item.title }}</a></h4>
+            <p>{{ item.content | strip_html | truncate: 200 }}</p>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% if section.settings.show_pages and has_pages %}
+    <div id="search-pages" class="desktop-12 tablet-6 mobile-3">
+      <h2 class="section-title">{{ 'general.search.pages' | t }}</h2>
+      {% for item in search.results %}
+        {% if item.object_type == 'page' %}
+        <div class="search-page desktop-3 tablet-2 mobile-half{% cycle ' first', '', '', ' last' %}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}">
+          <!--'item' is an page All page object properties can be accessed. -->
+          {% if item.image %}
+            <div class="prod-image">
+              <a href="{{ item.url }}" title="{{ item.title | escape }}">
+                {%- render 'basic-responsive-image', type: item.image, data_widths: '[180, 360, 540, 720, 900]'  -%}
+                <noscript>
+                  <img src="{{ item.image | img_url: '800x' }}" alt="{{ item.image.alt }}">
+                </noscript>
+              </a>
+            </div>
+          {% endif %}
+          <div class="product-info">
+            <h4 class="page-info"><a href="{{ item.url }}">{{ item.title }}</a></h4>
+            <p>{{ item.content | strip_html | truncate: 200 }}</p>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+  <div class="clear"></div>
+  {% render 'pagination', paginate: paginate %}
+
+{% endif %}
+
+
+{% endpaginate %}
+
+<style>
+@media screen and ( min-width: 981px ) {
+   .product-index.desktop-4:nth-child(3n+1) {
+       clear: left;
+   }
+
+   .product-index.desktop-3:nth-child(4n+1) {
+       clear: left;
+   }
+
+   .product-index.desktop-6:nth-child(2n+1) {
+       clear: left;
+   }
+}
+@media screen and ( min-width: 741px ) and ( max-width: 980px ) {
+   .product-index.tablet-2:nth-child(3n+1) {
+       clear: left;
+   }
+   .product-index.tablet-3:nth-child(2n+1) {
+       clear: left;
+   }
+}
+@media screen and ( max-width: 740px ) {
+   .product-index.mobile-half:nth-child(2n+1) {
+       clear: left;
+   }
+}
+</style>
+
+
+{% schema %}
+{
+  "name": "Search",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_articles",
+      "label": "Show relevant blog articles",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pages",
+      "label": "Show relevant pages",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,231 @@
+{% comment %}
+    Renders a list of product's price (regular, sale, unit)
+    Accompanies product forms and meant to be updated dynamically
+    Accepts:
+    - variant: {Object} Variant Liquid object (optional)
+    - product: {Object} Product Liquid object (optional)
+
+    Usage:
+    {% include 'product-price', variant: current_variant, product: product %}
+{% endcomment %}
+{%- liquid
+  if variant.title
+    assign compare_at_price = variant.compare_at_price
+    assign price = variant.price
+    assign available = variant.available
+  else
+    assign compare_at_price = 1999
+    assign price = 1999
+    assign available = true
+  endif
+
+  assign money_price = price | money
+-%}
+
+
+{%- assign product_tags = product.tags -%}
+{%- assign badge_type = '' -%}
+{%- comment -%}#733673129 logic for first setting badges on load{%- endcomment -%}
+
+{%- comment -%}
+% if compare_at_price > price %}  {% endif %}
+
+{%- assign badge_type = 'on-sale' -%}
+{%- endcomment -%}
+
+
+{% if variant.unit_price_measurement %} {%- assign badge_type = 'unit-available' -%} {% endif %}
+{%- comment -%}#719766932 Checking the tags to set the flags FOR INITIAL LOAD THE OF A PRODUCT{%- endcomment -%}
+
+{% for tag in product_tags %}
+  {% if tag == "special order"  %} 
+    {%- assign badge_type = 'special-order' -%}
+  {% endif %} 
+{% endfor %}
+{% for tag in product_tags %}
+  {% if tag == "coming soon" %} 
+    {%- assign badge_type = 'coming-soon' -%}
+  {% endif %} 
+{% endfor %}
+
+{% if available == false and badge_type != 'special-order' and  badge_type != 'coming-soon' %} 
+  {%- assign badge_type = 'sold-out' -%} 
+{% else %}
+  {% for tag in product_tags %}
+    {% if tag == "special order" %}
+      {%- assign badge_type = 'special-order' -%}
+    {% elsif tag == "limited edition" %}
+      {%- assign badge_type = 'limited-edition' -%}
+    {% elsif tag == "new" %}
+      {%- assign badge_type = 'new-product' -%}
+    {% elsif tag == "seconds" %}
+      {%- assign badge_type = 'seconds' -%}
+    {% elsif tag == "sale" %}
+      {%- assign badge_type = 'sale' -%}
+	{% elsif tag == "coming soon" %}
+      {%- assign badge_type = 'coming-soon' -%}
+    {% elsif tag == "restocked" %}
+      {%- assign badge_type = 'restocked' -%}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+
+
+{% assign preorderArray = variant.metafields.preorder | size %}
+
+{% if preorderArray > 0 %}
+  {% assign today_date = "now" | date: '%d-%m-%Y' | date: '%s' %}
+  {% assign preorder_date = variant.metafields.preorder.Preorder_date |  append: '' | date: '%s' %}
+  {% assign preorder_fullfilment_date_string = variant.metafields.preorder.Fulfilment_date  %}
+  {% assign preorder_fullfilment_date = preorder_fullfilment_date_string |  append: '' | date: '%s' %}
+  {% assign available_qty = variant.metafields.preorder.Available_Qty | plus: 0 %}
+  {% assign inventory_qty = variant.inventory_quantity | plus: 0  | abs %}
+  {%- comment -%}Checks to see the current variant and sets the button bassed on that{%- endcomment -%}
+    {%- if today_date >= preorder_date and today_date < preorder_fullfilment_date   -%} 
+      {% if available_qty == inventory_qty or available_qty == 0 %}
+        {%- assign badge_type = 'sold-out' -%}
+      {% else %}
+          {%- assign badge_type = 'pre-order' -%}
+      {% endif %}
+    {% else %}
+      {%- assign badge_type = 'sold-out' -%}
+    {%- endif -%}
+{%- endif -%}
+
+
+
+
+
+
+<dl id="product-price" class="price"
+  data-badge="{{ badge_type }}" data-price >
+
+
+  <dl id="product-price" class="price
+  {% if available == false %} price--sold-out {% endif %}
+  {% if compare_at_price > price %} price--on-sale {% endif %}
+  {% if variant.unit_price_measurement %} price--unit-available {% endif %}"
+  data-price
+>
+  {%- comment -%}
+  {%- endcomment -%}
+
+
+  {%- comment -%}
+    Explanation of description list:
+      - div.price__regular: Displayed when there are no variants on sale
+      - div.price__sale: Displayed when a variant is a sale
+      - div.price__unit: Displayed when the first variant has a unit price
+      - div.price__availability: Displayed when the product is sold out
+  {%- endcomment -%}
+  <div class="price__pricing-group">
+    <div class="price__regular">
+      <dt>
+        <span class="visually-hidden visually-hidden--inline">{{ 'products.general.regular_price' | t }}</span>
+       		 <dd>
+       				 <span class="price-item price-item--regular" data-regular-price>
+        			  {{ money_price }}
+        			 </span>
+      		</dd>
+      </dt>
+    
+    </div>
+    <div class="price__sale">
+      <dt>
+        <span class="visually-hidden visually-hidden--inline">{{ 'products.general.sale_price' | t }}</span>
+        	 <dd>
+                      <span class="price-item price-item--sale" data-sale-price>
+                      {{ money_price }} 
+                      </span>
+             </dd>
+      </dt>
+      
+      <dt>
+        <span class="visually-hidden visually-hidden--inline">{{ 'products.general.regular_price' | t }}</span>
+        	<dd>
+        			<span class="price-item price-item--regular" data-regular-price>
+          			{{ compare_at_price | money }}
+        			</span>
+      	   </dd>
+      </dt>
+      
+    </div>
+
+
+    <div class="price__badges" >
+  
+      {%- comment -%}
+        <span class="price__badge price__badge--sale" aria-hidden="true">
+        <span>{{ 'products.general.sale' | t }}</span>
+      </span>
+      {%- endcomment -%}
+
+      <span class="price__badge price__badge--hidden">
+        <span></span>
+      </span>
+
+
+      <span class="price__badge price__badge--limited-edition" >
+        <span>Limited Edition</span>
+      </span>
+      
+       <span class="price__badge price__badge--coming-soon" >
+        <span>Coming Soon</span>
+      </span>
+
+      <span class="price__badge price__badge--new-product" >
+        <span>New</span>
+      </span>
+
+      <span class="price__badge price__badge--seconds" >
+        <span>Seconds</span>
+      </span>
+
+      <span class="price__badge price__badge--pre-order" >
+        <span>Pre-order</span>
+      </span>
+
+
+      <span class="price__badge price__badge--special-order" >
+        <span>Special Order</span>
+      </span>
+
+      <span class="price__badge price__badge--sale" >
+        <span>Sale</span>
+      </span>
+
+      <span class="price__badge price__badge--restocked" >
+        <span>Restocked</span>
+      </span>
+
+      <span class="price__badge price__badge--sold-out">
+        <span>{{ 'products.product.sold_out' | t }}</span>
+      </span>
+    </div>
+
+
+  </div>
+  <div class="price__unit">
+    <dt>
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.unit_price_label' | t }}</span>
+    </dt>
+    <dd class="price-unit-price">
+      {%- capture unit_price_separator -%}
+        <span aria-hidden="true">/</span><span class="visually-hidden">{{ 'general.accessibility.unit_price_separator' | t }}&nbsp;</span>
+      {%- endcapture -%}
+      {%- capture unit_price_base_unit -%}
+        <span data-unit-price-base-unit>
+          {%- if variant.unit_price_measurement -%}
+            {%- if variant.unit_price_measurement.reference_value != 1 -%}
+              {{- variant.unit_price_measurement.reference_value -}}
+            {%- endif -%}
+            {{ variant.unit_price_measurement.reference_unit }}
+          {%- endif -%}
+        </span>
+      {%- endcapture -%}
+
+      <span data-unit-price>{{ variant.unit_price | money }}</span>{{- unit_price_separator -}}{{- unit_price_base_unit -}}
+    </dd>
+  </div>
+</dl>

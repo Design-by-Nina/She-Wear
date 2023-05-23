@@ -1,0 +1,65 @@
+<section class="homepage-featured-video-{{ section.id }} index-section{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}" data-section-id="{{ section.id }}" data-section-type="featured-video-section">
+
+  {% if section.settings.heading != blank %}
+    <div class="row">
+      <h2 class="section-title desktop-12 tablet-6 mobile-3">{{ section.settings.heading | escape }}</h2>
+    </div>
+  {% endif %}
+
+  {% if section.settings.display_wide %}
+  {% else %}
+  <div class="row">
+    <div class="desktop-12 tablet-6 mobile-3">
+      {% endif %}
+
+      <div class="videoWrapper">
+        {% if section.settings.video_url == blank %}
+          <iframe data-src="//www.youtube.com/embed/_9VUPq3SxOc?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+        {% else %}
+          {% if section.settings.video_url.type == "youtube" %}
+            <iframe data-src="//www.youtube.com/embed/{{ section.settings.video_url.id }}?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+          {% endif %}
+          {% if section.settings.video_url.type == "vimeo" %}
+            <iframe data-src="//player.vimeo.com/video/{{ section.settings.video_url.id }}?byline=0&portrait=0&badge=0" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      {% if section.settings.display_wide %}
+      {% else %}
+    </div>
+  </div>
+  {% endif %}
+
+</section>
+
+{% schema %}
+{
+  "name":"Featured video",
+  "settings": [
+    {
+      "type":"text",
+      "id":"heading",
+      "label":"Heading",
+      "default":"Featured video"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_wide",
+      "label": "Full width"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "YouTube or Vimeo link",
+      "accept": ["youtube", "vimeo"]
+    }
+  ],
+  "presets": [
+	 {
+      "name": "Video",
+      "category": "Video"
+    }
+	]
+}
+{% endschema %}

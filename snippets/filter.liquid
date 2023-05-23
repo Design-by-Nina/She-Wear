@@ -1,0 +1,55 @@
+{% if block.type == 'filter' %}
+<div class="filter-wrapper">
+  {% assign tags = block.settings.filter_by  | replace: ' ,', ',' | replace: ', ', ',' | split: ',' %}
+  <input id="styled-select-trigger" class="visually-hidden filter-control" type="checkbox" value="enabled-SORT">
+  <label for="styled-select-trigger" id="filter-{{ forloop.index0 }}" data-id="filter-{{ forloop.index0 }}"  class="main-label">
+    {{ block.settings.filter_by_title }}
+    {% render 'icon-arrow-down' %}
+  </label>
+  <ul class="styled-select coll-filter" style="display: none;">
+    {% assign filter_type = block.settings.filter_by_title | handleize %}
+    {% for tag in tags %}
+      {% if current_tags contains tag %}
+        <li class="current">
+          {{ tag | link_to_remove_tag: tag }}
+          {% render 'icon-check-mark' %}
+        </li>
+      {% elsif collection.all_tags contains tag %}
+        <li>{{ tag | link_to_add_tag: tag }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+  <script>
+  (function collectionFilters() {
+    const collFilters = document.querySelectorAll('.coll-filter');
+    if (collFilters.length > 0) {
+      collFilters.forEach((collFilter) => {
+        collFilter.addEventListener('change', function(){
+          var newTags = [];
+          collFilters.forEach((collFilter) => {
+            for(var i = 0; i <= collFilter.length-1; i++){
+              if(collFilter[i].selected == true && collFilter[i].value != "") {
+                newTags.push(collFilter[i].value);
+              }
+            }
+          });
+          if (newTags.length) {
+            var query = newTags.join('+');
+            window.location.href = '/collections/{{ collection.handle }}/' + query;
+          }
+          else {
+            {% if collection.handle %}
+            window.location.href = '/collections/{{ collection.handle }}';
+            {% elsif collection.products.first.type == collection.title %}
+            window.location.href = '{{ collection.title | url_for_type }}';
+            {% elsif collection.products.first.vendor == collection.title %}
+            window.location.href = '{{ collection.title | url_for_vendor }}';
+            {% endif %}
+          }
+        });
+      });
+    }
+  })();
+  </script>
+</div>
+{% endif %}

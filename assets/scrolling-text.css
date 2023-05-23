@@ -1,0 +1,91 @@
+/*------------------------------------------------------------------
+Compass Mixins
+*/
+/*------------------------------------------------------------------
+Variables
+*/
+/*------------------------------------------------------------------
+Utilities
+*/
+.scrolling-text {
+    background: var(--color-bg, var(--color-accent3));
+    color: var(--color-text, var(--color-accent2)); 
+    overflow: hidden;
+    min-height: 36px;
+}
+.scrolling-text a {
+    color: var(--color-text, var(--color-accent2)); 
+}
+.scrolling-text a:hover {
+    opacity: .8;
+    text-decoration: underline;
+}
+@media screen and (min-width: 981px) {
+    .scrolling-text:after {
+        content: '';
+        display: inline-block;
+        width: 260px;
+        min-height: 36px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        background: linear-gradient(to right, #0000 0%, #000 20% 100%);
+    }
+}
+.scrolling-text_inner {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: var(--font-size);
+    overflow: hidden; 
+}
+.scrolling-text_inner.direction-left > div {
+    animation: marquee-left var(--marquee-speed) linear infinite; 
+}
+.scrolling-text_inner.direction-right > div {
+    animation: marquee-right var(--marquee-speed) linear infinite; 
+}
+.scrolling-text_inner > div {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; 
+}
+.scrolling-text__item {
+    padding: 5px 5vw; 
+}
+.scrolling-text.outline-text-true .scrolling-text_inner > div * {
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: var(--color-text, var(--color-accent2)); 
+}
+
+
+@keyframes marquee-left {
+    0% {
+        transform: translateX(0%); 
+    }
+    100% {
+        transform: translateX(-100%); 
+    } 
+}
+
+@keyframes marquee-right {
+    0% {
+        transform: translateX(-100%); 
+    }
+    100% {
+        transform: translateX(0%); 
+    } 
+}
+  
+
+/* if top-bar is present */
+#top-bar {
+    background: transparent;
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    right: 0;
+    padding: 0 10px;
+}

@@ -1,0 +1,483 @@
+
+{% assign call_to_action = 'products.product.add_to_cart' | t %}
+{% assign product_tags = product.tags %}
+
+
+{% unless current_variant.available %}
+  {% assign call_to_action = 'products.product.sold_out' | t %}
+{% endunless %}
+
+{% assign type_of_product = product.type %}
+
+{% for tag in product_tags %}
+  {% if tag == "special order" %} 
+    {%- assign call_to_action = 'Special Order' -%}
+  {% endif %} 
+  {% if tag == "sold out" %} 
+    {%- assign call_to_action = 'Sold Out' -%}
+  {% endif %}
+{% endfor %}
+
+
+{% unless current_variant.available %}{% endunless %}
+{% assign preorderArray = current_variant.metafields.preorder | size %}
+{% assign inventory_qty = current_variant.inventory_quantity | plus: 0  | abs %}
+
+{% if preorderArray > 0 %}
+  {% assign today_date = "now" | date: '%d-%m-%Y' | date: '%s' %}
+  {% assign preorder_date = current_variant.metafields.preorder.Preorder_date |  append: '' | date: '%s' %}
+  {% assign preorder_fullfilment_date_string = current_variant.metafields.preorder.Fulfilment_date  %}
+  {% assign preorder_fullfilment_date = preorder_fullfilment_date_string |  append: '' | date: '%s' %}
+  {% assign available_qty = current_variant.metafields.preorder.Available_Qty | plus: 0 %}
+  {%- comment -%}Checks to see the current variant and sets the button bassed on that{%- endcomment -%}
+    {%- if today_date >= preorder_date and today_date < preorder_fullfilment_date   -%} 
+      {% if available_qty == inventory_qty or available_qty == 0 %}
+        {% assign call_to_action = 'Sold Out'  %}
+        {% assign button_disabled = true %} 
+      {% else %}
+          {% assign call_to_action = 'Pre Order Now'  %}
+          {% assign button_disabled = false %} 
+      {% endif %}
+    {% else %}
+      {% assign call_to_action = 'Sold Out'  %}
+      {% assign button_disabled = true %} 
+    {%- endif -%}
+{%- endif -%}
+
+
+
+
+
+{% form 'product', product, id: "AddToCartForm", class: "product_form", data-product-form:product_form_config %}
+{% unless product.type contains "Gift Card" %}
+<div class="okendo-summary">{% render 'okendo-reviews-product-rating-summary', product: product %}</div>
+{% endunless %}
+
+    <h1>
+      <span class="product-vendor">{{ product.vendor }}</span>
+      <span class="product-title">{{ product.title }}</span>
+    </h1>
+    <h5>
+      {% render 'product-price', variant: current_variant, product: product %}
+    </h5>
+
+    {% comment %} afterpay {% endcomment %}
+{%- comment -%}#734550503 if it's a giftcard we first check if it's more than 100, then if it is we allow afterpay banner{%- endcomment -%}
+    {% if  current_variant.price >= 10000 %}
+    <div class="afterpay-payments">
+      <div class="payments_item payments--afterpay">
+        <p>
+          <span>Or 4 payments of</span>
+          <span data-afterpay-amount><strong id="afterpay--payment">{{ current_variant.price | divided_by: 4 | money }}</strong> with</span>
+          <span class="afterpay-inline">{%- render 'icon' with 'afterpay-2', class: 'icon--full-color' -%}</span>
+          <a class="afterpay-link" href="https://www.afterpay.com.au/terms" target="_blank" rel="noop noopener">
+            <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+          </a>
+        </p>
+      </div>
+    </div>
+    {% elsif product.type contains "Gift Card"  %}
+        <div class="afterpay-payments hidden"
+        data-afterpay data-payments>
+          <div class="payments_item payments--afterpay">
+            <p>
+              <span>Or 4 payments of</span>
+              <span data-afterpay-amount><strong id="afterpay--payment"></strong> with</span>
+              <span class="afterpay-inline">{%- render 'icon' with 'afterpay-2', class: 'icon--full-color' -%}</span>
+              <a class="afterpay-link" href="https://www.afterpay.com.au/terms" target="_blank" rel="noop noopener">
+                <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+              </a>
+            </p>
+          </div>
+        </div>
+    {% endif %}
+
+    <div class="description">
+      {{ product.description }}
+      <p><a href="#product-details" class="read-more">Read More...</a></p>
+    </div>
+   {% if product.handle contains 'bolle-rush-small-safety-glasses-blue-black-with-smoke-lens' %}
+  <div class="swatch">
+    <img class="img-1-1-1 "src="https://cdn.shopify.com/s/files/1/0567/9503/7849/files/red.png?v=1628042530" >
+    <img class="img-1-1-1 "src="https://cdn.shopify.com/s/files/1/0567/9503/7849/files/blue.png?v=1628034201" >
+    <img class="img-1-1-1 "src="https://cdn.shopify.com/s/files/1/0567/9503/7849/files/light-pink.png?v=1628041533" >
+    <a href=""><img class="img-1-1-2 "src="https://cdn.shopify.com/s/files/1/0567/9503/7849/files/green_with_tick.png?v=1683595151" ></a>
+  </div>
+      <style> .img-1-1-1 {width: 30px;
+  height: 30px;
+  border-radius: 50%;
+      opacity:0.2;
+     position: relative;
+      }
+
+      .img-1-1-1:hover {
+      content: "Out of Stock";
+      color: #ffffff;
+      font-size: 12px;
+      }
+      .img-1-1-2 {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;  
+      }
+      
+    </style>
+  {% endif %}
+    <div class="variants clearfix">
+    {% if product.options.size > 1 %}
+    <div class="select" {% if product.variants.size == 1 %} style="display: none;" {% endif %}>
+      <select id="{{ section.id }}-product-select-{{ product.id }}" name="id" style="display: none;">
+        {% for variant in product.variants %}
+          <option value="{{ variant.id }}" {% if variant == current_variant %} selected="selected" {% endif %}>
+            {{ variant.title }}
+            -
+            {{ variant.price | money }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+  {% if settings.product_variants == 'swatches' %}
+    {% for option in product.options_with_values %}
+
+      {% assign option_name = option.name | downcase %}
+
+      {% if option_name == 'width' and option.values.size == 1 %}
+        {% continue %}
+      {% endif %}
+
+      {% render "swatch", option: option, current_variant: current_variant, product: product %}
+    {% endfor %}
+  {% endif %}
+{% elsif product.options.size == 1 and product.variants.size > 1 %}
+  <div class="select">
+    <label>{{ product.options[0] }}</label>
+    <select id="{{ section.id }}-product-select-{{ product.id }}" name="id" style="display: none;">
+      {% for variant in product.variants %}
+        <option data-sku="{{ variant.sku }}" value="{{ variant.id }}" {% if variant == current_variant %} selected="selected" {% endif %}>
+          {{ variant.title }}
+          -
+          {{ variant.price | money }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  {% if settings.product_variants == 'swatches' %}
+    {% for option in product.options_with_values %}
+      {% render "swatch", option: option, current_variant: current_variant, product: product %}
+
+    {% endfor %}
+  {% endif %}
+{% elsif product.variants.size == 1 %}
+  <select id="{{ section.id }}-product-select-{{ product.id }}" name="id" {% if product.variants.size == 1 %} style="display: none;" {% endif %}>
+    {% for variant in product.variants %}
+      <option value="{{ variant.id }}" {% if variant == current_variant %} selected="selected" {% endif %}>
+        {{ variant.title }}
+        -
+        {{ variant.price | money }}
+      </option>
+    {% endfor %}
+  </select>
+{% else %}
+  <div class="what-is-it">
+    {% if product.options.first != 'Title' %}
+      <label>{{ product.options.first }}:</label>
+      {% for variant in product.variants %}
+        <span class="it-is">{{ variant.option1 | escape }}</span>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div class="product-variants"></div><!-- product variants -->
+
+  <input type="hidden" id="{{ variant.id }}" name="id" data-sku="{{ variant.sku }}" value="{{ product.variants[0].id }}"/>
+{% endif %}</div>{%-comment-%}
+    {% if settings.show_quantity %}
+      <p class="option-label">{{ 'products.product.quantity' | t }}</p>
+      <div class="quantity-selector mb20">
+        <a class="quantity-control-down">-</a>
+        <input type="text" name="quantity" class="product-qty quantity" {% if current_variant.inventory_management == 'shopify' %}{% unless current_variant.inventory_policy == 'continue' %}data-limit="{{ current_variant.inventory_quantity }}"{% endunless %}{% endif %} value="1" style="max-width: 50px; text-align: center; margin: 0 auto 10px; "/>
+        <a class="quantity-control-up">+</a>
+      </div>
+    {% endif %}
+    {%-endcomment-%}
+ 
+<div class="product-add clearfix">
+<div class="note note-success mt3 js-added-msg" style="display: none">
+  <b>{{ 'products.product.added' | t }}</b>&nbsp;&nbsp;&nbsp;<a class="underline" href="{{ routes.cart_url }}">{{ 'products.product.view_cart' | t }}</a>
+  {{ 'products.product.or' | t }}
+  <a class="underline" href="{{ routes.all_products_collection_url }}">{{ 'products.product.continue' | t }}</a>.
+</div>
+<div class="note note-error js-error-msg" style="display: none">
+  <b>{{ 'cart.general.cart_error' | t }}</b>&nbsp;&nbsp;&nbsp;{{ 'cart.general.update_qty_error' | t }}
+</div>
+
+
+{%- comment -%}Text to be displayed if the product is a preorder{%- endcomment -%}
+{%- comment -%}
+
+{%- endcomment -%}
+{% if preorderArray > 0 %}
+  {%- if today_date >= preorder_date and today_date <  preorder_fullfilment_date %}
+    <div class="preorder-notification">
+      <p class="preorder-notification--text"><b>PRE ORDERS ARE OPEN!</b> Expected dispatch {{ preorder_fullfilment_date | date: "%B %e, %Y" }}</p>
+    </div>
+    <input type="hidden" id="sale" type="text" name="properties[Preordered Item]" value="Please check the expected dispatch date on the product page."  >
+  {%- endif -%}
+{%- endif -%}
+<div class="preorder-notification hidden">
+  <p  class="preorder-notification--text"></p>
+  <input type="hidden" id="sale" type="" name="" value=""  >
+</div>
+
+{%- comment -%}#719753665 displays warning about returns if certain tags active{%- endcomment -%}
+{% for tag in product_tags %}
+  {% if tag == "sale10" %}
+    <input type="hidden" id="sale" type="text" name="properties[Sale Item]" value="This SALE item may be returned for an exchange or store credit only. (unless faulty).">
+    {%- break -%}
+  {% elsif tag == "sale20" %}
+    <input type="hidden" id="sale" type="text" name="properties[Sale Item]" value="This FINAL SALE item cannot be refunded/exchanged (unless faulty).">
+   {% elsif tag == "blackfriday" %}
+    <input type="hidden" id="sale" type="text" name="properties[Sale Item]" value="This Black Friday SALE item cannot be refunded/exchanged (unless faulty).">   
+    {%- break -%}
+    {% elsif tag == "special order" %}
+    <input type="hidden" id="sale"class="sale-notice" type="text" color="red" name="properties[Item]"  value="Special order item (please refer to the product page for approx timeframe). ">
+    {%- break -%}
+  {% endif %}
+{% endfor %}
+
+
+
+
+  {%- if current_variant.metafields.properties.BIS_ETA != blank  and inventory_qty == 0  -%}
+    <p class="back-in-stock"><a class="klaviyo-bis-trigger button" href="#">Back in Stock ETA {{ current_variant.metafields.properties.BIS_ETA }} - Email me!!</a></p>
+  {%- else -%}
+    <p class="back-in-stock hidden"><a class="klaviyo-bis-trigger button" href="#">Email me when it's back in stock!</a></p>
+  {%- endif -%}
+
+
+
+
+{%- comment -%} #732282779 back in stock button{%- endcomment -%}
+{%- unless type_of_product contains "Accessories" or type_of_product  contains "PPE" or type_of_product  contains "Socks" or type_of_product  contains "Gift Card" -%}
+{%- comment -%}This is needed on load, to check if there is a backInStock set, if there is it won't be hidden if there is it will  be but is updated via the JS search for #732282779 Back in stock {%- endcomment -%}
+
+  
+
+  {% unless option.name contains "Colour"
+        or product_type contains "Gift Card"
+        or option.values contains "S"
+        or option.values contains "M"
+        or product_tags contains "no-size-guide" %}
+          <div class="sw-row">
+            <div class="sw-size--col" >
+              <div class="sw-size--wrapper">
+               {% render "size-guide-button" %}
+            </div>
+          </div>
+          <div class="sw-size--col" >
+          </div>
+         {% if product.tags contains "shoes"  %}
+          <div class="sw-size--col" >
+            <div class="sw-size--wrapper">
+            <p><a class="button sw-button" onclick="GorgiasChat.open();" >Need Help? Chat with us!</a></p>
+          </div>
+          </div>
+         {% endif %}
+          </div>
+  {% endunless %}
+{%- endunless -%}
+<div class="qty-cart">
+  {% if settings.show_quantity %}
+    <!-- <p class="option-label">{{ 'products.product.quantity' | t }}</p> -->
+     {% if product.title != "Signature Bio Mechanical inner sole" and product.title != "Organic cotton women's crew socks" %}  
+      <div class="quantity-selector mb20">
+        <a class="quantity-control-down">-</a>
+        <input type="text" name="quantity" class="product-qty quantity" {% if current_variant.inventory_management == 'shopify' %}{% unless current_variant.inventory_policy == 'continue' %}data-limit="{{ current_variant.inventory_quantity }}"{% endunless %}{% endif %} value="1" style="max-width: 50px; text-align: center; margin: 0 auto 10px; "/>
+        <a class="quantity-control-up">+</a>
+      </div>
+    {% endif %}
+  {% endif %}
+ {% if product.title != "Organic cotton women's crew socks" %} 
+  <input id="addToCart" type="submit" name="button" class="add AddtoCart js-ajax-submit {% if settings.show_payment_button and product.selling_plan_groups.size == 0 %} secondary-button{% endif %}" value="{{ call_to_action }}" 
+  {%- if current_variant.available == false  -%}
+    disabled
+  {%- elsif  button_disabled   -%} 
+	    disabled
+  {%- endif -%}
+   onclick="dataLayer.push({ 'ecommerce': null });dataLayer.push({
+'event': 'add_to_cart',
+'ecommerce': {
+		'items': [{
+		'item_id': '{{ product.id }}',
+		'item_name': '{{ product.title | remove: "'" | remove: '"' }}',
+		'item_brand': '{{ product.vendor | remove: "'" | remove: '"' }}',
+		'item_category': '{{ product.collections[0].title | remove: "'" | remove: '"' }}',
+		'item_variant': '{{ product.selected_variant.sku }}',
+		'currency': '{{ shop.currency }}',
+		'price': '{{ product.price  | times: 0.01}}'
+		}]
+	}
+});" />
+     {% else %}
+   <input class="button" style="width:100%;" value="Exclusive - Not for sale" disabled>
+   {%- endif -%}
+
+</div>
+ 
+{%- comment -%}
+
+and today_date >= preorder_date and today_date < preorder_fullfilment_date
+{% assign today_date = "now" | date: '%d-%m-%Y' | date: '%s' %}
+  {% assign preorder_date = current_variant.metafields.preorder.Preorder_date | date: '%s' %}
+  {% assign preorder_fullfilment_date_string = current_variant.metafields.preorder.Fulfilment_date  %}
+  {% assign preorder_fullfilment_date = preorder_fullfilment_date_string | date: '%s' %}
+
+{%- endcomment -%}
+
+
+
+
+{% if settings.show_payment_button %}
+  {{ form | payment_button }}{% endif %}
+
+      <div class="product-extra"> 
+        <a class="product-extra--link" href="/pages/returns">
+          
+            <svg version="1.1" width="1.5rem" id="Layer_1" xmlns="http://www.w3.org/2000/svg"     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+              <g>
+                <g>
+                  <path d="M288.502,32.502c-108.328,0-198.827,77.485-219.166,179.899l-42.482-53.107L0,180.784l68.769,85.961
+                  c3.352,4.178,8.338,6.447,13.427,6.447c2.596,0,5.226-0.585,7.685-1.805l103.153-51.577l-15.387-30.757l-75.8,37.892
+                  c14.063-90.5,92.27-160.059,186.655-160.059c104.271,0,189.114,84.843,189.114,189.114s-84.843,189.114-189.114,189.114v34.384
+                  C411.735,479.498,512,379.233,512,256S411.735,32.502,288.502,32.502z"/>
+                </g>
+              </g>
+            </svg>
+            <p class="product-extra-text" style="text-align:center;" ><span>30 Day <br>Returns</span></p>
+        </a>
+          <a class="product-extra--link" href="/pages/book-an-appointment">
+           <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="3.1rem" viewBox="0 0 485.000000 435.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,435.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M1845 3605 c-298 -65 -454 -271 -496 -655 -18 -162 9 -826 35 -868 9
+-16 41 -15 53 1 6 8 3 92 -8 237 -39 489 -20 741 70 935 94 202 262 295 531
+295 370 0 554 -175 610 -582 7 -51 11 -176 8 -321 -3 -211 -1 -239 13 -247 10
+-6 22 -5 34 4 16 11 18 36 23 223 8 331 -18 507 -100 673 -79 161 -218 267
+-400 304 -93 19 -288 20 -373 1z"/>
+<path d="M1723 3150 c-24 -5 -63 -18 -88 -29 l-46 -20 3 -263 3 -263 32 -67
+c17 -37 50 -86 72 -111 l40 -43 -15 -85 -16 -84 -105 -45 c-58 -25 -108 -51
+-111 -59 -3 -7 0 -22 7 -33 7 -11 10 -22 8 -24 -3 -3 -51 -23 -107 -44 -57
+-22 -120 -51 -141 -66 -45 -31 -103 -114 -119 -169 -7 -27 -10 -161 -8 -415
+l3 -375 24 -3 c13 -2 28 2 32 10 5 7 9 179 9 381 0 396 0 400 54 470 31 40 87
+71 219 122 l99 38 153 -153 c107 -106 158 -151 169 -147 8 3 33 41 55 84 38
+74 40 76 41 43 0 -19 2 -183 3 -363 2 -279 4 -329 17 -337 21 -13 26 -12 44 6
+14 13 16 62 16 372 l1 357 42 -80 c27 -52 48 -80 59 -80 9 0 53 36 98 79 81
+80 99 117 63 130 -17 7 -40 -11 -101 -76 -19 -21 -38 -38 -43 -38 -9 0 -114
+209 -108 214 2 2 61 35 131 75 70 40 131 79 136 87 5 8 1 56 -9 110 l-17 96
+43 48 c23 26 55 74 71 106 l29 59 3 265 c4 310 7 302 -86 268 -42 -15 -82 -21
+-152 -21 -87 -1 -103 3 -190 38 -81 32 -108 38 -185 41 -49 2 -109 -1 -132 -6z
+m308 -104 c106 -44 201 -55 302 -34 l67 15 0 -217 0 -217 -30 -61 c-35 -69
+-124 -158 -192 -191 -140 -67 -284 -36 -409 88 -102 102 -104 108 -107 388
+l-3 241 33 10 c62 20 73 21 163 18 77 -3 103 -9 176 -40z m-165 -773 c52 -25
+71 -28 164 -28 94 0 111 3 164 28 32 15 60 27 61 27 7 0 26 -110 21 -119 -9
+-14 -233 -141 -248 -140 -7 0 -65 31 -128 68 -107 63 -115 70 -113 97 3 38 13
+94 17 94 2 0 30 -12 62 -27z m-3 -223 c64 -35 117 -68 117 -72 0 -9 -99 -208
+-103 -208 -5 0 -287 283 -284 286 9 9 134 62 142 61 6 -1 63 -31 128 -67z"/>
+<path d="M1789 2884 c-24 -29 1 -49 61 -49 38 0 56 5 63 17 18 28 -9 48 -63
+48 -31 0 -52 -5 -61 -16z"/>
+<path d="M2149 2884 c-25 -30 1 -49 67 -49 55 0 59 2 62 24 2 13 -2 28 -10 32
+-23 15 -104 10 -119 -7z"/>
+<path d="M1907 2553 c-4 -3 -7 -17 -7 -30 0 -28 61 -71 113 -80 69 -11 178 65
+147 102 -17 21 -33 19 -76 -10 -20 -14 -45 -25 -54 -25 -9 0 -34 11 -54 25
+-37 25 -57 31 -69 18z"/>
+<path d="M2493 2310 c-13 -5 -32 -24 -43 -42 -19 -32 -20 -50 -20 -561 0 -579
+-1 -571 60 -602 24 -12 78 -15 310 -15 l280 0 0 -110 0 -110 -972 -2 -973 -3
+0 -100 0 -100 1475 0 1475 0 0 100 0 100 -322 3 -323 2 0 110 0 109 296 3 296
+3 29 33 29 32 0 548 c-1 581 1 560 -50 595 -23 16 -84 17 -775 16 -421 0 -760
+-4 -772 -9z m1515 -72 c17 -17 17 -1049 0 -1066 -9 -9 -87 -12 -289 -12 -256
+0 -278 1 -283 18 -2 9 -19 134 -37 277 -17 143 -36 266 -42 273 -6 8 -39 12
+-98 12 -83 0 -90 -2 -99 -22 -5 -13 -23 -140 -40 -283 -18 -143 -34 -263 -36
+-267 -9 -14 -558 -10 -572 4 -17 17 -17 1049 0 1066 17 17 1479 17 1496 0z
+m-671 -823 c22 -175 32 -294 32 -397 l1 -148 -110 0 -110 0 0 123 c0 80 12
+217 35 397 19 151 35 276 35 278 0 2 19 2 43 0 l42 -3 32 -250z m683 -650 l0
+-35 -1410 0 -1410 0 0 35 0 35 1410 0 1410 0 0 -35z"/>
+<path d="M1285 1004 c-9 -9 -14 -23 -11 -31 3 -8 6 -17 6 -19 0 -2 337 -4 749
+-4 l750 0 7 22 c15 48 22 48 -757 48 -659 0 -729 -2 -744 -16z"/>
+</g>
+</svg>
+          <p class="product-extra-text"><span>VIRTUAL <br>FITTING </span></p>
+        </a>
+        <a class="product-extra--link" href="/pages/shipping">
+            <svg width="2.0rem"  viewBox="0 -101 713.75189 713"  xmlns="http://www.w3.org/2000/svg"><path d="m85.085938 304.40625c-6.144532 2.882812-8.855469 10.140625-6.117188 16.34375l28.066406 60.25c1.378906 3 3.894532 5.335938 6.988282 6.488281 1.355468.492188 2.792968.746094 4.238281.746094 1.808593.015625 3.59375-.371094 5.238281-1.117187l212.054688-99.046876-19.207032 200.824219c-.371094 3.953125 1.152344 7.839844 4.109375 10.480469 9.296875 7.695312 20.882813 12.078125 32.9375 12.472656 3.324219-.003906 6.628907-.421875 9.851563-1.242187 17.214844-4.492188 30.5625-19.832031 39.667968-46.03125l83.449219-247.101563 165.273438-77.09375c48.648437-22.699218 73.71875-68.726562 56.882812-104.652344-9.554687-18.777343-27.855469-31.550781-48.773437-34.054687-23.242188-3.507813-46.996094.148437-68.105469 10.484375l-190.726563 89.433594-205.0625-80.207032c-25.824218-9.726562-46.277343-9.476562-60.621093.878907-12.035157 9.875-18.882813 24.71875-18.589844 40.285156.125 3.949219 2.113281 7.601563 5.363281 9.859375l138.082032 94.921875-79.078126 37.421875-132.601562-33.683594c-5.433594-1.335937-11.089844 1.113282-13.84375 5.988282l-33.050781 59.496093c-1.714844 3.152344-1.984375 6.894531-.738281 10.261719 1.238281 3.371094 3.871093 6.039062 7.226562 7.328125l98.167969 40.542969zm57.121093-248.09375c.734375-5.273438 3.402344-10.074219 7.488281-13.472656 7.113282-5.117188 20.085938-4.367188 37.421876 2.117187l182.617187 71.226563-83.328125 38.917968zm-112.257812 180.117188 21.703125-38.542969 127.605468 31.679687c2.75.695313 5.652344.433594 8.238282-.742187l414.75-193.71875c16.488281-8.132813 35.058594-11.09375 53.261718-8.484375 12.765626 1.175781 24.136719 8.542968 30.4375 19.707031 10.46875 22.457031-10.109374 55.261719-44.914062 71.476563l-143.695312 67.363281 8.734374-25.828125c2.207032-6.644532-1.398437-13.824219-8.042968-16.027344-6.652344-2.203125-13.828125 1.402344-16.03125 8.046875l-102.660156 305.476563c-6.113282 17.34375-13.722657 27.699218-22.203126 29.9375-5.253906 1.011718-10.691406-.019532-15.21875-2.863282l24.949219-261.953125c.652344-6.886719-4.398437-13-11.292969-13.652343-6.886718-.660157-13 4.398437-13.65625 11.285156l-3.863281 40.039062-214.054687 99.789063-17.578125-37.421875 35.167969-16.460938c4.527343-1.996094 7.445312-6.472656 7.445312-11.414062 0-4.945313-2.917969-9.421875-7.445312-11.414063zm0 0"/></svg>
+            <p class="product-extra-text" style="text-align:center;" ><span>WorldWide<br>Shipping</span></p>
+        </a>
+  {% comment %}
+        <a class="product-extra--link"  onclick="GorgiasChat.open();" >
+          <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"	 viewBox="0 0 512 512" width="1.5rem" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+            <style type="text/css">
+              .st0{fill:none;stroke:#000000;stroke-width:32;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+            </style>
+            <g>
+              <path class="st0" d="M494.37,256c0,131.65-106.72,238.37-238.37,238.37c-47.5,0-91.75-13.89-128.92-37.84
+                c-11.57,4.09-106.35,37.82-106.35,37.82s28.2-81.42,35.55-108.19C31.83,348.75,17.63,304.03,17.63,256
+                C17.63,124.35,124.35,17.63,256,17.63S494.37,124.35,494.37,256z"/>
+            <g>
+              <circle cx="151.96" cy="255.71" r="31.17"/>
+              <circle cx="256" cy="256" r="31.17"/>
+              <circle cx="360.04" cy="256.29" r="31.17"/>
+            </g>
+            </g>
+          </svg>
+          <p class="product-extra-text"><span>LIVE CHAT WITH<br>OUR TEAM</span></p>
+        </a>
+   {% endcomment %}
+    </div>
+
+  {% if type.settings.pf_show_sticky_cart %}
+    <div class="js-sticky-cart" data-product-sticky-bar id="sticky-cart">
+      <div class="product-info">
+        <h4>{{ product.title }}</h4>
+        {% render 'product-price', variant: current_variant, product: product %}
+      </div>
+      {% for option in product.options_with_values %}
+        {% if product.variants.size > 1 %}
+          {% if current_variant.option1 and forloop.index == 1 %}
+            <div class="current-option" id="current-option-1">
+              <p class="option-label">{{ option.name }}</p>
+              <p class="option-selected">{{ current_variant.option1 }}</p>
+            </div>
+          {% endif %}
+          {% if current_variant.option2 and forloop.index == 2 %}
+            <div class="current-option" id="current-option-2">
+              <p class="option-label">{{ option.name }}</p>
+              <p class="option-selected">{{ current_variant.option2 }}</p>
+            </div>
+          {% endif %}
+          {% if current_variant.option3 and forloop.index == 3 %}
+            <div class="current-option" id="current-option-3">
+              <p class="option-label">{{ option.name }}</p>
+              <p class="option-selected">{{ current_variant.option3 }}</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      <div class="product-add">
+        <input id="addToCart" type="submit" name="button" class="sticky-add clearfix mb10 AddtoCart secondary-button js-ajax-submit" value="{{ call_to_action }}"
+        {%- if current_variant.available == false  -%}
+        disabled
+        {%- elsif  button_disabled    -%} 
+          disabled
+        {%- endif -%}
+
+        />
+      </div>
+
+    </div>
+  {% endif %}
+{% endform %}
+

@@ -1,0 +1,152 @@
+<section class="homepage-collection-list-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="collection-list-section">
+  <article class="row">
+
+    {% if section.settings.title != blank %}
+      <h2 class="section-title desktop-12 tablet-6 mobile-3">
+        {{ section.settings.title | escape }}
+      </h2>
+    {% endif %}
+    {% if section.blocks.size == 0 %}
+      {% render 'no-blocks' %}
+    {% else %}
+      <div class="collection-loop">
+
+        {% case section.settings.collections_per_row %}
+        {% when 4 %}
+          {%- assign col_per_row = 'desktop-3 tablet-2' -%}
+        {% when 3 %}
+          {%- assign col_per_row = 'desktop-4 tablet-2' -%}
+        {% when 2 %}
+          {%- assign col_per_row = 'desktop-6 tablet-3' -%}
+        {% endcase %}
+
+        {% for block in section.blocks %}
+          {%- assign collection = collections[block.settings.collection] -%}
+          {% if collection != blank %}
+            {% render 'collection-grid-item',
+              collection: collection,
+              col_per_row: col_per_row %}
+          {% else %}
+            {% render 'onboard-collection',
+            col_per_row: col_per_row %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </article>
+</section>
+<div class="clear"></div>
+
+<style>
+  section.homepage-collection-list-{{ section.id }} {
+    padding: 20px 0;
+  }
+  section.homepage-collection-list-{{ section.id }} {
+    background: {{ section.settings.background_color }};
+  }
+  section.homepage-collection-list-{{ section.id }} h2,
+  section.homepage-collection-list-{{ section.id }} h2 a {
+    color: {{ section.settings.heading_color }} !important;
+  }
+  section.homepage-collection-list-{{ section.id }} .collection-index .collection-image a {
+    display: inline-block;
+    width: 100%;
+    outline-offset: unset !important;
+ }
+ @media screen and ( min-width: 981px ) {
+    .collection-index.desktop-4:nth-child(3n+1) {
+        clear: left;
+    }
+
+    .collection-index.desktop-3:nth-child(4n+1) {
+        clear: left;
+    }
+
+    .collection-index.desktop-6:nth-child(2n+1) {
+        clear: left;
+    }
+ }
+ @media screen and ( min-width: 741px ) and ( max-width: 980px ) {
+    .collection-index.tablet-2:nth-child(3n+1) {
+        clear: left;
+    }
+    .collection-index.tablet-3:nth-child(2n+1) {
+        clear: left;
+    }
+ }
+ @media screen and ( max-width: 740px ) {
+    .collection-index.mobile-half:nth-child(2n+1) {
+        clear: left;
+    }
+ }
+
+</style>
+
+{% schema %}
+{
+  "name": "Collection list",
+  "class": "index-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Collection list"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#000"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fff"
+    },
+    {
+      "type": "range",
+      "id": "collections_per_row",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Collections per row",
+      "default": 3
+    }
+  ],
+  "blocks": [
+    {
+      "type": "featured_collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "label": "Collection",
+          "id": "collection",
+          "type": "collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection list",
+      "category": "Collection",
+      "settings": {
+      },
+      "blocks": [
+        {
+          "type": "featured_collection"
+        },
+        {
+          "type": "featured_collection"
+        },
+        {
+          "type": "featured_collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

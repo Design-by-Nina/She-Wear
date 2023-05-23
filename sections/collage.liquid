@@ -1,0 +1,421 @@
+<section class="homepage-section-{{ section.id }} feat-images image-gallery section-gallery-{{ section.id }}{% if section.settings.no_bottom_margin %} nbm{% endif %}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %} flickity__section" data-section-id="{{ section.id }}">
+
+  {% capture slideshow_config %}{
+  "wrapAround":false,
+  "cellAlign": "center",
+  "dragThreshold":"5",
+  "contain": true,
+  "freeScroll": false,
+  "prevNextButtons": false,
+  "pageDots": false,
+  "watchCSS": true,
+  "cellSelector": ".image__container"
+  }{% endcapture %}
+  <div class="row homepage-section" style="margin-top:-80px;">
+    {% if section.settings.box_gallery_title != blank %}
+      <h3 class="section-title desktop-12 tablet-6 mobile-3 top-view">
+        {{ section.settings.box_gallery_title | escape }}
+    </h3></div>
+      <div class="clear"></div>
+    {% endif %}
+    <div class="flex-container gallery__container" >
+      {% for block in section.blocks %}
+        <div class="gallery-block{% if block.type == 'row_break' %} row__break{% endif %}" {{ block.shopify_attributes }}>
+          {% case block.type %}
+            {% when 'image' %}
+              {% case block.settings.image_width %}
+                {% when '50' %}
+                  {%- assign image_width = 'one-half' -%}
+                {% when '100' %}
+                  {%- assign image_width = 'one-whole' -%}
+              {% endcase %}
+
+              <div class="image__container promo-{{ block.id }} {{ image_width }} flex-item">
+                <div class="promo-inner">
+                  {% if block.settings.link != blank and block.settings.button_text == blank %}<a href="{{ block.settings.link }}">{% endif %}
+                    {% if block.settings.image != blank %}
+                      {% render 'basic-responsive-image', type: block.settings.image, data_widths: '[180, 360, 540, 720, 900, 1080, 1296, 1512]' %}
+                      <noscript>
+                        <img src="{{ block.settings.image | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+                      </noscript>
+                    {% else %}
+                      <div class="onboard">
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {% endif %}
+                    <div class="caption{% if block.settings.center_align %} centered{% endif %}">
+                      {% if block.settings.title != blank %}
+                        <h2 style="color:white; font-weight:bolder;">{{ block.settings.title | escape }}</h2>
+                      {% endif %}
+                      {% comment %}
+                      {% if block.settings.caption_text != blank %}
+                      {{ block.settings.caption_text }}
+                      {% endif %}
+                      {% endcomment %}
+                      {% if block.settings.link != blank and block.settings.button_text != blank %}
+                      <div class="gallery__btn-wrapper">
+                        <a href="{{ block.settings.link }}">{{ block.settings.button_text | escape }}</a>
+                      </div>
+                      {% endif %}
+                    </div>
+                  {% if block.settings.link != blank and block.settings.button_text == blank %}</a>{% endif %}
+                </div>
+                  {% case block.settings.image_size %}
+                  {% when 'small' %}
+                  {% assign image_height = '250px' %}
+                  {% when 'medium' %}
+                  {% assign image_height = '350px' %}
+                  {% when 'large' %}
+                  {% assign image_height = '700px' %}
+                  {% endcase %}
+                <style>
+                  .image__container.promo-{{ block.id }} {
+                    height: {{ image_height }};
+                    overflow: hidden;
+                  }
+                  .image__container.promo-{{ block.id }} .box-ratio {
+                    padding-bottom: {{ image_height }} ! important;
+                  }
+                  .image__container.promo-{{ block.id }} img {
+                    height: {{ image_height }};
+                    object-fit: cover;
+                    object-position: center;
+                  }
+                  @media screen and (max-width: 740px) {
+                    {% if section.settings.image_size == 'small' %}
+                    {% assign image_height = '220px' %}
+                    {% else %}
+                    {% assign image_height = '300px' %}
+                    {% endif %}
+                    .image__container.promo-{{ block.id }} {
+                      height: {{ image_height }};
+                    }
+                    .image__container.promo-{{ block.id }} .box-ratio {
+                      padding-bottom: {{ image_height }} ! important;
+                    }
+                    .image__container.promo-{{ block.id }} img {
+                      height: {{ image_height }};
+                    }
+                  }
+                  .image__container.promo-{{ block.id }} .caption {
+                    top: {{ block.settings.vertical_position }}%;
+                    left: {{ block.settings.horizontal_position }}%;
+                    -webkit-transform: translate(-{{ block.settings.horizontal_position }}%, -{{ block.settings.vertical_position }}%);
+                    -ms-transform: translate(-{{ block.settings.horizontal_position }}%, -{{ block.settings.vertical_position }}%);
+                    -moz-transform: translate(-{{ block.settings.horizontal_position }}%, -{{ block.settings.vertical_position }}%);
+                    -o-transform: translate(-{{ block.settings.horizontal_position }}%, -{{ block.settings.vertical_position }}%);
+                  }
+                  .image__container.promo-{{ block.id }} .caption h3
+                   {
+                    color: {{ block.settings.text_color }};
+                   }
+                  .image__container.promo-{{ block.id }} .caption .gallery__btn-wrapper a {
+                    background: {{ block.settings.button_color }};
+                    color: {{ block.settings.button_text_color }};
+                  }
+                </style>
+              </div>
+            {% when 'row_break' %}
+             <div class="clear"></div>
+          {% endcase %}
+        </div>
+      {% endfor %}
+
+      {% if section.blocks.size == 0 %}
+        {% render 'no-blocks' %}
+      {% endif %}
+    </div>
+    <div class="clear"></div>
+
+    <style>
+      #shopify-section-{{ section.id }} .image__container .promo-inner h3 {
+        font-size: {{ section.settings.promo_size }}px;
+        line-height: 1;
+      }
+      #shopify-section-{{ section.id }} .image__container .promo-inner p {
+        font-size: {{ section.settings.hidden_size }}px;
+      }
+      @media screen and (max-width: 740px) {
+        #shopify-section-{{ section.id }} .image__container .promo-inner h3 {
+          font-size: calc({{ section.settings.promo_size }}px - ({{ section.settings.promo_size }}px * 0.15));
+        }
+        #shopify-section-{{ section.id }} .image__container .promo-inner p {
+          font-size: calc({{ section.settings.hidden_size }}px - ({{ section.settings.hidden_size }}px * 0.15));
+        }
+      }
+      {% if section.settings.image_padding == 'padding' %}
+        .section-gallery-{{ section.id }} .flex-container {
+          margin-top: -10px;
+          margin-bottom: -10px;
+        }
+        .section-gallery-{{ section.id }} .flex-container .flex-item {
+          padding: 10px !important;
+        }
+        .section-gallery-{{ section.id }} .flex-container .flex-item .promo-inner {
+          padding-top: 10px;
+        }
+      {% endif %}
+      {% if section.settings.full_width %}
+        .section-gallery-{{ section.id }} .flex-container {
+          width: 102.4%;
+          margin-left: -20px;
+        }
+        @media only screen and (max-width: 980px) {
+          .section-gallery-{{ section.id }} .flex-container {
+            width: 105.5%;
+            margin-left: -10px;
+          }
+        }
+      {% else %}
+        .section-gallery-{{ section.id }} .flex-container {
+          width: 90%;
+          margin: 0 auto !important;
+        }
+        @media screen and (max-width: 740px) {
+          .section-gallery-{{ section.id }} .flex-container {
+            width: 100%;
+          }
+        }
+      {% endif %}
+      @media screen and ( max-width: 740px ) {
+        .gallery__container:after {
+          content: 'flickity';
+          display: none; /* hide :after */
+        }
+        .gallery__container.flickity-enabled .gallery-block {
+          width: 100%;
+        }
+        .gallery-block.row__break {
+            display: none !important;
+            width: 0 !important;
+        }
+      }
+      @media screen and ( min-width: 741px ) {
+        /* disable Flickity for large devices */
+        .gallery__container:after {
+          content: '';
+        }
+      }
+       .top-view { 
+          margin-top: 0px;
+       }
+       
+    </style>
+</section>
+<div class="clear"></div>
+  {% schema %}
+  {
+      "name": "Box-Gallery",
+  	  "max_blocks": 16,
+      "settings": [
+      {
+        "type": "text",
+        "id": "box_gallery_title",
+        "label": "Heading",
+        "default": "Text columns with images"
+      },
+	  
+       {
+          "type": "checkbox",
+          "id": "full_width",
+          "label": "Enable full width",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "promo_size",
+          "min": 12,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "label": "Heading size",
+          "default": 32
+        },
+        {
+          "type": "checkbox",
+          "id": "no_bottom_margin",
+          "label": "No space after section",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "image_padding",
+          "label": "Choose Style",
+          "default": "padding",
+          "options": [
+           {
+               "value": "padding",
+               "label": "Space around images"
+            },
+            {
+               "value": "no-padding",
+               "label": "Images touching"
+            }
+          ]
+        }
+      ],
+    	"blocks": [
+        {
+          "type": "image",
+          "name": "Image",
+          "settings": [
+            {
+              "type": "image_picker",
+              "id": "image",
+              "label": "Image"
+            },
+            {
+              "type": "select",
+              "id": "image_size",
+              "label": "Image height",
+              "default":"medium",
+              "options": [
+                {
+                  "value": "none",
+                  "label": "Natural"
+                },
+                {
+                  "value": "small",
+                  "label": "Small"
+                },
+                {
+                  "value": "medium",
+                  "label": "Medium"
+                },
+                {
+                  "value": "large",
+                  "label": "Large"
+                }
+              ],
+              "info": "Allow theme to control image heights to aid alignment"
+            },
+            {
+              "type": "select",
+              "id": "image_width",
+              "label": "Container width",
+              "default": "33",
+              "options": [
+               {
+                   "value":"25",
+                   "label":"25%"
+                },
+                {
+                   "value":"33",
+                   "label":"33%"
+                },
+                {
+                   "value":"50",
+                   "label":"50%"
+                },
+                {
+                   "value":"66",
+                   "label":"66%"
+                },
+                {
+                   "value":"75",
+                   "label":"75%"
+                },
+                {
+                   "value":"100",
+                   "label":"100%"
+                }
+              ]
+            },
+            {
+              "type": "url",
+              "id": "link",
+              "label": "Link",
+              "info": "Optional"
+            },
+            {
+              "type": "header",
+              "content": "Image captions"
+            },
+             {
+              "type": "text",
+              "id": "title",
+              "label": "Image heading",
+              "default": "Heading"
+             },
+             {
+               "type": "text",
+               "id": "button_text",
+               "label": "Button text",
+               "default": "Button",
+               "info": "Visible only if a link is chosen"
+             },
+             {
+               "type": "header",
+               "content": "Image caption style"
+             },
+             {
+               "type": "range",
+               "id": "vertical_position",
+               "min": 0,
+               "max": 100,
+               "step": 1,
+               "unit": "%",
+               "label": "Vertical position",
+               "default": 50
+             },
+             {
+               "type": "range",
+               "id": "horizontal_position",
+               "min": 0,
+               "max": 100,
+               "step": 1,
+               "unit": "%",
+               "label": "Horizontal position",
+               "default": 50
+             },
+             {
+               "type": "checkbox",
+               "id": "center_align",
+               "label": "Center align text",
+               "default": true
+             },
+            {
+              "type": "color",
+              "id": "text_color",
+              "label": "Text color",
+              "default": "#000"
+            },
+            {
+              "type": "color",
+              "id": "button_text_color",
+              "label": "Button text",
+              "default": "#fff"
+            },
+            {
+              "type": "color",
+              "id": "button_color",
+              "label": "Button color",
+              "default": "#000"
+            }
+          ]
+        },
+        {
+          "type": "row_break",
+          "name": "Row Break",
+          "settings": []
+        }
+      ],
+      "presets": [
+        {
+          "name": "Box-Gallery",
+          "category": "Image",
+          "blocks": [
+            {
+              "type": "image"
+            },
+            {
+              "type": "image"
+            },
+            {
+              "type": "image"
+            }
+          ]
+        }
+      ]
+    }
+  {% endschema %}

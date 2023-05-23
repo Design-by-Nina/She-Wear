@@ -1,0 +1,242 @@
+<!-- snippets/collection-sidebar.liqiud -->
+
+{% assign filters = false %}
+<div class="desktop-2 tablet-6 mobile-3">
+  <div id="collection-sidebar">
+
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'menu' or block.type == 'filter' or block.type == 'image' or block.type == 'vendor_list' -%}
+        {% assign filters = true %}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if filters -%}
+      <div class="mobile-filter-trigger js-filter-trigger desktop-hide tablet-6 mobile-3">
+        {{ 'collections.filter.filters' | t }}
+        {% render 'icon-arrow-down' %}
+      </div>
+    {%- endif -%}
+
+    {% comment %}
+      Include block settings for collecti.on template to add sidebar menus
+    {% endcomment %}
+    <div class="sidebar-filters tablet-6 mobile-3 js-sidebar-filters">
+
+      {% if current_tags.size >= 1 %}
+      <ul class="current_tags">
+        {% for tag in collection.all_tags %}
+        {% if current_tags contains tag %}
+        <li class="current_tag">
+        {{ tag | link_to_remove_tag: tag }}
+        </li>
+        {% endif %}
+        {% endfor %}
+        <li><a class="clear-tags" href="{{ collection.url }}">{{ 'collections.general.clear_all' | t }}</a></li>
+      </ul>
+      {% endif %}
+
+      {% comment %}
+      setup variables for accordion
+      {% endcomment %}
+
+      {% assign unique_id = section.id | slice: 0, 7 %}
+
+      <div class="js-accordion c-accordion c-accordion--collection-page-sidebar c-accordion--vantage c-accordion--{{ unique_id }}"
+          id="c-accordion--{{ unique_id }}" data-accordion-allow-multiple>
+
+        {% comment %}
+        loop through collection template blocks
+        - sort_by
+        - vendor_list
+        - menu
+        - image
+        - filter
+        {% endcomment %}
+
+        {% for block in section.blocks %}
+
+          {% if block.type == 'sort_by' %}
+            {% continue %}
+          {% endif %}
+
+          {% assign accordion_content_class = 'c-accordion__panel--' %}
+          {% assign accordion_content_id = accordion_content_class | append: unique_id | append: '-' | append: forloop.index %}
+
+
+          {% if block.type == 'vendor_list' %}
+            {% if collection.handle == "all" %}
+                {% capture accordion_heading_capture %}
+                  {{ block.settings.shop_by_designer_title  }}
+                {% endcapture %}
+                {% capture accordion_content_capture %}
+                <ul class="styled-select coll-filter">
+                  {% for product_vendor in shop.vendors %}
+                    <li>{{ product_vendor | link_to_vendor  }}</li>
+                  {% endfor %}
+                </ul>
+                {% endcapture %}
+            {% else %}
+                {% capture accordion_heading_capture %}
+                  {{ block.settings.shop_by_designer_title }}
+                {% endcapture %}
+                {% capture accordion_content_capture %}
+                <ul class="styled-select coll-filter">
+                  {% for product_vendor in collection.all_vendors %}
+                    <li class="{{ product_vendor | handelize }}">
+                      {{ product_vendor | link_to_vendor }}
+                    </li>
+                  {% endfor %}
+                </ul>
+                {% endcapture %}
+            {% endif %}
+          {% endif %}
+
+          {% if block.type == 'menu' %}
+              {% capture accordion_heading_capture %}
+                {{ block.settings.title }}
+              {% endcapture %}
+              {% capture accordion_content_capture %}
+
+                {% render 'collection-sidebar-menu', block: block, sidenav: block.settings.side_nav %}
+
+              {% endcapture %}
+          {% endif %}
+
+          {% comment %}
+          {% render 'filter', collection: collection, block: block, forloop: forloop %}
+          {% endcomment %}
+          {% if block.type == 'filter' %}
+
+          {%- liquid
+            assign defaultOpen = true
+            assign is_color_filter = false
+            assign tags = block.settings.filter_by  | replace: ' ,', ',' | replace: ', ', ',' | split: ','
+            assign filter_title_to_lowercase = block.settings.filter_by_title | downcase
+            if filter_title_to_lowercase contains "color" or filter_title_to_lowercase contains "colour"
+              assign is_color_filter = true
+            endif
+            -%}
+
+            {% capture accordion_heading_capture %}
+            {{ block.settings.filter_by_title }}
+            {% endcapture %}
+
+            {% capture accordion_content_capture %}
+            <ul class="styled-select coll-filter{% if is_color_filter %} filter--color{% endif %}">
+              {% assign filter_type = block.settings.filter_by_title | handleize %}
+              {% for tag in tags %}
+                {% comment %}
+                If color filter then capture data for color filters
+                {% endcomment %}
+                {% if is_color_filter %}
+                  {% assign swatch_image_url = tag | handle | append: '.png' | file_url %}
+                  {% assign css_color = tag | split: ' ' | last | handle %}
+                  {% capture inline_style %}
+                    background-color: {{ css_color }}; background-image: url('{{ swatch_image_url }}');
+                  {% endcapture %}
+                {% endif %}
+                {% if current_tags contains tag %}
+                  <li class="current">
+                    {% if is_color_filter %}
+                      <span class="color-filter color-filter--current color-filter--rounded current" data-tag="{{ tag | handle }}" style="{{ inline_style }}" role="button" title="{{ tag }}"></span>
+                    {% else %}
+                    {% render 'icon-check-mark' %}
+                    <a data-tag="{{ tag | handle }}" class="current" href="#">{{ tag }}</a>
+                    {% endif %}
+                  </li>
+                {% elsif collection.all_tags contains tag %}
+                  <li>
+                    {% if is_color_filter %}
+                      <span class="color-filter color-filter--rounded" data-tag="{{ tag | handle }}" role="button" title="{{ tag }}" style="{{ inline_style }}"></span>
+                    {% else %}
+                      <a data-tag="{{ tag | handle }}" href="#">{{ tag }}</a>
+                    {% endif %}
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+
+            <script>
+            (function collectionFilters() {
+              const collFilters = document.querySelectorAll('.coll-filter');
+              if (collFilters.length > 0) {
+                collFilters.forEach((collFilter) => {
+                  collFilter.addEventListener('change', function(){
+                    var newTags = [];
+                    collFilters.forEach((collFilter) => {
+                      for(var i = 0; i <= collFilter.length-1; i++){
+                        if(collFilter[i].selected == true && collFilter[i].value != "") {
+                          newTags.push(collFilter[i].value);
+                        }
+                      }
+                    });
+                    if (newTags.length) {
+                      var query = newTags.join('+');
+                      window.location.href = '/collections/{{ collection.handle }}/' + query;
+                    }
+                    else {
+                      {% if collection.handle %}
+                      window.location.href = '/collections/{{ collection.handle }}';
+                      {% elsif collection.products.first.type == collection.title %}
+                      window.location.href = '{{ collection.title | url_for_type }}';
+                      {% elsif collection.products.first.vendor == collection.title %}
+                      window.location.href = '{{ collection.title | url_for_vendor }}';
+                      {% endif %}
+                    }
+                  });
+                });
+              }
+            })();
+            </script>
+            {% endcapture %}
+          {% endif %}
+
+
+          {% comment %}
+          render blocks
+          if block type is image, then render image other wise render block within accordion markup.
+          {% endcomment %}
+          {% if block.type == 'image' %}
+            <div class="sidebar-image" {{ block.shopify_attributes }}>
+              {% if block.settings.link != blank %}<a href="{{ block.settings.link }}">{% endif %}
+                {% if block.settings.image != blank %}
+                  {% render 'basic-responsive-image', type: block.settings.image, data_widths: '[180, 360, 540, 720]' %}
+                  <noscript>
+                    <img src="{{ block.settings.image | img_url: '400x' }}" alt="{{ block.settings.image.alt }}">
+                  </noscript>
+                {% else %}
+                  <div class="onboard">
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {% endif %}
+              {% if block.settings.link != blank %}</a>{% endif %}
+            </div>
+
+          {% else %}
+
+            <button class="js-accordion-header c-accordion__header {% if defaultOpen %}js-accordion-is-open{% endif %}"
+                    {% if defaultOpen %}
+                      aria-expanded="true"
+                    {% else %}
+                      aria-expanded="false"
+                    {% endif %}
+                    aria-controls="{{ accordion_content_id }}" data-toggle="accordion"
+                    {{ block.shopify_attributes }} >
+               {{ accordion_heading_capture }}
+                <span class="dropdown-arrow">
+                  <i class="fa fa-angle-down"></i>
+                </span>
+            </button>
+             <div class="c-accordion__panel {% if defaultOpen %}is-active{% endif %} {{ accordion_content_id }} c-accordion__panel--{{ block.type }}" id="{{ accordion_content_id }}" data-parent="#c-accordion--{{ unique_id }}">
+              <div class="c-accordion__inner">
+               {{ accordion_content_capture }}
+              </div>
+             </div>
+          {% endif %}
+        {% endfor %}
+
+      </div><!-- /.c-accordion -->
+    </div><!-- /.sidebar-filters.tablet-6.mobile-3 -->
+
+  </div><!-- /#collection-sidebar -->
+</div><!-- /.desktop-2.tablet-6.mobile-3 -->

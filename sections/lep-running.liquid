@@ -1,0 +1,96 @@
+  <div class="cat-background">
+     
+          <h2 style="color:#000; font-weight:bolder; text-align: center;">Catch the leopard to view next gen leopard She Strives</h2>
+    
+        <div class="cat-container-running">
+            <div class="sprite-cat-vertical">
+                <a href="/products/she-strives-limited-edition-womens-work-boots"><div class="heart-icon"  style="">                 
+                </div></a>
+            </div>
+        </div>
+  </div>
+{% style %}
+  :root {
+    --cat-height: 252px;
+    --cat-width: 588px;
+    --steps: 1;
+}
+.cat-background {
+    height: fit-content;
+    width: 100%;
+    margin: 20px 0;
+    background-color: #fff;
+    overflow-x: hidden;
+}
+.cat-container-running {
+    animation: cat-running 8s linear infinite normal;
+    height: fit-content;
+    width: fit-content;
+}
+@keyframes cat-running {
+    from {
+       transform: translate(calc(var(--cat-width) * (-1)), 0);
+        
+    }
+    to {
+       transform: translate(calc(100vw + var(--cat-width)), 0);
+    }
+}
+.sprite-cat-vertical {
+    height: calc(var(--cat-height) - 10px); /*here we also need to solve the problem of a badly cut image*/
+    width: var(--cat-width); 
+
+    background: url(https://cdn.shopify.com/s/files/1/0567/9503/7849/files/Leopard_Run_Cycle_Animation_-_GIF.gif?v=1671668457) 0 0/cover no-repeat #fff;
+
+    animation: sprite-cat-vertical calc(var(--steps) * 0.56s)/*0.56s*/ steps(var(--steps)) infinite normal;
+}
+@keyframes sprite-cat-vertical {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 0 calc(var(--cat-height) * (-1) * var(--steps)); /*background-position: 0 -1216px;*/
+    }
+}
+.heart-icon {
+    background-color: transparent;
+    margin-top: 50px;
+    margin-left:100px; 
+    height:100px; 
+    width:350px; 
+    border: 0px solid transparent; 
+}
+.cat-container-running:hover,
+.sprite-cat-vertical:hover {
+    animation-play-state: paused;
+}
+.heart-icon:hover {
+  background-color: transparent;
+    
+}
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Lep running",
+   "settings": [
+      {
+        "type": "text",
+        "id": "box_gallery_title",
+        "label": "Heading",
+        "default": "Text columns with images"
+      }
+   ],
+  "presets": [
+    {
+      "name": "Lep running"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

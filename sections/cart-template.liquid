@@ -1,0 +1,367 @@
+<section id="shopping-cart" class="cart-page ajax-cart__page-wrapper" data-section-id="{{ section.id }}" data-section-type="cart">
+  <div class="loading-wrapper js-mini-cart-loader">
+    <div class="loading-ripple"><div></div><div></div></div>
+  </div>
+
+  <div class="ajax-cart__form-wrapper cart-wrapper js-ajax-cart-content">
+
+  </div>
+
+  {% if section.settings.show_sticky_checkout %}
+    <div id="sticky-cart" class="js-sticky-cart">
+      <div class="cart-total">
+        <h3 class="title">{{ 'cart.general.total' | t }} <span class="cart-original-total">{{ cart.total_price | money }}</span> <span class="cart-total"></span></h3>
+      </div>
+      <div class="cart-details">
+        {% if section.settings.sticky_fine_print != blank %}<p>{{ section.settings.sticky_fine_print }}</p>{% endif %}
+      </div>
+      <div class="cart-checkout">
+        <input type="submit" name="checkout" id="checkout" value="{{ 'cart.general.checkout' | t }}" class="button" />
+      </div>
+    </div>
+  {% endif %}
+
+  {% if settings.cart_type == 'page_only' %}
+    {% render 'cart-config', cart: cart %}
+  {% endif %}
+</section>
+{% for block in section.blocks %}
+  {% if block.type == 'customer_service' %}
+    <section id="customer-service" class="desktop-12 tablet-6 mobile-3" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+      <div class="item image">
+        {% if block.settings.image == blank %}
+        <div class="onboard">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+        {% else %}
+        {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+        <img class="lazyload lazyload-fade"
+          id="{{ imageid }}"
+          data-src="{{ img_url }}"
+          data-sizes="auto"
+          alt="{{ block.settings.image.alt | escape }}">
+
+          <noscript>
+            <img src="{{ block.settings.image | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+          </noscript>
+        {% endif %}
+      </div>
+      <div class="item info">
+        {% if block.settings.title != blank %}
+          <h3>{{ block.settings.title | escape }}</h3>
+        {% endif %}
+        {% if block.settings.text != blank %}
+          <div class="rte">{{ block.settings.text }}</div>
+        {% endif %}
+        {% if block.settings.button != blank and block.settings.link != blank %}
+          <a href="{{ block.settings.link }}" class="button">
+            {{ block.settings.button | escape }}
+          </a>
+        {% endif %}
+        {% if block.settings.show_info_columns %}
+          <div class="info-columns">
+            {% for n in (1..4) %}
+              {% assign default_icon = "default_icon_" | append: n %}
+              {% assign default_icon = block.settings[default_icon] %}
+              {% assign icon = "icon_" | append: n %}
+              {% assign icon = block.settings[icon] %}
+              {% assign info_title = "info_title_" | append: n %}
+              {% assign info_title = block.settings[info_title] %}
+              <div class="info-column">
+                {% if default_icon == 'shipping_truck' %}
+                  <i class="fa fa-truck"></i>
+                {% elsif default_icon == 'clock' %}
+                  <i class="fa fa-clock-o"></i>
+                {% elsif default_icon == 'credit_card' %}
+                  <i class="fa fa-credit-card-alt"></i>
+                {% elsif default_icon == 'secure_lock' %}
+                  <i class="fa fa-lock"></i>
+                {% elsif default_icon == 'custom' %}
+                  {% unless icon == blank %}
+                    <img src="{{ icon | img_url: '24x' }}" alt="{{ icon.alt }}">
+                  {% endunless %}
+                {% endif %}
+                {% unless info_title == blank %}
+                  <p>{{ info_title }}</p>
+                {% endunless %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  {% endif %}
+{% endfor %}
+<style media="screen">
+  {% if section.settings.payment_icon_color %}
+   .payment-types img { filter: grayscale(1); }
+  {% endif %}
+</style>
+{% schema %}
+{
+  "name": "Cart page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_sticky_checkout",
+      "label": "Show sticky checkout",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sticky_fine_print",
+      "label": "Sticky checkout note or fine print",
+      "default": "Multiple payments accepted here."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordion_info",
+      "name": "Accordion Info",
+      "settings": [
+        {
+          "type": "text",
+          "id": "accordion_heading",
+          "label": "Accordion Heading",
+          "default": "Frequently Asked Question"
+        },
+        {
+          "type": "richtext",
+          "id": "accordion_text",
+          "label": "Accordion Text",
+          "default": "<p>You the accordion on the cart page to answer common questions a customer may have while checking out in your store.</p>"
+        }
+      ]
+    },
+    {
+      "type": "cart_note",
+      "name": "Cart Note",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Displays a cart note element"
+        }
+      ]
+    },
+    {
+       "type":"customer_service",
+       "name":"Customer Service Info",
+       "limit": 1,
+       "settings":[
+         {
+           "type": "image_picker",
+           "id": "image",
+           "label": "Image"
+         },
+         {
+           "type": "text",
+           "id": "title",
+           "label": "Heading",
+           "default": "Customer Service"
+         },
+         {
+           "type": "richtext",
+           "id": "text",
+           "label": "Text",
+           "default": "<p>Have questions about your order? Email our support team at or check out our Help Center.</p>"
+         },
+         {
+           "type": "text",
+           "id": "button",
+           "label": "Button label"
+         },
+         {
+           "type": "url",
+           "id": "link",
+           "label": "Button link"
+         },
+         {
+           "type": "header",
+           "content": "Icon/Info Columns"
+         },
+         {
+           "type": "checkbox",
+           "id": "show_info_columns",
+           "label":  "Show info/icon columns",
+           "default": true
+         },
+        {
+         "type":      "select",
+         "id":        "default_icon_1",
+         "label":     "Use default icon",
+         "options": [
+            {
+             "value": "shipping_truck",
+             "label": "Shipping Truck"
+            },
+            {
+             "value": "credit_card",
+             "label": "Credit Card"
+            },
+            {
+             "value": "secure_lock",
+             "label": "Secure Lock"
+            },
+            {
+             "value": "clock",
+             "label": "Clock"
+           },
+           {
+            "value": "custom",
+            "label": "Custom Icon"
+           }
+          ],
+          "default": "shipping_truck",
+          "info": "Use a built in icon or upload an icon below"
+        },
+         {
+           "type": "image_picker",
+           "id": "icon_1",
+           "label": "Icon 1",
+           "info": "Upload a 24px x 24px transparent png icon"
+         },
+         {
+           "type": "text",
+           "id": "info_title_1",
+           "label": "Title 1",
+           "default": "Free Worldwide Shipping"
+         },
+         {
+          "type":      "select",
+          "id":        "default_icon_2",
+          "label":     "Use default icon",
+          "options": [
+             {
+              "value": "shipping_truck",
+              "label": "Shipping Truck"
+             },
+             {
+              "value": "credit_card",
+              "label": "Credit Card"
+             },
+             {
+              "value": "secure_lock",
+              "label": "Secure Lock"
+             },
+             {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+             "value": "custom",
+             "label": "Custom Icon"
+            }
+           ],
+           "default": "credit_card",
+           "info": "Use a built in icon or upload an icon below"
+         },
+         {
+           "type": "image_picker",
+           "id": "icon_2",
+           "label": "Icon 2",
+           "info": "Upload a 24px x 24px transparent png icon"
+         },
+         {
+           "type": "text",
+           "id": "info_title_2",
+           "label": "Title 2",
+           "default": "60-day Exchanges & Returns"
+         },
+         {
+          "type":      "select",
+          "id":        "default_icon_3",
+          "label":     "Use default icon",
+          "options": [
+             {
+              "value": "shipping_truck",
+              "label": "Shipping Truck"
+             },
+             {
+              "value": "credit_card",
+              "label": "Credit Card"
+             },
+             {
+              "value": "secure_lock",
+              "label": "Secure Lock"
+             },
+             {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+             "value": "custom",
+             "label": "Custom Icon"
+            }
+             ],
+             "default": "clock",
+             "info": "Use a built in icon or upload an icon below"
+         },
+         {
+           "type": "image_picker",
+           "id": "icon_3",
+           "label": "Icon 3",
+           "info": "Upload a 24px x 24px transparent png icon"
+         },
+         {
+           "type": "text",
+           "id": "info_title_3",
+           "label": "Title 3",
+           "default": "24 / 7 Customer Support"
+         },
+         {
+          "type":      "select",
+          "id":        "default_icon_4",
+          "label":     "Use default icon",
+          "options": [
+             {
+              "value": "shipping_truck",
+              "label": "Shipping Truck"
+             },
+             {
+              "value": "credit_card",
+              "label": "Credit Card"
+             },
+             {
+              "value": "secure_lock",
+              "label": "Secure Lock"
+             },
+             {
+              "value": "clock",
+              "label": "Clock"
+            },
+            {
+             "value": "custom",
+             "label": "Custom Icon"
+            }
+           ],
+           "default": "secure_lock",
+           "info": "Use a built in icon or upload an icon below"
+         },
+         {
+           "type": "image_picker",
+           "id": "icon_4",
+           "label": "Icon 4",
+           "info": "Upload a 24px x 24px transparent png icon"
+         },
+         {
+           "type": "text",
+           "id": "info_title_4",
+           "label": "Title 4",
+           "default": "100% Secure Checkout"
+         }
+       ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "accordion_info"
+      },
+      {
+        "type": "cart_note"
+      }
+    ]
+  }
+}
+{% endschema %}

@@ -1,0 +1,79 @@
+{% comment %} Please don’t update this content {% endcomment %}
+
+{% layout none %}
+{% paginate collection.products by 50 %}
+  {
+    "products":
+      [
+        {% for product in collection.products %}
+          {
+            "id":{{ product.id }},
+            
+            "metafields":[
+              
+              {% comment %}
+                Single Metafield
+              {% endcomment %}
+              {% assign v_Fulfilment_Date = product.metafields.preorder["Fulfilment_Date"] %}
+              {% if v_Fulfilment_Date != blank %}
+                {
+                  "namespace": "preorder",
+                  "key": "Fulfilment_Date",
+                  "value": {{ v_Fulfilment_Date | json }}
+                },
+              {% endif %}
+        
+              {% comment %}
+                Single Metafield
+              {% endcomment %}
+              {% assign v_Preorder_Date = product.metafields.preorder["Preorder_Date"] %}
+              {% if v_Preorder_Date != blank %}
+                {
+                  "namespace": "preorder",
+                  "key": "Preorder_Date",
+                  "value": {{ v_Preorder_Date | json }}
+                },
+              {% endif %}
+        
+              {% comment %}
+                Variant Metafield
+              {% endcomment %}
+              {% assign l_variants = product.variants %}
+              {% for v_variant in l_variants %}
+                {
+                  "namespace": {{ v_variant.id }},
+                  "key": "Preorder_date",
+                  "value": {{ v_variant.metafields.preorder["Preorder_date"] | json }}
+                },
+              {% endfor %}
+        
+              {% comment %}
+                Variant Metafield
+              {% endcomment %}
+              {% assign l_variants = product.variants %}
+              {% for v_variant in l_variants %}
+                {
+                  "namespace": {{ v_variant.id }},
+                  "key": "Fulfilment_date",
+                  "value": {{ v_variant.metafields.preorder["Fulfilment_date"] | json }}
+                },
+              {% endfor %}
+        
+              {% comment %}
+                Variant Metafield
+              {% endcomment %}
+              {% assign l_variants = product.variants %}
+              {% for v_variant in l_variants %}
+                {
+                  "namespace": {{ v_variant.id }},
+                  "key": "Available_Qty",
+                  "value": {{ v_variant.metafields.preorder["Available_Qty"] | json }}
+                },
+              {% endfor %}
+        
+            ]
+          },
+        {% endfor %}
+      ]
+  }
+{% endpaginate %}

@@ -1,0 +1,377 @@
+<div class="article-template" data-section-id="{{ section.id }}" data-section-type="article-template">
+
+  {% assign number_of_comments = article.comments_count %}
+  {% if comment and comment.created_at %}
+    {% assign number_of_comments = article.comments_count | plus: 1 %}
+  {% endif %}
+
+  <div id="content" class="row">
+  <div id="page">
+    <h1 class="blog-title desktop-12" style="text-align: center">{{ article.title }}</h1>
+    {% paginate article.comments by 20 %}
+      <div id="article-body" class="desktop-12 tablet-6 mobile-3">
+        {% if section.settings.show_date or section.settings.show_author %}
+          <p class="posted">{% if section.settings.show_date %}{{ article.published_at | date: format: 'month_date_year'}}{% endif %}{% if section.settings.show_date and section.settings.show_author %} – {% endif %}{% if section.settings.show_author %}{{ article.author }}{% endif %}</p>
+        {% endif %}
+        {% if article.image and section.settings.show_image %}
+          {%- render 'basic-responsive-image', type: article.image, data_widths: '[180, 360, 540, 720, 900, 1080]' -%}
+          {% if article.image.alt %}<p class="caption">{{ article.image.alt }}</p>{% endif %}
+          <noscript>
+            <img src="{{ article.image | img_url: '800x' }}" alt="{{ article.image.alt }}">
+          </noscript>
+        {% endif %}
+
+        <div class="rte">
+          {{ article.content }}
+        </div>
+
+       <div class="article-details">
+         {% if article.tags and section.settings.show_tags %}
+           <p>{{ 'blogs.article.tagged' | t }}:
+             {% for tag in article.tags %}
+               <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %},{% endunless %}
+             {% endfor %}
+           </p>
+         {% endif %}
+         {% if section.settings.show_social %}
+          {% render 'social' with article %}
+         {% endif %}
+       </div>
+
+        {% if blog.comments_enabled? %}
+          <div id="comments">
+            <h3>{{ 'blogs.comments.comments_with_count' | t: count: number_of_comments }}</h3>
+            <ul class="desktop-7 tablet-6 mobile-3">
+              {% for comment in article.comments %}
+                <li>
+                  <div class="comment-details">
+                    {{ comment.author }}: {{ comment.created_at | date: "%B %d, %Y" }}
+                  </div>
+                  <div class="gravatar desktop-1 mobile-1">
+                    <img src="//www.gravatar.com/avatar/{{ comment.email | remove: ' ' | strip_newlines | downcase | md5 }}" />
+                  </div>
+                  <div class="comment desktop-11 mobile-2">
+                    {{ comment.content }}
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+            {% if paginate.pages > 1 %}
+              <div id="pagination">
+                {% if paginate.previous %}
+                  {{ '<' | link_to: paginate.previous.url }}
+                {% endif %}
+                {% for part in paginate.parts %}
+                  {% if part.is_link %}
+                    {{ part.title | link_to: part.url }}
+                  {% else %}
+                    {% if part.title == '&hellip;' %}
+                      {{ part.title }}
+                    {% else %}
+                      <span class="current">{{ part.title }}</span>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                {% if paginate.next %}
+                  {{ '>' | link_to: paginate.next.url }}
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <!-- Comment Form -->
+            <div id="comment-form" class="desktop-5 tablet-6 mobile-3">
+              {% form article %}
+                <h5>{{ 'blogs.comments.title' | t }}</h5>
+                <!-- Check if a comment has been submitted in the last request, and if yes display an appropriate message -->
+              {% if form.posted_successfully? %}
+                {% if blog.moderated? %}
+                  <div class="notice">
+                    {{ 'blogs.comments.success_moderated' | t }}
+                  </div>
+                {% else %}
+                  <div class="notice">
+                    {{ 'blogs.comments.success' | t }}
+                  </div>
+                {% endif %}
+              {% endif %}
+
+              {% if form.errors %}
+                <div class="notice error">
+                  {{ 'general.forms.post_error' | t }}
+                </div>
+              {% endif %}
+              <dl>
+                <dt class="{% if form.errors contains 'author' %}error{% endif %}">
+                  <label for="comment_author">{{ 'blogs.comments.your_name' | t }}</label>
+                </dt>
+                <dd>
+                  <input type="text" id="comment_author" name="comment[author]" size="40" value="{{form.author}}" class="{% if form.errors contains 'author' %}input-error{% endif %}" />
+                </dd>
+
+                <dt class="{% if form.errors contains 'email' %}error{% endif %}">
+                  <label for="comment_email">{{ 'blogs.comments.your_email' | t }}</label>
+                </dt>
+                <dd>
+                  <input type="text" id="comment_email" name="comment[email]" size="40" value="{{form.email}}" class="{% if form.errors contains 'email' %}input-error{% endif %}" />
+                </dd>
+
+                <dt class="{% if form.errors contains 'body' %}error{% endif %}">
+                  <label for="comment_body">{{ 'blogs.comments.your_comment' | t }}</label>
+                </dt>
+                <dd>
+                  <textarea id="comment_body" name="comment[body]" cols="40" rows="5" class="{% if form.errors contains 'body' %}input-error{% endif %}">{{form.body}}</textarea>
+                </dd>
+              </dl>
+              {% if blog.moderated? %}
+                <p class="hint">{{ 'blogs.comments.moderated' | t }}</p>
+              {% endif %}
+                <input type="submit" value="{{ 'blogs.comments.post' | t }}" />
+              {% endform %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="clear"></div>
+      <div id="article-pagination">
+        {% if blog.previous_article != blank %}
+          <a class="prev-article" href="{{ blog.previous_article }}">
+            <svg width="12px" height="20px" viewBox="0 0 12 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desk---Collections" transform="translate(-654.000000, -1670.000000)" stroke="#353535">
+                        <g id="Pagination-1" transform="translate(640.000000, 1660.000000)">
+                            <polyline id="Previous-Icon" points="25 10 15 20 25 30"></polyline>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+            {{ blog.previous_article.title  | truncate: 30 }}
+          </a>
+        {% endif %}
+        {% if blog.next_article != blank %}
+          <a class="next-article" href="{{ blog.next_article }}">
+            {{ blog.next_article.title  | truncate: 30 }}
+            <svg width="12px" height="20px" viewBox="0 0 12 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desk---Collections" transform="translate(-654.000000, -1670.000000)" stroke="#353535">
+                        <g id="Pagination-1" transform="translate(640.000000, 1660.000000)">
+                            <polyline id="Previous-Icon" points="25 10 15 20 25 30"></polyline>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    {% endpaginate %}
+  </div>
+</div>
+
+  {% unless section.blocks.size == 0 %}
+  {% for block in section.blocks %}
+  {% if block.type == 'newsletter_subscribe' %}
+  <div class="clear"></div>
+    <div class="gridlock-fluid">
+      <div class="row">
+      <section id="newsletter" class="row section-newsletter-{{ block.id }}" data-section-id="{{ block.id }}">
+        <div class="section-header desktop-8 desktop-push-2 tablet-6 mobile-3">
+        {% if block.settings.ns_heading != blank %}
+          <div class="section-title">
+            <h2>{{ block.settings.ns_heading | escape }}</h2>
+          </div>
+        {% endif %}
+        {% if block.settings.ns_newsletter_subheading != blank %}
+          <p>{{ block.settings.ns_newsletter_subheading }}</p>
+        {% endif %}
+        </div>
+        <div class="section-newsletter desktop-8 desktop-push-2 tablet-6 mobile-3">
+        {% form 'customer', id: mailingForm %}
+          {{ form.errors | default_errors }}
+          {% if form.posted_successfully? %}
+            <p class="form--success note-success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+          {% else %}
+            <div class="input-group password__input-group">
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <input type="email"
+                name="contact[email]"
+                id="Email"
+                class="input-group__field newsletter__input"
+                value="{% if customer %}{{ customer.email }}{% endif %}"
+                placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}"
+                autocorrect="off"
+                autocapitalize="off">
+                <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
+                  <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                </button>
+            </div>
+          {% endif %}
+        {% endform %}
+      </div>
+        <div class="section-icons desktop-8 desktop-push-2 tablet-6 mobile-3">
+          {% render "social-icons" %}
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+  <style>
+    .article-template #page {
+      padding-bottom: 0;
+    }
+    section.section-newsletter-{{ block.id }} {
+        background: {{ block.settings.ns_background_color }};
+        {% if block.settings.background_color == '#ffffff' or block.settings.background_color == 'transparent' %}
+        padding-bottom: 0px;
+        {% else %}
+        padding-bottom: 30px !important;
+        {% endif %}
+        padding-top: 30px;
+        padding-right: 15px;
+        padding-left: 15px;
+        display: inline-block;
+        width: 98%;
+        margin-left: 1%;
+    }
+    section.section-newsletter-{{ block.id }} h2 {
+      color: {{ block.settings.ns_heading_color }} !important;
+    }
+
+    section.section-newsletter-{{ block.id }} p {
+      color: {{ block.settings.ns_subheading_color }} !important;
+      font-weight: {{ block.settings.ns_subheading_font_weight }} !important;
+      font-size: {{ block.settings.ns_subheading_font_size }}px !important;
+      max-width: 60%;
+      margin: 0 auto !important;
+      line-height: 30px;
+      padding-bottom: 20px !important;
+    }
+    .section-newsletter-{{ block.id }} p a {
+      color: {{ block.settings.ns_subheading_color }} !important;
+      opacity: 0.9;
+    }
+    .section-newsletter-{{ block.id }} p a:hover {
+      text-decoration: underline;
+    }
+    @media screen and (max-width: 500px) {
+      section.section-newsletter-{{ block.id }} p {
+        max-width: 100%;
+      }
+    }
+    section.section-newsletter-{{ block.id }} ul#social-icons li a:hover {
+      opacity: 0.8;
+    }
+  </style>
+  {% endif %}
+  {% endfor %}
+  {% endunless %}
+
+
+
+
+
+{% schema %}
+{
+"name": "Blog posts",
+"max_blocks": 1,
+"blocks": [
+  {
+    "type": "newsletter_subscribe",
+    "name": "Newsletter Subscribe",
+    "settings": [
+      {
+        "type": "text",
+        "id": "ns_heading",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "color",
+        "id": "ns_heading_color",
+        "label": "Heading",
+        "default": "#000000"
+      },
+      {
+        "type": "richtext",
+        "id": "ns_newsletter_subheading",
+        "label": "Subheading",
+        "default": "<p>Signup for our newsletter to stay up to date on sales and events.</p>"
+      },
+      {
+        "type": "range",
+        "id": "ns_subheading_font_size",
+        "min": 12,
+        "max": 36,
+        "step": 1,
+        "unit": "px",
+        "label": "Subheading size",
+        "default": 16
+      },
+      {
+        "type": "select",
+        "id": "ns_subheading_font_weight",
+        "label": "Subheading weight",
+        "options": [
+          {
+            "value": "normal",
+            "label": "Normal"
+          },
+          {
+            "value": "bold",
+            "label": "Bold"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "ns_subheading_color",
+        "label": "Subheading",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "ns_background_color",
+        "label": "Background",
+        "default": "#f7f7f7"
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ]
+  }
+],
+"settings":
+	[
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show published date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show featured post image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show post tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "Show social share icons",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

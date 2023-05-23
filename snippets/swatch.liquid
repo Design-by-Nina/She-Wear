@@ -1,0 +1,185 @@
+{% assign option_name = option.name | downcase %}
+{% assign product_type = product.type %}
+
+{% assign color_swatch_options = "color, colour" | split: ", " %}
+
+{% assign current_option = "option" | append: option.position %}
+
+{% assign other_options = "option1 option2 option3" | remove: current_option | strip | split: " " %}
+
+{% assign product_tags = product.tags | join: ", " %}
+
+<div class="swatch clearfix" data-option-index="{{ option.position }}" data-other-options='{{ other_options | json }}'>
+
+
+  {% if option.name == "Shoe Size (AU/EU)"  %}
+  <p class="option-label option-au-eu">{{ option.name }}
+    {% for value in option.values %}
+      {% if option.selected_value == value %}
+        <span id="selected-option-{{ option.position }}">{{ value }}</span>
+      {% endif %}
+    {% endfor %}
+  </p>
+    {% render "switcher" %}
+  {% else %}
+    <p class="option-label">{{ option.name }}
+      {% for value in option.values %}
+        {% if option.selected_value == value %}
+          <span id="selected-option-{{ option.position }}">{{ value }}</span>
+        {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
+
+
+
+{%- comment -%}
+  <p class="option-label">{{ option.name }}
+    {% for value in option.values %}
+      {% if option.selected_value == value %}
+        <span id="selected-option-{{ option.position }}">{{ value }}</span>
+      {% endif %}
+    {% endfor %}
+  </p>
+{%- endcomment -%}
+
+
+
+  {%- comment -%}
+<p class="option-label">{{ option.name }} | {% for value in option.values %}{% if option.selected_value == value %}<span id="selected-option-{{ option.position }}" >{{ value }}</span>{% endif %}{% endfor %}</p>
+{%- endcomment -%}
+
+  {% for value in option.values %}
+    {% if settings.custom_swatch_location == 'file_url' %}
+      {% assign image_url = value | handle | append: '.png' | file_url %}
+    {% elsif settings.custom_swatch_location == 'asset_url' %}
+      {% assign image_url = value | handle | append: '.png' | asset_url %}
+    {% endif %}
+
+    {% assign css_color = value | split: ' ' | last | handle %}
+
+    {% capture id %}
+      {{ section.id }}-swatch-{{ option.position }}-{{ value | handle }}
+    {% endcapture %}
+
+    {% assign available = false %}
+
+    <!-- Checking Availability -->
+    {% for variant in product.variants %}
+      {% unless variant.available %}
+        {% continue %}
+      {% endunless %}
+
+      {% unless variant[current_option] == value %}
+        {% continue %}
+      {% endunless %}
+
+      {% unless variant[other_options[0]] == current_variant[other_options[0]] %}
+        {% continue %}
+      {% endunless %}
+
+      {% unless variant[other_options[1]] == current_variant[other_options[1]] %}
+        {% continue %}
+      {% endunless %}
+
+      {% assign available = true %}
+    {% endfor %}
+
+    <!-- Building Variant Image -->
+    {% for variant in product.variants %}
+      {% unless variant[current_option] == value %}
+        {% continue %}
+      {% endunless %}
+
+      {% unless variant[other_options[0]] == current_variant[other_options[0]] %}
+        {% continue %}
+      {% endunless %}
+
+      {% unless variant[other_options[1]] == current_variant[other_options[1]] %}
+        {% continue %}
+      {% endunless %}
+
+      {% assign variant_image_url = blank %}
+
+      {% if variant.image %}
+        {% assign variant_image_url =  variant.image | img_url: '1000x' %}
+      {% endif %}
+
+    {% endfor %}
+
+    {% assign checked = "" %}
+
+    {% if current_variant[current_option] == value %}
+      {% assign checked = 'checked="checked"' %}
+    {% endif %}
+
+    {% capture radio_button %}
+      <input type="radio" id="{% if template == 'product.quick' %}qv-{% endif %}{{ id }}" name="{{ option_name }}" value="{{ value | escape }}" data-position="{{ option.position }}" {{ checked }}/>
+    {% endcapture %}
+
+    {% capture sold_out_image %}
+      <img class="crossed-out" src="{{ 'soldout.png' | asset_url }}"/>
+    {% endcapture %}
+
+    {% capture regular_swatch %}
+      <div class="swatch-element {% unless available %}soldout{% endunless %}">
+        {{ radio_button }}
+
+        {%- comment -%}#702305199 changed out from having two labels to having a single label with the two size spans to fix the selection{%- endcomment -%}
+      {% if option.name contains "Shoe Size (AU/EU)" %}
+        {% assign option_sizes = value | split: "/"  %}
+        {% for size in value %}
+          <label for="{% if template == 'product.quick' %}qv-{% endif %}{{ id }}">
+            <span  class="eu">{{ option_sizes[1] }}</span><span  class="au">{{ option_sizes[0] }}</span>{{ sold_out_image }}
+          </label>
+        {% endfor %}
+      {% else %}
+        <label for="{% if template == 'product.quick' %}qv-{% endif %}{{ id }}">
+          {{ value }}
+          {{ sold_out_image }}
+        </label>
+      {% endif %}
+
+      {%- comment -%}
+            <label for="{% if template == 'product.quick' %}qv-{% endif %}{{ id }}" class="au">
+            {{ option_sizes[0] }}{{ sold_out_image }}
+          </label>
+          <label for="{% if template == 'product.quick' %}qv-{% endif %}{{ id }}" class="eu">
+            {{ option_sizes[1] }}{{ sold_out_image }}
+          </label>
+      {%- endcomment -%}
+       
+      </div>
+    {% endcapture %}
+
+    {% capture color_swatch %}
+      <div class="swatch-element color" {% unless available %} {%  unless 'elwd-workwear-utility-short-elastic-waist' %} style="display: none;"{% endunless %}{% endunless %}>
+
+        {{ radio_button }}
+
+        <label for="{% if template == 'product.quick' %}qv-{% endif %}{{ id }}" style="background-color: {{ css_color }}; {% if settings.use_swatch_images %}background-image: url({{ image_url }}); background-size: contain;{% endif %}">
+         
+        </label>
+      </div>
+    {% endcapture %}
+
+    {% if color_swatch_options contains option_name %}
+      {{ color_swatch }}
+    {% else %}
+      {{ regular_swatch }}
+    {% endif %}
+  {% endfor %}
+</div>
+
+       {%- comment -%}
+{% unless option.name contains "Colour"
+       or product_type contains "Gift Card"
+       or option.values contains "S"
+       or option.values contains "M"
+       or product_tags contains "no-size-guide" %}
+
+         {% render "size-guide-button" %}
+
+
+{% endunless %}
+       {%- endcomment -%}

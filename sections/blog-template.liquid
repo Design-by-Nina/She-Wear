@@ -1,0 +1,379 @@
+<div class="blog-template" data-section-id="{{ section.id }}" data-section-type="blog-template">
+  {% assign number = section.settings.posts_per_page %}
+  {% paginate blog.articles by number %}
+
+  <div id="page">
+    {% if section.settings.image != blank %}
+      <div class="collection-banner">
+        <div class="background-image lazyload"
+        data-bgset="{% render 'bgset', image: section.settings.image %}"
+        data-sizes="auto"></div>
+        <noscript>
+          <div class="background-image" style="background-image: url({{ section.settings.image | img_url: '1024x' }});"></div>
+        </noscript>
+      </div>
+    {% endif %}
+
+    <div id="content" class="row">
+      <h1 class="blog-title desktop-12" style="text-align: center">{{ blog.title }}</h1>
+      {% if section.settings.text != blank %}
+        <div class="desktop-12 tablet-6 mobile-3 blog-description">
+          {{ section.settings.text }}
+        </div>
+      {% endif %}
+
+      {% unless request.path contains 'tagged' %}
+      <div id="recent-posts" class="desktop-12 tablet-6 mobile-3">
+        {% for article in blog.articles limit: 2 %}
+          <div class="recent-post desktop-6 tablet-3 mobile-3{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}">
+            <a class="recent-image" href="{{ article.url }}">
+              {%- render 'simple-responsive-image', type: article.image -%}
+              <noscript>
+                <img src="{{ article.image | img_url: '800x' }}" alt="{{ article.image.alt }}">
+              </noscript>
+            </a>
+            <div class="recent-caption">
+              <h4>{{ article.title | truncate: 60 }}</h4>
+              <a href="{{ article.url }}">
+                {{ 'blogs.article.read_more' | t }}
+                <svg width="18px" height="7px" viewBox="0 0 27 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g transform="translate(-1291.000000, -306.000000)" fill="#353535" fill-rule="nonzero" id="Footer---Light">
+                            <g transform="translate(0.000000, 120.000000)">
+                                <g id="Email-input" transform="translate(940.000000, 168.000000)">
+                                    <path id="Line-2" d="M368.309343,18.8190816 L377.519864,24 L368.309343,29.1809184 L367.819082,28.3093429 L374.589,24.5 L351.5,24.5 L351.5,23.5 L374.593,23.5 L367.819082,19.6906571 L368.309343,18.8190816 Z"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="clear"></div>
+      {% endunless %}
+      {% if section.settings.show_sidebar %}
+        <div id="blog-sidebar" class="desktop-2 tablet-6 mobile-3">
+         <ul class="filter-list">
+           <li class="{% unless request.path contains 'tagged' %}selected{% endunless %}">
+             <h4><a href="{{ blog.url }}">{{ 'blogs.article.all_posts' | t }}</a></h4>
+           </li>
+           {% for tag in blog.all_tags %}
+             <li class="{% if request.path contains tag %}selected{% endif %}">
+               <h4><a href="{{ blog.url }}/tagged/{{ tag }}">{{ tag }}</a></h4>
+             </li>
+           {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      <div id="blog-articles" class="{% if section.settings.show_sidebar %}desktop-10{% else %}desktop-12{% endif %} tablet-6 mobile-3">
+        <ul>
+          {% if request.path contains 'tagged' %}
+            {% for article in blog.articles %}
+              {% render 'article-loop',
+                article: article %}
+            {% endfor %}
+          {% else %}
+            {% for article in blog.articles offset: 2 %}
+              {% render 'article-loop',
+                article: article %}
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <div class="clear"></div>
+  {% render 'pagination', paginate: paginate %}
+  {% endpaginate %}
+
+  {% unless section.blocks.size == 0 %}
+  {% for block in section.blocks %}
+  {% if block.type == 'newsletter_subscribe' %}
+  <div class="clear"></div>
+  <div class="gridlock-fluid">
+  <div class="row">
+      <section id="newsletter" class="section-newsletter-{{ block.id }} row" data-section-id="{{ block.id }}">
+        <div class="section-header desktop-8 desktop-push-2 tablet-6 mobile-3">
+            {% if block.settings.ns_heading != blank %}
+              <div class="section-title">
+                <h2>{{ block.settings.ns_heading | escape }}</h2>
+              </div>
+            {% endif %}
+            {% if block.settings.ns_newsletter_subheading != blank %}
+              <p>{{ block.settings.ns_newsletter_subheading }}</p>
+            {% endif %}
+          </div>
+        <div class="section-newsletter desktop-8 desktop-push-2 tablet-6 mobile-3">
+            {% form 'customer', id: mailingForm %}
+              {{ form.errors | default_errors }}
+              {% if form.posted_successfully? %}
+                <p class="form--success note-success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+              {% else %}
+                <div class="input-group password__input-group">
+                  <input type="hidden" name="contact[tags]" value="newsletter">
+                  <input type="email"
+                    name="contact[email]"
+                    id="Email"
+                    class="input-group__field newsletter__input"
+                    value="{% if customer %}{{ customer.email }}{% endif %}"
+                    placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}"
+                    autocorrect="off"
+                    autocapitalize="off">
+                    <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
+                      <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                    </button>
+                </div>
+              {% endif %}
+            {% endform %}
+          </div>
+        <div class="section-icons desktop-8 desktop-push-2 tablet-6 mobile-3">
+          {% render "social-icons" %}
+        </div>
+      </section>
+  </div>
+  </div>
+  <style>
+    .article-template #page {
+      padding-bottom: 0;
+    }
+    section.section-newsletter-{{ block.id }} {
+        background: {{ block.settings.ns_background_color }};
+        {% if block.settings.background_color == '#ffffff' or block.settings.background_color == 'transparent' %}
+        padding-bottom: 0px;
+        {% else %}
+        padding-bottom: 30px !important;
+        {% endif %}
+        padding-top: 30px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    section.section-newsletter-{{ block.id }} h2 {
+      color: {{ block.settings.ns_heading_color }} !important;
+    }
+
+    section.section-newsletter-{{ block.id }} p {
+      color: {{ block.settings.ns_subheading_color }} !important;
+      font-weight: {{ block.settings.ns_subheading_font_weight }} !important;
+      font-size: {{ block.settings.ns_subheading_font_size }}px !important;
+      max-width: 60%;
+      margin: 0 auto !important;
+      line-height: 30px;
+      padding-bottom: 20px !important;
+    }
+    .section-newsletter-{{ block.id }} p a {
+      color: {{ block.settings.ns_subheading_color }} !important;
+      opacity: 0.9;
+    }
+    .section-newsletter-{{ block.id }} p a:hover {
+      text-decoration: underline;
+    }
+    @media screen and (max-width: 500px) {
+      section.section-newsletter-{{ block.id }} p {
+        max-width: 100%;
+      }
+    }
+    section.section-newsletter-{{ block.id }} ul#social-icons li a:hover {
+      opacity: 0.8;
+    }
+  </style>
+  {% endif %}
+  {% endfor %}
+  {% endunless %}
+
+  <style>
+    h3.post-title, p.posted, .article-headline .rte, .article-headline {
+      text-align: {{ section.settings.text_align }};
+    }
+   @media (min-width: 980px) {
+     {% if section.settings.image_align == 'alternated' %}
+       .article-index:nth-child(odd) div.article-image {
+         order: 2;
+       }
+     {% endif %}
+     {% if section.settings.image_align == 'right' %}
+       .article-index div.article-image {
+         order: 2;
+       }
+     {% endif %}
+   }
+   .collection-banner .background-image {
+     background-size: cover;
+     background-position: center center;
+     height: {{ section.settings.image_height }}px;
+   }
+  </style>
+</div>
+
+{% schema %}
+{
+"name": "Blog",
+"max_blocks": 1,
+"blocks": [
+  {
+    "type": "newsletter_subscribe",
+    "name": "Newsletter Subscribe",
+    "settings": [
+      {
+        "type": "text",
+        "id": "ns_heading",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "color",
+        "id": "ns_heading_color",
+        "label": "Heading",
+        "default": "#000000"
+      },
+      {
+        "type": "richtext",
+        "id": "ns_newsletter_subheading",
+        "label": "Subheading",
+        "default": "<p>Signup for our newsletter to stay up to date on sales and events.</p>"
+      },
+      {
+        "type": "range",
+        "id": "ns_subheading_font_size",
+        "min": 12,
+        "max": 36,
+        "step": 1,
+        "unit": "px",
+        "label": "Subheading size",
+        "default": 16
+      },
+      {
+        "type": "select",
+        "id": "ns_subheading_font_weight",
+        "label": "Subheading weight",
+        "options": [
+          {
+            "value": "normal",
+            "label": "Normal"
+          },
+          {
+            "value": "bold",
+            "label": "Bold"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "ns_subheading_color",
+        "label": "Subheading",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "ns_background_color",
+        "label": "Background",
+        "default": "#f7f7f7"
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ]
+  }
+],
+"settings":
+	[
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 100,
+      "max": 600,
+      "step": 100,
+      "unit": "px",
+      "label": "Image height",
+      "default": 400
+    },
+    {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text",
+        "default": "<p>Add some descriptive text to your Blog page.</p>"
+     },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "min": 2,
+      "max": 48,
+      "step": 1,
+      "label": "Posts per page",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "image_align",
+      "label": "Image alignment",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "alternated",
+          "label": "Alternated"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+	     "default": "center",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show published date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_above",
+      "label": "Show author/date above title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar",
+      "label": "Show sidebar w/tags",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

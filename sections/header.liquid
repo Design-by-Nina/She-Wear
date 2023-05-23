@@ -1,0 +1,666 @@
+{% liquid
+  assign hd_locale_selector = false
+  assign hd_currency_selector = false
+
+  if section.settings.show_currency_selector and shop.enabled_currencies.size > 1
+    assign hd_currency_selector = true
+  endif
+
+  if section.settings.show_locale_selector and shop.published_locales.size > 1
+    assign hd_locale_selector = true
+  endif
+
+  assign full_width_header = false
+  if section.settings.full_width_header
+    assign full_width_header = true
+  endif
+
+  assign inline_layout = false
+  assign block_layout = false
+  assign search_layout = false
+  assign mobile_style = false
+
+  if section.settings.header_layout == 'inline'
+    assign inline_layout = true
+  elsif section.settings.header_layout == 'block'
+    assign block_layout = true
+  elsif section.settings.header_layout == 'search'
+    assign search_layout = true
+  elsif section.settings.header_layout == 'mobile'
+    assign mobile_style = true
+  endif
+
+  assign mobile_logo = false
+  if section.settings.mobile_logo != blank
+    assign mobile_logo = true
+  endif
+
+  assign show_announcement = false
+
+  assign cart_top = section.settings.cart_top_bar
+%}
+
+<div
+  class="
+    header-section
+    header__wrapper
+    full-width-{{ full_width_header }}
+    block-layout-{{ block_layout }}
+    inline-layout-{{ inline_layout }}
+    search-layout-{{ search_layout }}
+    mobile-style-{{ mobile_style }}
+    cart-top-bar-{{ cart_top }}
+    logo-left-align-{{ section.settings.logo_align_left }}
+    show-announcement-{{ show_announcement }}
+    cart-icon-{{ section.settings.cart_icon }}
+  "
+  data-section-id="{{ section.id }}"
+  data-section-type="header-section"
+>
+  <div id="top-bar" class="header__topbar-container js-top-bar">
+    {% capture top_shop_links %}
+      <div class="header__topbar__shopping-cart-links top-bar-shop-links">
+        {% render 'shopping-cart-links', is_mobile: false, cart: cart, hd_currency_selector: hd_currency_selector, hd_locale_selector: hd_locale_selector %}
+      </div>
+    {% endcapture %}
+    {{ top_shop_links }}
+  </div>
+
+  {% capture nav_template %}
+    <ul id="main-nav" class="nav header__main-nav header__nav__list {% if block_layout or search_layout %}js-theme-header stickynav{% endif %}">
+      {% for link in linklists[section.settings.main_nav].links %}
+        {% render 'navigation', link: link %}
+      {% endfor %}
+    </ul>
+  {% endcapture %}
+
+  {% capture shop_links_template %}
+    <div id="shopping-links" class="header__shopping-cart-links{% if section.settings.cart_top_bar %} desktop-hide{% endif %}">
+      {% render 'shopping-cart-links', cart: cart, is_mobile: false, hd_currency_selector: hd_currency_selector, hd_locale_selector: hd_locale_selector %}
+    </div>
+  {% endcapture %}
+
+  {% capture logo_template %}
+    <div id="logo" class="header__desktop-logo">
+      {% if mobile_logo %}
+        <a class="desktop-hide" href="{{ routes.root_url }}" aria-label="she wear logo">
+          <img class="lazyload v-align-middle" data-src="{{ section.settings.mobile_logo | img_url: '600x' }}" width="100%" height="100%" itemprop="logo">
+        </a>
+      {% endif %}
+      {% if section.settings.logo != blank %}
+        {%- assign image_size = '600x' -%}
+        {% comment %} to show contact | our difference nav link on header near logo {% endcomment %}
+        <div class="row-header">
+        <div class="column-header left-header">
+         <a  href="{{ routes.root_url }}">
+          <img class="lazyload v-align-middle " data-src="{{ section.settings.logo | img_url: image_size }}" width="100%" height="100%" itemprop="logo">
+        </a>
+       </div>
+        <div class="column-header right-header">
+         <a href="/pages/contact" style="font-size:12px;">CONTACT | HELP</a><br>
+         <a href="/pages/about-she-wear" style="font-size:12px;">OUR DIFFERENCE</a>
+          <br>
+        </div>
+       </div>
+      {% else %}
+        <a class="v-align-middle {% if mobile_logo %}device-hide{% endif %}" href="{{ routes.root_url }}">
+          {{ shop.name }}
+        </a>
+      {% endif %}
+    </div>
+  {% endcapture %}
+
+  {% capture search_box_template %}
+    <form id="search-box" class="header__search-box-inline search-form" action="{{ routes.search_url }}" method="get">
+      <input type="text" name="q" id="q" class="search-field" placeholder="{{ 'general.search.placeholder' | t }}" />
+      <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+  {% endcapture %}
+
+  {% capture mobile_trigger %}
+     <div class="mobile-menu__trigger {% unless mobile_style %}desktop-hide{% endunless %}{% if mobile_style %} header__main-nav{% endif %}">
+       <div class="slideout__trigger--open text-left">
+         <button class="slideout__trigger-mobile-menu js-slideout-open text-left" data-wau-slideout-target="mobile-navigation" data-slideout-direction="left" aria-label="Open navigation" tabindex="0" type="button" name="button">
+           <!-- <svg class="v-align-middle" width="27px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25.5 12.08">
+             <path class="cls-1" fill="#000000" d="M0,6a.67.67,0,0,1,.67-.67H24.83a.67.67,0,0,1,0,1.34H.67A.67.67,0,0,1,0,6Z"/>
+             <path class="cls-1" fill="#000000" d="M0,11.41a.67.67,0,0,1,.67-.67H24.83a.67.67,0,1,1,0,1.34H.67A.67.67,0,0,1,0,11.41Z"/>
+             <path class="cls-1" fill="#000000" d="M0,.67A.67.67,0,0,1,.67,0H24.83a.67.67,0,0,1,0,1.34H.67A.67.67,0,0,1,0,.67Z"/>
+           </svg> -->
+           <svg viewBox="0 0 100 80" width="25" height="25" class="v-align-middle">
+            <rect width="100" height="6"></rect>
+            <rect y="30" width="100" height="6"></rect>
+            <rect y="60" width="100" height="6"></rect>
+          </svg>
+         </button>
+       </div>
+     </div>
+  {% endcapture %}
+
+  <div
+    id="mobile-header"
+    class="header__mobile-container js-mobile-header stickynav {% unless mobile_style %} desktop-hide{% endunless %}"
+  >
+    {{ mobile_trigger }}
+
+    {{ logo_template }}
+
+    <div
+      id="shopping-links"
+      class="header__shopping-cart-links{% if section.settings.cart_top_bar %} desktop-hide{% endif %}"
+    >
+      {% render 'shopping-cart-links',
+        is_mobile: true,
+        cart: cart,
+        hd_currency_selector: false,
+        hd_locale_selector: false
+      %}
+    </div>
+  </div>
+  {% unless mobile_style %}
+    <div
+      id="header-wrapper"
+      class="header__main-wrapper device-hide{% if inline_layout %} js-theme-header stickynav{% endif %}"
+    >
+      {% if block_layout %}
+        <div class="header__block-top-wrapper js-block-header">
+          {{ logo_template }}
+
+          {% unless section.settings.cart_top_bar %}
+            {{ shop_links_template }}
+          {% endunless %}
+        </div>
+        {{ nav_template }}
+      {% elsif inline_layout %}
+        {% if section.settings.logo_align_left %}
+          {{ logo_template }}
+          {{ nav_template }}
+        {% else %}
+          {{ nav_template }}
+          {{ logo_template }}
+        {% endif %}
+        {% unless section.settings.cart_top_bar %}
+          {{ shop_links_template }}
+        {% endunless %}
+      {% elsif search_layout %}
+        <div class="header__block-top-wrapper js-block-header">
+          {{ logo_template }}
+          {{ search_box_template }}
+          {% unless section.settings.cart_top_bar %}
+            {{ shop_links_template }}
+          {% endunless %}
+        </div>
+        {{ nav_template }}
+      {% endif %}
+    </div>
+  {% endunless %}
+
+  {%- comment -%}
+    <div id="searchbox" class="header__search-box-slidedown animate-hide">
+       <form class="header__search-box-slidedown-form" action="{{ routes.search_url }}" method="get">
+         <input class="header__search-box-slidedown-input" type="text" name="q" id="q" placeholder="search..." />
+       </form>
+     </div>
+  {%- endcomment -%}
+
+  <style media="screen">
+      .header__nav .header__wrapper {
+        background-color: red;
+      }
+        .header__main-nav li  a.dlink,
+        .header__main-nav li  a.alink  {
+          height: {{ section.settings.nav_height }}px;
+          line-height: {{ section.settings.nav_height }}px;
+        }
+        .header__nav__list-item.has_sub_menu a.header__nav__link.first-level:before {
+          line-height: calc({{ section.settings.nav_height }}px + 2px);
+        }
+        .header__desktop-logo a,
+        .header__mobile-logo a {
+          font-size: {{ section.settings.logo_size }}px;
+          font-weight: initial;
+        }
+
+        @media screen and ( min-width: 740px ) {
+          {%- if section.settings.logo -%}
+            .header__desktop-logo a {
+              display: inline-block;
+            }
+            .header__desktop-logo img {
+              max-width: {{ section.settings.logo_max_width }}px;
+              vertical-align: middle;
+            }
+          {%- else -%}
+            .header__desktop-logo {
+              width: {{ section.settings.logo_max_width }}px;
+            }
+            .header__desktop-logo a {
+              display: inline-block;
+            }
+          {%- endif -%}
+        }
+
+        .top-header.active #logo img {
+          transition: max-width .2s ease;
+          max-width: {{ section.settings.logo_max_width_sticky }}px;
+        }
+
+        .top-header.active .header__main-wrapper > div:first-child{
+          padding-bottom: 0px;
+        }
+
+        .top-header-sticky.active #logo img {
+          transition: max-width .2s ease;
+          max-width: {{ section.settings.logo_max_width_sticky }}px;
+        }
+
+        .top-header-sticky.active .header__main-wrapper > div:first-child{
+          padding-bottom: 0px;
+        }
+
+        {%- if section.settings.logo or section.settings.mobile_logo -%}
+          .header__mobile-container .header__mobile-logo {
+            line-height: 40px;
+          }
+        {%- endif -%}
+
+        /* Layout Styles */
+        .header__main-nav.block-layout-true {
+          text-align: {{ section.settings.nav_alignment }};
+        }
+        .header__wrapper.search-layout-true .header__main-nav {
+          text-align: {{ section.settings.nav_alignment }};
+        }
+        .header__wrapper.inline-layout-true.logo-left-align-true .header__main-nav {
+          text-align: {{ section.settings.nav_alignment }};
+        }
+        .header__wrapper.inline-layout-true.logo-left-align-true.cart-top-bar-true .header__main-nav {
+          width: calc(80% - {{ section.settings.logo_max_width }}px);
+        }
+        .header__wrapper.inline-layout-true.logo-left-align-true.cart-top-bar-false .header__main-nav,
+        .header__wrapper.search-layout-true .header__search-box-inline,
+        .header__wrapper.search-layout-true.cart-top-bar-true .header__search-box-inline {
+          width: calc((100% - {{ section.settings.logo_max_width }}px) * 0.65);
+        }
+        .header__wrapper.inline-layout-true.logo-left-align-true.cart-top-bar-false .header__shopping-cart-links,
+        .header__wrapper.search-layout-true.cart-top-bar-false .header__shopping-cart-links {
+          width: calc((100% - {{ section.settings.logo_max_width }}px) * 0.35);
+        }
+
+        .header__wrapper.inline-layout-true.mobile-style-true.logo-left-align-true.cart-top-bar-false .mobile-menu__trigger {
+          width: calc(58% - {{ section.settings.logo_max_width }}px);
+          margin-left: 2%;
+        }
+        .header__wrapper.inline-layout-true.logo-left-align-false .header__main-nav {
+          text-align: {{ section.settings.nav_alignment }};
+        }
+        .header__wrapper.block-layout-true .header__main-nav {
+          justify-content: {{ section.settings.nav_alignment }};
+        }
+        .header__wrapper.mobile-style-true .header__main-nav,
+        .header__wrapper.mobile-style-true.cart-top-bar-false .header__shopping-cart-links,
+        .header__wrapper.mobile-style-true.logo-left-align-true.cart-top-bar-true .mobile-menu__trigger,
+        .header__wrapper.inline-layout-true.logo-left-align-false .header__main-nav,
+        .header__wrapper.inline-layout-true.logo-left-align-false.cart-top-bar-false .header__shopping-cart-links {
+          width: calc((100% - {{ section.settings.logo_max_width }}px) / 2);
+        }
+        .header__wrapper.mobile-style-true .header__desktop-logo,
+        .header__wrapper.mobile-style-true.logo-left-align-true.cart-top-bar-true .header__desktop-logo,
+        .header__wrapper.inline-layout-true.logo-left-align-false .header__desktop-logo,
+        .header__wrapper.inline-layout-true.logo-left-align-true.cart-top-bar-false .header__desktop-logo,
+        .header__wrapper.search-layout-true .header__desktop-logo {
+          width: {{ section.settings.logo_max_width }}px;
+        }
+
+    .header__wrapper.block-layout-true.full-width-true .header__main-nav {
+      position: relative; /* Set the parent element to relative position */
+      border-right: 0px solid #aaa; /* Add a right border to the parent element */
+      margin-bottom:5px;
+    }
+
+    .header__wrapper.block-layout-true.full-width-true .header__main-nav > *:nth-child(6) {
+      position: relative; /* Set the 6th child element to relative position */
+    }
+
+    .header__wrapper.block-layout-true.full-width-true .header__main-nav > *:nth-child(6):after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: -1px; /* Position the vertical line to the right of the parent element */
+      border-right:1px solid #5A5A5A;
+    }
+    .header__wrapper.block-layout-true.full-width-true .header__main-nav > *:nth-child(10):after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: -1px; /* Position the vertical line to the right of the parent element */
+      border-right:0px solid #aaa;
+    }
+  </style>
+</div>
+<!-- <div class="clear js-clear-element"></div> -->
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Announcement Bar"
+    },
+    {
+      "type": "link_list",
+      "id": "top_bar_links",
+      "label": "Announcement bar links"
+    },
+    {
+      "type": "header",
+      "content": "Language Selector",
+      "info": "To add a language, go to your [language settings.](/admin/settings/languages)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_selector",
+      "label": "Show language selector",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Currency Selector",
+      "info": "To add a currency, go to your [payment settings.](/admin/settings/payments)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency_selector",
+      "label": "Show currency selector",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout options"
+    },
+    {
+      "type": "select",
+      "id": "header_layout",
+      "label": "Header layout",
+      "options": [
+        {
+          "value": "inline",
+          "label": "Logo inline with navigation"
+        },
+        {
+          "value": "block",
+          "label": "Logo above navigation"
+        },
+        {
+          "value": "search",
+          "label": "Logo and large search box above navigation"
+        },
+        {
+          "value": "mobile",
+          "label": "Logo inline with mobile navigation"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_header",
+      "label": "Enable full width"
+    },
+    {
+      "type": "checkbox",
+      "id": "logo_align_left",
+      "label": "Left align logo"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_top_bar",
+      "label": "Cart link in announcement bar"
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Desktop logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "min": 100,
+      "max": 250,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop logo width",
+      "default": 200
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width_sticky",
+      "min": 10,
+      "max": 250,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop logo width sticky",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "logo_size",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "Logo text",
+      "default": 18
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_logo",
+      "label": "Mobile logo image",
+      "info": "Horizontal mobile logo recommended"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "main_nav",
+      "label": "Choose main menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "nav_height",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Navigation height",
+      "default": 50
+    },
+    {
+      "type": "select",
+      "id": "nav_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "cart_icon",
+      "label": "Cart Icon",
+      "default": "bag",
+      "options": [
+        {
+          "value": "bag",
+          "label": "Bag"
+        },
+        {
+          "value": "cart",
+          "label": "Cart"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collections_mega_menu",
+      "name": "Collections mega menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "collection_item",
+          "label": "Menu item",
+          "info": "Enter menu item to apply a mega menu"
+        },
+        {
+          "type": "select",
+          "id": "image_ratio",
+          "options": [
+            { "value": "vertical", "label": "Vertical Images" },
+            { "value": "horizontal", "label": "Horizontal Images" },
+            { "value": "square", "label": "Square Images" }
+          ],
+          "label": "Image Ratio"
+        },
+        {
+          "type": "collection",
+          "id": "collection_1",
+          "label": "Collection One"
+        },
+        {
+          "type": "collection",
+          "id": "collection_2",
+          "label": "Collection Two"
+        },
+        {
+          "type": "collection",
+          "id": "collection_3",
+          "label": "Collection Three"
+        },
+        {
+          "type": "collection",
+          "id": "collection_4",
+          "label": "Collection Four"
+        },
+        {
+          "type": "collection",
+          "id": "collection_5",
+          "label": "Collection Five"
+        },
+        {
+          "type": "collection",
+          "id": "collection_6",
+          "label": "Collection Six"
+        }
+      ]
+    },
+    {
+      "type": "linklist_columns",
+      "name": "Links in columns",
+      "settings": [
+        {
+          "type": "text",
+          "id": "linklist_item",
+          "label": "Menu item",
+          "info": "Select a menu item that will show up to 6 link columns. Create menus in your [store navigation admin](\/admin\/menus)."
+        }
+      ]
+    },
+    {
+      "type": "linklist_with_images",
+      "name": "Links with images",
+      "settings": [
+        {
+          "type": "text",
+          "id": "linklist_images_menu_item",
+          "label": "Menu item",
+          "info": "Select a menu item that will show up to 3 link columns and 3 images. Create menus in your [store navigation admin](\/admin\/menus)."
+        },
+        {
+          "type": "select",
+          "id": "image_ratio",
+          "default": "square",
+          "options": [
+            { "value": "vertical", "label": "Vertical Images" },
+            { "value": "horizontal", "label": "Horizontal Images" },
+            { "value": "square", "label": "Square Images" }
+          ],
+          "label": "Image Ratio"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_image_1",
+          "label": "Select a featured image #1"
+        },
+        {
+          "type": "text",
+          "id": "featured_image_label_1",
+          "label": "Featured image label #1"
+        },
+        {
+          "id": "image_url_1",
+          "type": "url",
+          "label": "Image link #1"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_image_2",
+          "label": "Select a featured image #2"
+        },
+        {
+          "type": "text",
+          "id": "featured_image_label_2",
+          "label": "Featured image label #2"
+        },
+        {
+          "id": "image_url_2",
+          "type": "url",
+          "label": "Image link #2"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_image_3",
+          "label": "Select a featured image #3"
+        },
+        {
+          "type": "text",
+          "id": "featured_image_label_3",
+          "label": "Featured image label #3"
+        },
+        {
+          "id": "image_url_3",
+          "type": "url",
+          "label": "Image link #3"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "collections_mega_menu"
+      },
+      {
+        "type": "linklist_columns"
+      },
+      {
+        "type": "linklist_with_images"
+      }
+    ]
+  }
+}
+{% endschema %}

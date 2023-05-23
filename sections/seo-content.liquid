@@ -1,0 +1,56 @@
+<section class="homepage-section-{{ section.id }} seo-content{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}" data-section-id="{{ section.id }}" data-section-type="featured-content">
+
+  <article class="row">
+    <h1 class="section-title desktop-8 desktop-push-2 tablet-6 mobile-3">{{ section.settings.heading }}</h1>
+
+    <div class="clear"></div>
+    <div class="pages-content desktop-8 desktop-push-2 tablet-6 mobile-3">
+        <div class="rte">
+          {{ section.settings.rich_text }}
+        </div>
+
+      {% if section.settings.rich_text == blank %}
+        <div class="content-onboard">
+          <p>Use this section to tell customers about your store or add content from one of your pages which makes it easy to add images, video or any other content</p>
+        </div>
+      {% endif %}
+    </div>
+
+
+  </article>
+
+</section>
+<div class="clear"></div>
+
+
+{% schema %}
+{
+  "name": "SEO content",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Pages within your store will automatically generate the H1 SEO title for products, collections, pages and blog posts. Your home page is not automated, add a relevant search title and support that with a few sentences of relevant text."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "H1 SEO heading",
+      "default": "Welcome to our store"
+    },
+    {
+      "type": "richtext",
+      "id": "rich_text",
+      "label": "Text",
+      "default": "<p>Use this text to add value to the H1 title that you have chosen, make it relevant to your site content but not overstuffed with keywords.</p>"
+    }
+   ],
+   "presets":[
+      {
+       "name":"SEO content",
+       "category":"Text"
+
+	  }
+   ]
+}
+{% endschema %}

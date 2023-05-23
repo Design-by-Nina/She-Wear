@@ -1,0 +1,959 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<div itemscope itemtype="http://schema.org/Product"
+  id="product-{{ product.id }}"
+  class="product-page product-template page-sections"
+  data-product-id="{{ product.id }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="product-section">
+
+  {% render 'custom-product-blocks', current_variant: current_variant, product: product %}
+</div>
+{% schema %}
+  {
+    "name": "Custom Product One",
+    "max_blocks": 40,
+    "blocks": [
+      {
+        "type": "product_description",
+        "name": "Product Description",
+        "settings": [
+          {
+            "type":   "range",
+            "id":     "pd_max_width",
+            "min":       400,
+            "max":       1000,
+            "step":      100,
+            "unit":      "px",
+            "label":     "Description width",
+            "default":   800
+          },
+          {
+            "type":   "range",
+            "id":     "pd_text_size",
+            "min":       14,
+            "max":       32,
+            "step":      1,
+            "unit":      "px",
+            "label":     "Text size",
+            "default":   18
+          },
+          {
+             "type": "color",
+             "id": "pd_background_color",
+             "label": "Background color",
+             "default": "#ffffff"
+          },
+          {
+             "type": "color",
+             "id": "pd_text_color",
+             "label": "Text color",
+             "default": "#000000"
+          },
+          {
+            "type": "checkbox",
+            "id": "pd_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "product_form",
+        "name": "Product Form",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Product Form"
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_sticky_cart",
+            "label": "Show sticky add to cart",
+            "default": true
+          },
+          {
+            "type": "select",
+            "id": "pf_align",
+            "label": "Alignment",
+            "default": "center",
+            "options": [
+              {
+                "value": "center",
+                "label": "Center"
+              },
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "right",
+                "label": "Right"
+              }
+            ]
+          },
+          {
+            "type": "header",
+            "content": "Product Specs"
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_specs",
+            "label": "Show product specs",
+            "default": true
+          },
+          {
+             "type": "color",
+             "id": "pf_text_color",
+             "label": "Text color",
+             "default": "#000"
+          },
+          {
+             "type": "color",
+             "id": "pf_background_color",
+             "label": "Background color",
+             "default": "#eee"
+          },
+          {
+            "type": "text",
+            "id": "pf_heading",
+            "label": "Heading",
+            "default": "Product Specs"
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_sku",
+            "label": "Show variant SKU",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_product_inventory",
+            "label": "Show variant inventory",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_product_weight",
+            "label": "Show variant weight",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_product_type",
+            "label": "Show product type",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_product_vendor",
+            "label": "Show product vendor",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_show_product_collection",
+            "label": "Show product collection",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "pf_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "product_size_chart",
+        "name": "Product Size Chart",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "psc_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type":"text",
+            "id":"psc_heading",
+            "label":"Heading",
+            "default":"Size Chart"
+          },
+          {
+            "type":   "range",
+            "id":     "psc_size_chart_width",
+            "min":       100,
+            "max":       1000,
+            "step":      100,
+            "unit":      "px",
+            "label":     "Size Chart Width",
+            "default":   800
+          }
+        ]
+      },
+      {
+        "type": "featured_video",
+        "name": "Product Video",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "fv_display_wide",
+            "label": "Enable full width"
+          },
+          {
+            "type": "checkbox",
+            "id": "fv_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type":"text",
+            "id":"fv_heading",
+            "label":"Heading",
+            "default":"Product video"
+          },
+          {
+            "type": "video_url",
+            "id": "fv_video_url",
+            "label": "YouTube or Vimeo link",
+            "accept": ["youtube", "vimeo"]
+          }
+        ]
+      },
+      {
+        "type": "product_reviews",
+        "name": "Product Reviews",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "prr_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "prr_product_review_title",
+            "label": "Heading",
+            "default": "Reviews"
+          },
+          {
+            "type": "paragraph",
+            "content": "You will need to add the free [Shopify reviews app](https:\/\/apps.shopify.com/product-reviews) to your store"
+          }
+        ]
+      },
+      {
+        "type": "featured_article",
+        "name": "Featured Blog Article",
+        "settings": [
+          {
+            "type": "text",
+            "id": "fa_heading",
+            "label": "Heading",
+            "default": "Featured Article"
+          },
+          {
+             "type": "color",
+             "id": "fa_heading_color",
+             "label": "Heading color",
+             "default": "#000"
+          },
+          {
+             "type": "article",
+             "id": "fa_featured_article",
+             "label": "Choose Article"
+          },
+          {
+            "type": "select",
+            "id": "fa_text_align",
+            "label": "Text alignment",
+            "default": "center",
+            "options": [
+              {
+                "value": "center",
+                "label": "Center"
+              },
+              {
+                "value": "left",
+                "label": "Left"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "fa_show_date",
+            "label": "Show published date",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "fa_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "featured_collection",
+        "name": "Recommended Products",
+        "settings": [
+          {
+            "type": "text",
+            "id": "fc_heading",
+            "label": "Heading",
+            "default": "Recommended Products"
+          },
+          {
+             "type": "color",
+             "id": "fc_heading_color",
+             "label": "Heading color",
+             "default": "#000"
+          },
+          {
+             "type": "color",
+             "id": "fc_product_info_color",
+             "label": "Product info color",
+             "default": "#000"
+          },
+          {
+            "type": "color",
+            "id": "fc_background_color",
+            "label": "Background color",
+            "default": "#fff"
+          },
+          {
+            "type": "range",
+            "id": "fc_grid",
+            "min": 2,
+            "max": 4,
+            "step": 1,
+            "label": "Products per row",
+            "default": 3
+          },
+          {
+            "type": "range",
+            "id": "fc_limit",
+            "min": 2,
+            "max": 30,
+            "step": 1,
+            "label": "Products shown",
+            "default": 3
+          },
+          {
+            "type": "checkbox",
+            "id": "fc_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "header",
+            "content": "Collection Settings"
+          },
+          {
+            "type": "paragraph",
+            "content": "Create a new collection with the products you want to recommend then select it below."
+          },
+          {
+            "id": "fc_collection",
+            "type": "collection",
+            "label": "Collection"
+          }
+        ]
+      },
+      {
+        "type": "text_columns_with_images",
+        "name": "Text Columns with Images",
+        "settings": [
+          {
+            "type": "text",
+            "id": "txt_title",
+            "label": "Heading",
+            "default": "Text columns with images"
+          },
+          {
+            "type": "select",
+            "id": "txt_align_text",
+            "label": "Text alignment",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "center",
+                "label": "Centered"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "txt_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "header",
+            "content": "Column One"
+          },
+          {
+            "type": "image_picker",
+            "id": "txt_image_1",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "txt_link_1",
+            "label": "Link",
+            "info": "Optional"
+          },
+           {
+            "type": "text",
+            "id": "txt_title_text_1",
+            "label": "Heading",
+            "default": "Our collections"
+           },
+          {
+            "type": "richtext",
+            "id": "txt_text_1",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          },
+          {
+            "type": "header",
+            "content": "Column Two"
+          },
+          {
+            "type": "image_picker",
+            "id": "txt_image_2",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "txt_link_2",
+            "label": "Link",
+            "info": "Optional"
+          },
+           {
+            "type": "text",
+            "id": "txt_title_text_2",
+            "label": "Heading",
+            "default": "Our collections"
+           },
+          {
+            "type": "richtext",
+            "id": "txt_text_2",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          },
+          {
+            "type": "header",
+            "content": "Column Three"
+          },
+          {
+            "type": "image_picker",
+            "id": "txt_image_3",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "txt_link_3",
+            "label": "Link",
+            "info": "Optional"
+          },
+           {
+            "type": "text",
+            "id": "txt_title_text_3",
+            "label": "Heading",
+            "default": "Our collections"
+           },
+          {
+            "type": "richtext",
+            "id": "txt_text_3",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          },
+          {
+            "type": "header",
+            "content": "Column Four"
+          },
+          {
+            "type": "image_picker",
+            "id": "txt_image_4",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "txt_link_4",
+            "label": "Link",
+            "info": "Optional"
+          },
+           {
+            "type": "text",
+            "id": "txt_title_text_4",
+            "label": "Heading",
+            "default": "Our collections"
+           },
+          {
+            "type": "richtext",
+            "id": "txt_text_4",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          }
+        ]
+      },
+      {
+        "type": "image_text_overlay",
+        "name": "Image with Text Overlay",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "io_full_width",
+            "label": "Enable full width",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "io_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "image_picker",
+            "id": "io_image",
+            "label": "Image"
+          },
+          {
+            "type": "range",
+            "id": "io_image_height",
+            "min": 100,
+            "max": 600,
+            "step": 100,
+            "unit": "px",
+            "label": "Image height",
+            "default": 400
+          },
+          {
+            "type": "url",
+            "id": "io_link",
+            "label": "Link",
+            "info": "Optional"
+          },
+          {
+            "type": "checkbox",
+            "id": "io_scroll_to_add",
+            "label": "Scroll to 'Add to Cart' button on click",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "io_heading",
+            "label": "Heading",
+            "default": "Image with Text Overlay"
+          },
+          {
+            "type": "range",
+            "id": "io_heading_text_size",
+            "min": 12,
+            "max": 36,
+            "step": 1,
+            "unit": "px",
+            "label": "Heading size",
+            "default": 28
+          },
+          {
+            "type": "color",
+            "id": "io_heading_text_color",
+            "label": "Heading",
+            "default": "#000"
+          },
+          {
+            "type": "textarea",
+            "id": "io_hidden_text",
+            "label": "Text",
+            "default": "Pair text with a large full width image to give focus to areas of your store.",
+            "info": "Shown on hover"
+          },
+          {
+            "type": "range",
+            "id": "io_hidden_text_size",
+            "min": 12,
+            "max": 36,
+            "step": 1,
+            "unit": "px",
+            "label": "Text size",
+            "default": 18
+          },
+          {
+            "type": "color",
+            "id": "io_hidden_text_color",
+            "label": "Text color",
+            "default": "#000"
+          }
+        ]
+      },
+      {
+        "type": "image_carousel_with_text",
+        "name": "Image Carousel with Text",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "ic_full_width",
+            "label": "Enable full width",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "ic_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "ic_layout",
+            "label": "Layout",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Image on left"
+              },
+              {
+                "value": "right",
+                "label": "Image on right"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "ic_image_width",
+            "label": "Image width",
+            "default": "50%",
+            "options": [
+              {
+                "value":"33%",
+                "label":"33%"
+              },
+              {
+                "value":"50%",
+                "label":"50%"
+              },
+              {
+                "value":"66%",
+                "label":"66%"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "ic_text_align",
+            "label": "Text alignment",
+            "default": "left",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "right",
+                "label": "Right"
+              },
+              {
+                "value": "center",
+                "label": "Center"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "id": "ic_title",
+            "label": "Heading",
+            "default": "Image carousel with text"
+          },
+          {
+            "type": "richtext",
+            "id": "ic_text",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ic_button",
+            "label": "Button label"
+          },
+          {
+            "type": "url",
+            "id": "ic_link",
+            "label": "Button link"
+          },
+          {
+            "type": "header",
+            "content": "Image #1 Settings"
+          },
+          {
+            "type": "image_picker",
+            "id": "ic_image_1",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "ic_image_link_1",
+            "label": "Image Link",
+            "info": "Optional"
+          },
+          {
+            "type": "header",
+            "content": "Image #2 Settings"
+          },
+          {
+            "type": "image_picker",
+            "id": "ic_image_2",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "ic_image_link_2",
+            "label": "Image Link",
+            "info": "Optional"
+          },
+          {
+            "type": "header",
+            "content": "Image #3 Settings"
+          },
+          {
+            "type": "image_picker",
+            "id": "ic_image_3",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "ic_image_link_3",
+            "label": "Image Link",
+            "info": "Optional"
+          }
+        ]
+      },
+      {
+        "type": "collection_list",
+        "name": "Collection List",
+        "settings": [
+          {
+            "type": "text",
+            "id": "cl_title",
+            "label": "Heading",
+            "default": "Collection list"
+          },
+          {
+            "type": "color",
+            "id": "cl_heading_color",
+            "label": "Heading",
+            "default": "#000"
+          },
+          {
+            "type": "color",
+            "id": "cl_background_color",
+            "label": "Background",
+            "default": "#fff"
+          },
+          {
+            "type": "range",
+            "id": "cl_collections_per_row",
+            "min": 2,
+            "max": 4,
+            "step": 1,
+            "label": "Collections per row",
+            "default": 3
+          },
+          {
+            "type": "checkbox",
+            "id": "cl_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "header",
+            "content": "Choose Collections"
+          },
+          {
+            "label": "Collection 1",
+            "id": "cl_collection_1",
+            "type": "collection"
+          },
+          {
+            "label": "Collection 2",
+            "id": "cl_collection_2",
+            "type": "collection"
+          },
+          {
+            "label": "Collection 3",
+            "id": "cl_collection_3",
+            "type": "collection"
+          },
+          {
+            "label": "Collection 4",
+            "id": "cl_collection_4",
+            "type": "collection"
+          }
+        ]
+      },
+      {
+        "type": "accordion",
+        "name": "Accordion",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "ac_no_bottom_margin",
+            "label": "No space after section",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "allow_multiple",
+            "label": "Allow multiple accordions open at one time",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "ac_section_heading",
+            "label": "Heading",
+            "default": "Accordion"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_1",
+            "label": "Item 1 Heading",
+            "default": "Item 1"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_1",
+            "label": "Item 1 Content",
+            "default": "<p>Description and content for Item 1.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_2",
+            "label": "Item 2 Heading",
+            "default": "Item 2"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_2",
+            "label": "Item 2 Content",
+            "default": "<p>Description and content for Item 2.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_3",
+            "label": "Item 3 Heading",
+            "default": "Item 3"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_3",
+            "label": "Item 3 Content",
+            "default": "<p>Description and content for Item 3.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_4",
+            "label": "Item 4 Heading",
+            "default": "Item 4"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_4",
+            "label": "Item 4 Content",
+            "default": "<p>Description and content for Item 4.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_5",
+            "label": "Item 5 Heading",
+            "default": "Item 5"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_5",
+            "label": "Item 5 Content",
+            "default": "<p>Description and content for Item 5.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_6",
+            "label": "Item 6 Heading",
+            "default": "Item 6"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_6",
+            "label": "Item 6 Content",
+            "default": "<p>Description and content for Item 6.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_7",
+            "label": "Item 7 Heading",
+            "default": "Item 7"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_7",
+            "label": "Item 7 Content",
+            "default": "<p>Description and content for Item 7.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_8",
+            "label": "Item 8 Heading",
+            "default": "Item 8"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_8",
+            "label": "Item 8 Content",
+            "default": "<p>Description and content for Item 8.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_9",
+            "label": "Item 9 Heading",
+            "default": "Item 9"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_9",
+            "label": "Item 9 Content",
+            "default": "<p>Description and content for Item 9.</p>"
+          },
+          {
+            "type": "text",
+            "id": "ac_heading_10",
+            "label": "Item 10 Heading",
+            "default": "Item 10"
+          },
+          {
+            "type": "richtext",
+            "id": "ac_content_10",
+            "label": "Item 10 Content",
+            "default": "<p>Description and content for Item 10.</p>"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        {
+          "type": "image_text_overlay"
+        },
+        {
+          "type": "product_description"
+        },
+        {
+          "type": "product_form"
+        }
+      ]
+    }
+  }
+{% endschema %}

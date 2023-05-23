@@ -1,0 +1,19 @@
+<div class="size-guide--wrapper">
+  {% if product.type contains "Junior" %}
+     <p><a class="size-guide--button" href="#size-guide-{{product.id}}" data-remodal-target="" data-no-instant="">Size Guide</a></p>
+         {% render 'popup-size-chart-shoes-junior' %}
+   {% elsif product.type contains "Shoes" or product.type contains "Soles" and product.tags contains "shoes" %}
+  {% assign prod-title = product.title | split: " " %}  
+  {% assign prod-title = prod-title | slice: 1 %}
+{% assign prod-title = prod-title | remove: ":" %}
+{% assign prod-title = prod-title | remove: "[" %}
+{% assign prod-title = prod-title | remove: "]" %}
+{% assign prod-title = prod-title | remove: '"' %}
+     <p><a class="button sw-button size-guide--button" href="#size-guide-{{product.id}}" data-remodal-target="" data-no-instant="" style="background-color:#e8e8e8; border: 1px solid #000; color:#000;">
+            Find your She {{ prod-title}} size</a></p>
+         {% render 'popup-size-chart-shoes-women' %}
+   {% elsif product.type contains "Workwear" %}
+     <p><a class="size-guide--button" href="#size-guide-{{product.id}}" data-remodal-target="" data-no-instant="">Size Guide</a></p>
+        {% render 'popup-size-chart-workwear' %}
+  {% endif %}
+</div> 

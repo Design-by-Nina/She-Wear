@@ -1,0 +1,290 @@
+<section
+  class="featured-collections-slider slideshow-container homepage-featured-collection-{{ section.id }}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}"
+  data-section-id="{{ section.id }}"
+  id="{{ section.id }}"
+  data-section-type="collection-slider">
+  {% for block in section.blocks %}
+    <div
+      id="block-{{ block.id }}"
+      data-slide-index="{{ forloop.index }}"
+      class="slide collection-slide-wrapper slide-{{ forloop.index }}"
+      {{ block.shopify_attributes }}>
+
+      {%- assign collection = collections[block.settings.featured_collection] -%}
+      <div class="collection-description">
+        <div class = "collection-text">
+          {% if collection != blank %}
+           <h2>{{ collection.title }}</h2>
+          {% else %}
+           <h2>Collection Title</h2>
+          {% endif %}
+        {% if block.settings.description_text != blank %}
+          <p>{{ block.settings.description_text }}</p>
+        {% else %}
+          <p>{{ collection.description }}</p>
+        {% endif %}
+        {% if section.blocks.size > 1 %}
+        <div class="arrow-container">
+          <button data-arrow-prev style="background-color: transparent" data-parent="{{ section.id }}">
+              <svg class="left-arrow" width="27px" height="12px" viewBox="0 0 27 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g troke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g transform="translate(-1291.000000, -306.000000)" fill="#353535" fill-rule="nonzero" id="Footer---Light">
+                          <g transform="translate(0.000000, 120.000000)">
+                              <g id="Email-input" transform="translate(940.000000, 168.000000)">
+                                  <path id="Line-2" d="M368.309343,18.8190816 L377.519864,24 L368.309343,29.1809184 L367.819082,28.3093429 L374.589,24.5 L351.5,24.5 L351.5,23.5 L374.593,23.5 L367.819082,19.6906571 L368.309343,18.8190816 Z"></path>
+                              </g>
+                          </g>
+                      </g>
+                  </g>
+              </svg>
+            </button>
+            <button data-arrow-next style="background-color: transparent" data-parent="{{ section.id }}">
+              <svg class="right-arrow" width="27px" height="12px" viewBox="0 0 27 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g troke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g transform="translate(-1291.000000, -306.000000)" fill="#353535" fill-rule="nonzero" id="Footer---Light">
+                          <g transform="translate(0.000000, 120.000000)">
+                              <g id="Email-input" transform="translate(940.000000, 168.000000)">
+                                  <path id="Line-2" d="M368.309343,18.8190816 L377.519864,24 L368.309343,29.1809184 L367.819082,28.3093429 L374.589,24.5 L351.5,24.5 L351.5,23.5 L374.593,23.5 L367.819082,19.6906571 L368.309343,18.8190816 Z"></path>
+                              </g>
+                          </g>
+                      </g>
+                  </g>
+              </svg>
+            </button>
+        </div>
+        {% endif %}
+      </div>
+      </div>
+      <div class="collection-image">
+        {% if collection != blank %}
+          {% if block.settings.collection_image != blank %}
+            {% render 'basic-responsive-image', type: block.settings.collection_image, data_widths: '[180, 360, 540, 720, 900]' %}
+            <noscript>
+              <img class="center_img" data-src="{{ block.settings.collection_image | img_url: '800x' }}" alt="{{ block.settings.collection_image.alt }} class="lazyload"">
+            </noscript>
+          {% else %}
+            {% render 'basic-responsive-image', type: collection.image, data_widths: '[180, 360, 540, 720, 900]' %}
+            <noscript>
+              <img class="right_img" data-src="{{ collection.image | img_url: '800x' }}" alt="{{ collection.image.alt }} class="lazyload"">
+            </noscript>
+          {% endif %}
+        {% else %}
+          {{ 'collection-6' | placeholder_svg_tag: 'placeholder-svg' }}
+        {% endif %}
+      </div>
+      <div class="product-wrapper">
+        <div class="collection-link">
+          <div class = "collection-link-text">
+          <a href="{{ collection.url }}">{{ 'products.general.explore_more' | t }} {{ collection.title }}
+            <svg width="27px" height="12px" viewBox="0 0 27 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g troke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g transform="translate(-1291.000000, -306.000000)" fill="#353535" fill-rule="nonzero" id="Footer---Light">
+                        <g transform="translate(0.000000, 120.000000)">
+                            <g id="Email-input" transform="translate(940.000000, 168.000000)">
+                                <path id="Line-2" d="M368.309343,18.8190816 L377.519864,24 L368.309343,29.1809184 L367.819082,28.3093429 L374.589,24.5 L351.5,24.5 L351.5,23.5 L374.593,23.5 L367.819082,19.6906571 L368.309343,18.8190816 Z"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+          </a>
+        </div>
+        </div>
+        <div class="featured-product">
+          {% assign product = all_products[block.settings.featured_product] %}
+          {% if product != blank %}
+            <h3>{{ block.settings.product_title }}</h3>
+            {% render 'basic-responsive-image', type: product.featured_media, data_widths: '[180, 360, 540, 720, 900]' %}
+            <noscript>
+              <img data-src="{{ product.featured_media | img_url: '800x' }}" alt="{{ product.featured_media.alt }} class="lazyload"">
+            </noscript>
+            <a href="{{ product.url }}" class="shop-product">{{ block.settings.shop_link_text }}</a>
+          {% else %}
+            <h3>Product Title</h3>
+            {{ 'product-1' | placeholder_svg_tag }}
+            <a href="" class="shop-product">{{ block.settings.shop_link_text }}</a>
+          {% endif %}
+        </div>
+      </div>
+      <style>
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-description {
+          background-color: {{ block.settings.des_bg_color }};
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-link {
+          background-color: {{ block.settings.link_bg_color }};
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-link a {
+          color: {{ block.settings.link_color }};
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-link g#Footer---Light {
+          fill: {{ block.settings.link_color }};
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-text h2 {
+          color: {{ block.settings.header_text_color }};
+          font-size: {{ section.settings.header_font_size }}px;
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-text p {
+          color: {{ block.settings.paragraph_text_color }};
+          font-size: {{ section.settings.text_font_size }}px;
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .collection-text g#Footer---Light {
+          fill: {{ block.settings.paragraph_text_color }};
+        }
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .featured-product h3,
+        .homepage-featured-collection-{{ section.id }} #block-{{ block.id }} .featured-product a {
+          color: {{ block.settings.product_title_color }};
+          background-color: {{ block.settings.product_title_bg }};
+        }
+      </style>
+    </div>
+  {% endfor %}
+<style>
+  .homepage-featured-collection-{{ section.id }} {
+    position: relative;
+    height: 704px;
+  }
+  @media (max-width: 980px) {
+    .homepage-featured-collection-{{ section.id }} {
+      height: 1104px;
+    }
+  }
+  .homepage-featured-collection-{{ section.id }} .collection-image {
+    margin-bottom: 0;
+    background-color: #fbfbfb;
+  }
+  .homepage-featured-collection-{{ section.id }} svg.placeholder-svg {
+    height: 100%;
+    width: 100%;
+  }
+  .homepage-featured-collection-{{ section.id }} .product-wrapper {
+    background-color: white;
+  }
+</style>
+</section>
+<div class="clear"></div>
+{% schema %}
+{
+  "name": "Featured collections",
+  "settings": [
+    {
+      "type": "range",
+      "id": "header_font_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Header font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text font size",
+      "default": 13
+    }
+  ],
+  "max_blocks": 5,
+  "blocks": [
+    {
+      "type": "featured_collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "featured_collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "collection_image",
+          "label": "Custom collection image"
+        },
+        {
+          "type": "color",
+          "id": "header_text_color",
+          "label": "Collection title",
+          "default": "#000000"
+        },
+        {
+          "type": "richtext",
+          "id": "description_text",
+          "label": "Description",
+          "default": "<p>Describe this featured collection.</p>"
+        },
+        {
+          "type": "color",
+          "id": "des_bg_color",
+          "label": "Description background",
+          "default": "#ebf1f2"
+        },
+        {
+          "type": "color",
+          "id": "paragraph_text_color",
+          "label": "Description text",
+          "default": "#000000"
+        },
+        {
+          "type": "product",
+          "id": "featured_product",
+          "label": "Featured product"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Custom product title"
+        },
+        {
+          "type": "color",
+          "id": "product_title_color",
+          "label": "Product title and link",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "product_title_bg",
+          "label": "Product title and link bg",
+          "default": "#ffffff"
+        },
+        {
+          "type": "text",
+          "id": "shop_link_text",
+          "label": "Shop Link Text"
+        },
+        {
+          "type": "color",
+          "id": "link_bg_color",
+          "label": "Link background",
+          "default": "#edddd3"
+        },
+        {
+          "type": "color",
+          "id": "link_color",
+          "label": "Link text",
+          "default": "#000000"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collections slider",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "featured_collection"
+        },
+        {
+          "type": "featured_collection"
+        },
+        {
+          "type": "featured_collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,226 @@
+<div id="collection-page">
+  <div class="collection-sections">
+    {% for block in section.blocks %}
+      <div class="collection-section{% if forloop.first %} first__block{% endif %}" {{ block.shopify_attributes }}>
+        {% case block.type %}
+          {% when 'image_text_overlay' %}
+            <section class="image__text-overlay block-{{ block.id }}{% if block.settings.io_no_bottom_margin %} nbm{% endif %} image__container" data-section-id="{{ block.id }}" >
+
+              {% if block.settings.io_full_width %}<div class="gridlock-fluid"><div class="row">{% endif %}
+              <div class="row ">
+                {% if block.settings.io_link != blank %}<a class="section-promo-link" href="{{ block.settings.io_link }}">{% endif %}
+                  <div class="section-promo centered contained desktop-12 tablet-6 mobile-3">
+                    {% if block.settings.io_image %}
+                      <div class="background-image lazyload"
+                      data-bgset="{% render 'bgset', image: block.settings.io_image %}"
+                      data-sizes="auto"></div>
+                      <noscript>
+                        <div class="background-image" style="background-image: url({{ block.settings.io_image | img_url: '1024x' }});"></div>
+                      </noscript>
+                    {% else %}
+                      <div class="onboard">
+                        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {% endif %}
+                    <div class="caption centered">
+                      {% if block.settings.io_heading != blank %}
+                        <h3>{{ block.settings.io_heading }}</h3>
+                      {% endif %}
+                      {% if block.settings.io_hidden_text != blank %}
+                        <p>{{ block.settings.io_hidden_text }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% if block.settings.io_link != blank %}</a>{% endif %}
+              </div>
+              {% if block.settings.io_full_width %}</div></div>{% endif %}
+
+              <div class="clear"></div>
+              <style>
+                .image__text-overlay.block-{{ block.id }} .background-image {
+                  height: {{ block.settings.io_image_height }}px;
+                }
+                .image__text-overlay.block-{{ block.id }} .section-promo {
+                  margin-bottom: 0;
+                }
+                .image__text-overlay.block-{{ block.id }} .caption h3 {
+                  color: {{ block.settings.io_heading_text_color }};
+                  font-size: {{ block.settings.io_heading_text_size }}px;
+                  line-height: 1.5;
+                }
+                .image__text-overlay.block-{{ block.id }} .caption p {
+                  color: {{ block.settings.io_hidden_text_color }};
+                  font-size: {{ block.settings.io_hidden_text_size }}px;
+                  line-height: 1.5;
+                }
+              </style>
+            </section>
+          {% when 'featured_collection' %}
+            <section class="custom-collection section-featured-collection-{{ block.id }}" data-block-id="{{ block.id }}" data-section-type="featured-collection">
+              {% assign collection = collections[block.settings.fc_collection] %}
+              {% assign prod_limit = block.settings.fc_limit %}
+              {% assign prod_limit = prod_limit | minus: 2 %}
+              <article class="row">
+                  <div class="product-loop">
+                    <div class="collection-image desktop-6 tablet-6 mobile-3" {%- if block.settings.fc_collection_image_position == 'right' -%}style="float: right;"{%- endif -%}>
+                      <a href="{{ collection.url }}">
+                        {% if block.settings.fc_image %}
+                          {% render 'basic-responsive-image', type: block.settings.fc_image, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+                          <noscript>
+                            <img src="{{ collection.image | img_url: '1024x' }}" alt="{{ collection__image.alt | escape }}" class="collection__image">
+                          </noscript>
+                        {% elsif collection.image %}
+                          {% render 'basic-responsive-image', type: collection.image, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+                          <noscript>
+                            <img src="{{ collection.image | img_url: '1024x' }}" alt="{{ collection__image.alt | escape }}" class="collection__image">
+                          </noscript>
+                        {% else %}
+                          {% render 'basic-responsive-image', type: collection.products.first.featured_media, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+                          <noscript>
+                            <img src="{{ collection.products.first.featured_media | img_url: '1024x' }}" alt="{{ collection.products.first.featured_media.alt | escape }}" class="collection__image">
+                          </noscript>
+                        {% endif %}
+                        {% if block.settings.fc_collection == blank %}
+                        <div class="onboard">
+                          {{ 'product-1' | placeholder_svg_tag }}
+                        </div>
+                        {% endif %}
+                        <div class="collection-caption">
+                          <h1>{{ collection.title }}</h1>
+                          <div class="rte">
+                            {{ collection.description | remove: "[banner]" }}
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+
+                    {% for product in collection.products limit: 2  %}
+                      <div class="product-index desktop-3 tablet-3 mobile-half" id="prod-{{ product.id }}" data-alpha="{{ product.title }}" data-price="{{ product.price }}">
+                        {% render 'product-listing', product: product %}
+                      </div>
+                    {% endfor %}
+                    {% if block.settings.fc_collection == blank %}
+                      {% assign grid_item_width = 'desktop-3 tablet-2 mobile-half' %}
+                      {% assign grid_width = 'desktop-6 tablet-3 mobile-3' %}
+                      {% render 'onboard-product',  prod_limit: prod_limit, grid_item_width: grid_item_width %}
+                    {% endif %}
+                  </div>
+                  <div class="clear"></div>
+                  <div class="product-loop second-row">
+                    {% for product in collection.products limit: prod_limit offset: 2  %}
+                      <div class="product-index desktop-3 tablet-3 mobile-half" id="prod-{{ product.id }}" data-alpha="{{ product.title }}" data-price="{{ product.price }}">
+                        {% render 'product-listing', product: product %}
+                      </div>
+                    {% endfor %}
+                    {% if block.settings.fc_collection == blank %}
+                      {% assign grid_item_width = 'desktop-3 tablet-2 mobile-half' %}
+                      {% assign grid_width = 'desktop-6 tablet-3 mobile-3' %}
+                      {% render 'onboard-product',  prod_limit: prod_limit, grid_item_width: grid_item_width %}
+                    {% endif %}
+                  </div>
+              </article>
+            <style>
+              {% if block.settings.fc_collection_border %}
+                .section-featured-collection-{{ block.id }} {
+                  border-bottom: 1px solid #eee;
+                }
+              {% endif %}
+               .section-featured-collection-{{ block.id }} {
+                 margin-bottom: 30px;
+               }
+                .section-featured-collection-{{ block.id }} #collection-page {
+                  border-bottom: 1px solid #eee;
+                  margin-bottom: 20px;
+                }
+                .section-featured-collection-{{ block.id }} .product-info,
+                .section-featured-collection-{{ block.id }} .product-info a {
+                  color: {{ block.settings.fc_product_info_color }} !important;
+                }
+                .section-featured-collection-{{ block.id }} .collection-caption,
+                .section-featured-collection-{{ block.id }} .collection-caption h1 {
+                  color: {{ block.settings.fc_collection_caption_color }} !important;
+                }
+                {% if template contains 'collection.custom-' %}
+                  @media screen and ( min-width: 981px ) {
+                    .section-featured-collection-{{ block.id }} .second-row .product-index.desktop-3:nth-child(4n+1) {
+                      clear: left;
+                    }
+                  }
+                  @media screen and ( min-width: 741px ) and ( max-width: 980px ) {
+                    .section-featured-collection-{{ block.id }} .second-row .product-index.desktop-3:nth-child(2n+1) {
+                      clear: left;
+                    }
+                  }
+                  @media screen and ( max-width: 740px ) {
+                    .section-featured-collection-{{ block.id }} .second-row .product-index.mobile-half:nth-child(2n+1) {
+                      clear: left;
+                    }
+                  }
+                {% endif %}
+                .collection-image {
+                  position: relative;
+                }
+                .collection-caption {
+                  position: absolute;
+                  top: 9%;
+                  padding: 20px 70px;
+                  text-align: center;
+                }
+              </style>
+            </section>
+          {% when 'collection_list' %}
+            <section class="section-collection-list-{{ block.id }}" data-block-id="{{ block.id }}" data-section-type="collection-list-section">
+              <article class="row">
+                {% if block.settings.cl_title != blank %}
+                  <h2 class="section-title desktop-12 tablet-6 mobile-3">
+                    {{ block.settings.cl_title | escape }}
+                  </h2>
+                {% endif %}
+                  <div class="collection-loop">
+                    {% case block.settings.cl_collections_per_row %}
+                      {% when 4 %}
+                        {% assign col_per_row = 'desktop-3 tablet-2' %}
+                      {% when 3 %}
+                        {% assign col_per_row = 'desktop-4 tablet-2' %}
+                      {% when 2 %}
+                        {% assign col_per_row = 'desktop-6 tablet-3' %}
+                    {% endcase %}
+                    {% for n in (1..12) %}
+                      {% assign collection = "cl_collection_" | append: n %}
+                      {% assign collection = collections[block.settings[collection]] | default: false %}
+                      {% if collection %}
+                        {% render 'collection-grid-item', collection: collection, col_per_row: col_per_row %}
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+              </article>
+              <div class="clear"></div>
+              <style>
+                section.section-collection-list-{{ block.id }} {
+                  padding: 20px 0;
+                }
+                section.section-collection-list-{{ block.id }} .collection-index .product-title {
+                  color: {{ block.settings.cl_heading_color }} !important;
+                }
+                section.section-collection-list-{{ block.id }} h2,
+                section.section-collection-list-{{ block.id }} h2 a {
+                  color: {{ block.settings.cl_heading_color }} !important;
+                }
+              </style>
+            </section>
+        {% endcase %}
+      </div>
+    {% endfor %}
+  </div>
+  <section class="collection-all-products">
+    {% assign collection = collections[block.settings.fc_collection] %}
+    <a class="button" href="?view=all">{{ 'collections.general.shop_all' | t }}</a>
+    <style>
+      .collection-all-products {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+    </style>
+  </section>
+</div>
+<div class="clear"></div>

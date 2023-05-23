@@ -1,0 +1,247 @@
+
+<div class="text-column">
+  <div class="text-column-item"  >
+    
+    {% render 'basic-responsive-image', type: section.settings.image_1 %}
+                      <noscript>
+                        <img src="{{ section.settings.image_1  | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+                      </noscript>
+    <h5 class="top-center">{{ section.settings.header-1 }}</h5>
+    <a href="{{ section.settings.button-link-1 }}" class="bottom-center-button" style="color:white;">SHOP NOW</a>
+  </div>
+  <div class="text-column-item"  >
+    {% render 'basic-responsive-image', type: section.settings.image_2, data_widths: '[180, 360, 540, 720, 900, 1080, 1296, 1512]' %}
+                      <noscript>
+                        <img src="{{ section.settings.image_2 | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+                      </noscript>
+     <h5 class="top-center">{{ section.settings.header-2 }}</h5>
+     <a href="{{ section.settings.button-link-2 }}" class="bottom-center-button" style="color:white;">SHOP NOW</a>
+  </div>
+  <div class="text-column-item"   >
+    {% render 'basic-responsive-image', type: section.settings.image_3, data_widths: '[180, 360, 540, 720, 900, 1080, 1296, 1512]' %}
+                      <noscript>
+                        <img src="{{ section.settings.image_3  | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+                      </noscript>
+    <h5 class="top-center">{{ section.settings.header-3 }}</h5>
+     <a href="{{ section.settings.button-link-3 }}" class="bottom-center-button" style="color:white;">SHOP NOW</a>
+  </div>
+    <div class="text-column-item"  >
+    {% render 'basic-responsive-image', type: section.settings.image_4, data_widths: '[180, 360, 540, 720, 900, 1080, 1296, 1512]' %}
+                      <noscript>
+                        <img src="{{ section.settings.image_4 | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+                      </noscript>
+   <h5 class="top-center">{{ section.settings.header-4 }}</h5>
+       <a href="{{ section.settings.button-link-4 }}" class="bottom-center-button" style="color:white;">SHOP NOW</a>
+  </div>
+</div>
+
+
+ <style>
+.text-column {
+  margin-top:50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  margin-right:50px;
+
+  }
+  .text-column-item {
+    flex: 0 0 calc(25% - 50px);
+    max-width: calc(25% - 50px);
+    margin-bottom: 40px;
+    position: relative;
+     
+  }
+.text-column-item img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  overflow: hidden;
+ 
+}
+  .text-column-item p {
+    margin: 0;
+    padding: 10px 0;
+  }
+.text-column-item img {
+  transition: transform 0.2s ease-in-out;
+}
+.top-center{
+     position: absolute;
+    top:15%;
+   left: 50%;
+  transform: translate(-50%, -50%);
+   padding:8px;  
+   text-align:center;
+  width:35%;
+  color:#000;
+  border-radius:65px;
+  background-color:#ffffff;
+   font-size:16px;
+}
+
+   .bottom-center-button{
+     position: absolute;
+    bottom:5%;
+   left: 50%;
+  transform: translate(-50%, -50%);
+  padding:8px;
+     width:35%;
+   text-align:center;
+  color: white;
+  border-radius:65px;
+  background-color:#000000;
+     font-size:18px;
+}
+.text-column-item img:hover {
+  transform: scale(1.1);
+}
+    @media only screen and (max-width: 1400px) {
+    .text-column {
+      flex-wrap: wrap;
+      margin-right:0px;
+    }
+    .text-column-item {
+      flex: 0 0 calc(50% - 10px);
+      max-width: calc(50% - 10px);
+    }
+    .top-center{
+      font-size: 12px;
+       padding:8px;
+       width:30%;
+       border-radius:45px;
+    }
+
+   .bottom-center-button{
+     font-size:14px;
+     padding:2px;
+     width:30%;
+     border-radius:65px;
+   }
+  }
+  /* Responsive design for mobile and tablets */
+  @media only screen and (max-width: 768px) {
+    .text-column {
+      flex-wrap: wrap;
+       margin-right:0px;
+    }
+    .text-column-item {
+      flex: 0 0 calc(50% - 10px);
+      max-width: calc(50% - 10px);
+    }
+    .top-center{
+      font-size: 18px;
+       padding:8px;
+       width:35%;
+       border-radius:45px;
+    }
+
+   .bottom-center-button{
+     font-size:16px;
+     padding:2px;
+     width:35%;
+     border-radius:65px;
+   }
+  }
+
+  @media only screen and (max-width: 480px) {
+    .text-column-item {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+</style>
+
+{% schema %}
+  {
+    "name": "4 image grid",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image_1",
+        "label": "Image 1"
+      },
+       {
+        "type": "text",
+        "id": "header-1",
+        "label": "Header 1"
+      },
+      {
+        "type": "text",
+        "id": "button-1",
+        "label": "Button Text 1"
+      },
+      {
+        "type": "url",
+        "id": "button-link-1",
+        "label": "Button Link 1"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_2",
+        "label": "Image 2"
+      },
+      {
+        "type": "text",
+        "id": "header-2",
+        "label": "Header 2"
+      },
+      {
+        "type": "text",
+        "id": "button-2",
+        "label": "Button Text 2"
+      },
+      {
+        "type": "url",
+        "id": "button-link-2",
+        "label": "Button Link 2"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_3",
+        "label": "Image 3"
+      },
+      {
+        "type": "text",
+        "id": "header-3",
+        "label": "Header 3"
+      },
+      {
+        "type": "text",
+        "id": "button-3",
+        "label": "Button Text 3"
+      },
+      {
+        "type": "url",
+        "id": "button-link-3",
+        "label": "Button Link 3"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_4",
+        "label": "Image 4"
+      },
+      {
+        "type": "text",
+        "id": "header-4",
+        "label": "Header 4"
+      },
+      {
+        "type": "text",
+        "id": "button-4",
+        "label": "Button Text 4"
+      },
+      {
+        "type": "url",
+        "id": "button-link-4",
+        "label": "Button Link 4"
+      }
+    ],
+  "presets": [
+    {
+      "name": "4 image grid",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

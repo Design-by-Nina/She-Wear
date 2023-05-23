@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>{% render 'pagefly-head' %}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="theme-color" content="#F0E7E3"/>
+  <!-- Establish early connection to external domains -->
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.shopify.com" crossorigin>
+  <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
+  <link rel="preconnect" href="//ajax.googleapis.com" crossorigin />
+  {%- assign main_font = settings.main_font -%}
+  {%- assign heading_font = settings.heading_font -%}
+  {%- assign nav_font = settings.nav_font -%}
+  {%- assign main_font_bold = main_font | font_modify: 'weight', 'bolder' -%}
+  {%- assign main_font_italic = main_font | font_modify: 'style', 'italic' -%}
+  {%- assign main_font_bold_italic = main_font_bold | font_modify: 'style', 'italic' -%}
+  <!-- Preload onDomain stylesheets and script libraries -->
+  <link rel="preload" href="{{ 'stylesheet.css' | asset_url }}" as="style">
+  <link rel="preload" as="font" href="{{ main_font | font_url }}" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="{{ nav_font | font_url }}" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="{{ heading_font | font_url }}" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ 'eventemitter3.min.js' | asset_url }}" as="script">
+  <link rel="preload" href="{{ 'theme.js' | asset_url }}" as="script">
+  <link rel="preload" href="{{ 'option_selection.js' | shopify_asset_url }}" as="script">
+  {% if settings.favicon %}<link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png" />{% endif %}
+  <link rel="canonical" href="{{ canonical_url }}" />
+  {%- comment -%}
+    <title>{{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}" />{% endif %}
+  {%- endcomment -%}
+
+
+  {% render 'meta-tags' %}
+  {% render 'social-media-tags' %}
+  {% render 'structured-data' %}
+  {% render 'css-variables' %}
+  <link rel="stylesheet" href="{{ 'stylesheet.css' | asset_url }}" type="text/css">
+  <style>
+    {{ main_font | font_face: font_display: 'swap' }}
+    {{ nav_font | font_face: font_display: 'swap' }}
+    {{ heading_font | font_face: font_display: 'swap' }}
+    {{ main_font_bold | font_face: font_display: 'swap' }}
+    {{ main_font_italic | font_face: font_display: 'swap' }}
+    {{ main_font_bold_italic | font_face: font_display: 'swap' }}
+  </style>
+
+  {{ content_for_header }}
+  {% include 'pagefly-header' %}
+  {% render 'boost-pfs-style' %}
+
+
+  {{ shop.metafields.okendo.ReviewsWidgetStyleTag }}
+  {{ shop.metafields.okendo.StyleCustomizations }}
+
+  {% if content_for_header contains 'rio.pwztag.com' %}{% render 'productwiz-rio', product: product, shop: shop, installGuard: true %}{% endif %}
+
+
+         {% render 'digismoothie-candyrack' %}
+  
+  <!-- Google Tag Manager -->
+<script>
+    window.dataLayer = window.dataLayer || [];
+</script>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TPPMGF9');</script>
+  
+<!-- End Google Tag Manager -->
+  {% render 'analyzify-product-datalayer.liquid' %}
+  
+<!-- One Tag Conditional Container: SheWear AU (25232) | SheWear_OneTag (14225) | Export Date: Apr. 27, 2022 @ 2:14am UTC -->
+    <script type="text/javascript">
+    var ft_onetag_14225 = {
+        ft_vars:{
+            "ftXRef":"{{ product.id }}",
+            "ftXValue":"{{ product.price | money_without_currency | remove: ',' }}",
+            "ftXType":{{ product.selected_or_first_available_variant.sku | json }},
+            "ftXName":"{{ product.title | strip_html | escape | strip_newlines }}",
+            "ftXNumItems":"{{ shop.url }}{{ product.url }}",
+            "ftXCurrency": "{{ shop.currency }}",
+            "U1":"{{ product.selected_or_first_available_variant.sku | strip_html | escape }}",
+            "U2":"{{ product.selected_or_first_available_variant.title | strip_html | escape }}",
+            },
+        ot_dom:'https://servedby.flashtalking.com',
+        ot_path:'/container/25232;129657;14225;iframe/?',
+        ot_href:'ft_referrer='+escape(document.location.href),
+        ot_rand:Math.random()*1000000,
+        ot_ref:document.referrer,
+        ot_init:function(){
+            var o=this,qs='',count=0,ns='';
+            for(var key in o.ft_vars){
+                qs+=(o.ft_vars[key]==''?'':key+'='+o.ft_vars[key]+'&');
+            }
+            count=o.ot_path.length+qs.length+o.ot_href+escape(o.ot_ref).length;
+            ns=o.ot_ns(count-2000);
+            document.write('<iframe style="position:absolute; visibility:hidden; width:1px; height:1px;" src="'+o.ot_dom+o.ot_path+qs+o.ot_href+'&ns='+ns+'&cb='+o.ot_rand+'"></iframe>');
+        },
+        ot_ns:function(diff){
+            if(diff>0){
+                var o=this,qo={},
+                    sp=/(?:^|&)([^&=]*)=?([^&]*)/g,
+                    fp=/^(http[s]?):\/\/?([^:\/\s]+)\/([\w\.]+[^#?\s]+)(.*)?/.exec(o.ot_ref),
+                    ro={h:fp[2],p:fp[3],qs:fp[4].replace(sp,function(p1,p2,p3){if(p2)qo[p2]=[p3]})};
+                return escape(ro.h+ro.p.substring(0,10)+(qo.q?'?q='+unescape(qo.q):'?p='+unescape(qo.p)));
+            }else{
+                var o=this;
+                return escape(unescape(o.ot_ref));
+            }
+                }
+        }
+    ft_onetag_14225.ot_init();
+    </script>
+    </head>
+         
+
+<body class="gridlock {{ template | handleize }} template-{{ template | handleize }} js-slideout-toggle-wrapper js-modal-toggle-wrapper {%- render 'body-classes' -%}">
+  <div class="js-slideout-overlay site-overlay"></div>
+  <div class="js-modal-overlay site-overlay"></div>
+
+  <aside class="slideout slideout__drawer-left" data-wau-slideout="mobile-navigation" id="slideout-mobile-navigation">
+   {% section 'mobile-navigation' %}
+  </aside>
+
+  <main class="site-wrap" role="main" data-money-format="{{ shop.money_format }}">
+    <div id="wrapper" class="site-wrap__container">   
+      <div class="top-header">
+        {% section'header' %}
+        {% section'notification-bar' %}
+        {% render 'searchbar' %}
+      </div>
+    {% if template contains 'collection' %}
+    {% if collection.description contains '[banner]' %}
+    {% capture banner %}{{ collection.handle }}.jpg{% endcapture %}
+    <div class="collection-banner">
+      <img class="lazyload" data-src="{{ banner | file_url }}" alt="{{ collection.title }} width="100%" height="100%"">
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% if template contains 'index' or template contains 'blog' or template contains 'article' or template contains 'list-collections' or template contains 'page.custom-' or template contains 'product.custom-' or template contains 'collection.custom-' %}
+     {{ content_for_layout }}
+
+     {% else %}
+
+     <div id="content" class="row">
+       {% render 'breadcrumb' %}
+       {{ content_for_layout }}
+     </div>
+    {% endif %}
+
+      <div class="clear"></div>
+    </div> <!-- End wrapper -->
+
+    <div class="klaviyo-wrapper">
+      <div class="container row desktop-hide">
+        <div class="klaviyo-form-XRX88D"></div>
+      </div>
+      <div class="container row device-hide">
+        <div class="klaviyo-form-RhriFU"></div>
+      </div>
+    </div>
+    
+    {% section 'footer' %}
+  </main>
+
+  {%- if settings.cart_type == 'drawer' -%}
+  <aside class="slideout slideout__drawer-right mini-cart" data-wau-slideout="ajax-cart" id="slideout-ajax-cart">
+    {% render 'cart-mini' %}
+  </aside>
+  {% elsif settings.cart_type == 'modal_cart' %}
+  <div class="modal__container" data-wau-modal="ajax-cart" id="modal-ajax-cart">
+    <div class="modal__inner-wrapper">
+      {% render 'cart-mini' %}
+    </div>
+  </div>
+  {%- endif -%}
+  {%- if settings.quickview -%}
+  <div class="modal__container" data-wau-modal="quickview" id="modal-quickview-cart">
+    <div class="modal__inner-wrapper">
+      {%- render 'product-quickview' -%}
+    </div>
+  </div>
+  {%- endif -%}
+
+  <script src="{{ 'eventemitter3.min.js' | asset_url }}"></script>
+  <script src="{{ 'theme.js' | asset_url }}"></script>
+  <script src="{{ 'option_selection.js' | shopify_asset_url }}"></script>
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+
+  <script>
+    $(document).ready(function(){
+      if ($('#dynamic-checkout-cart').contents().length == 0) {
+      $('p.sm-caps.or-divider.mt2.mb2.a-center').hide();
+      console.log('#######################');
+      console.log($('p.sm-caps.or-divider.mt2.mb2.a-center'));
+    }
+    });
+    </script>
+
+  {% section 'popup' %}
+
+  <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+
+  {%- if request.page_type contains 'customers/' -%}
+  <script src="{{ 'customer_area.js' | shopify_asset_url }}" defer="defer"></script>
+  {%- endif -%}
+  
+  <script>
+    window.lazySizesConfig = window.lazySizesConfig || {};
+    window.lazySizesConfig.minSize = 360;
+    lazySizesConfig.loadMode = 1;
+  </script>
+
+  <script>
+      document.documentElement.className =
+      document.documentElement.className.replace("no-js","js");
+  </script>
+
+  <!-- Root element of PhotoSwipe. Must have class pswp. -->
+  <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe.
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+      <!-- Container that holds slides.
+          PhotoSwipe keeps only 3 of them in the DOM to save memory.
+          Don't modify these 3 pswp__item elements, data is added later on. -->
+      <div class="pswp__container">
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+          <div class="pswp__item"></div>
+      </div>
+      <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+      <div class="pswp__ui pswp__ui--hidden">
+          <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+          <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+          <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      </div>
+    </div>
+  </div>
+
+
+<!--begin-boost-pfs-js-->
+  {% render 'boost-pfs' %}
+<!--end-boost-pfs-js-->
+
+{%- comment -%} #732282779 back in stock script{%- endcomment -%}
+<script src="https://a.klaviyo.com/media/js/onsite/onsite.js" ></script>
+<script >
+    var klaviyo = klaviyo || [];
+    klaviyo.init({
+      account: "WLYaYY",
+      list: 'Y7x9WG',
+      platform: "shopify"
+    });
+    klaviyo.enable("backinstock",{ 
+    trigger: {
+      product_page_text: "Notify me when my size is in stock!",
+      product_page_class: "klaviyo-bis-trigger",
+      product_page_text_align: "left",
+      product_page_margin: "0px",
+      alternate_anchor: "klaviyo-bis-trigger",
+      replace_anchor: true
+    },
+    modal: {
+     headline: "{product_name}",
+     body_content: "Register to receive a notification when this item comes back in stock.",
+     email_field_label: "Email",
+     button_label: "Notify me when available",
+     subscription_success_label: "You're in! We'll let you know when it's back.",
+     footer_content: '',
+     additional_styles: "@import url('https://fonts.googleapis.com/css?family=Roboto');h3.modal-title{font-size:1.4rem}#completed_message{line-height: 36px}",
+     drop_background_color: "#000",
+     background_color: "#fff",
+     text_color: "#222",
+     button_text_color: "#fff",
+     button_background_color: "#000",
+     close_button_color: "#ccc",
+     error_background_color: "#fcd6d7",
+     error_text_color: "#C72E2F",
+     success_background_color: "#f3f7f1",
+     success_text_color: "#000"
+    }
+  });
+  </script>
+    <!--Gorgias Chat Widget Start--><script id="gorgias-chat-widget-install">!function(_){_.GORGIAS_CHAT_APP_ID="10701",_.GORGIAS_CHAT_BASE_URL="us-east1-898b.production.gorgias.chat",_.GORGIAS_API_BASE_URL="config.gorgias.chat";var e=new XMLHttpRequest;e.open("GET","https://config.gorgias.chat/applications/10701",!0),e.onload=function(t){if(4===e.readyState)if(200===e.status){var n=JSON.parse(e.responseText);if(!n.application||!n.bundleVersion)throw new Error("Missing fields in the response body - https://config.gorgias.chat/applications/10701");if(_.GORGIAS_CHAT_APP=n.application,_.GORGIAS_CHAT_BUNDLE_VERSION=n.bundleVersion,n&&n.texts&&(_.GORGIAS_CHAT_TEXTS=n.texts),n&&n.sspTexts&&(_.GORGIAS_CHAT_SELF_SERVICE_PORTAL_TEXTS=n.sspTexts),!document.getElementById("gorgias-chat-container")){var o=document.createElement("div");o.id="gorgias-chat-container",document.body.appendChild(o);var r=document.createElement("script");r.setAttribute("defer",!0),r.src="https://client-builds.production.gorgias.chat/{bundleVersion}/static/js/main.js".replace("{bundleVersion}",n.bundleVersion),document.body.appendChild(r)}}else console.error("Failed request GET - https://config.gorgias.chat/applications/10701")},e.onerror=function(_){console.error(_)},e.send()}(window||{});</script><script id="gorgias-chat-shopify-install">!function(_){_.SHOPIFY_PERMANENT_DOMAIN="{{shop.permanent_domain}}",_.SHOPIFY_CUSTOMER_ID="{{customer.id}}",_.SHOPIFY_CUSTOMER_EMAIL="{{customer.email}}"}(window||{});
+    </script>
+    <!--Gorgias Chat Widget End-->
+  </body>
+  
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TPPMGF9"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  
+  <!--Trade Desk All Pages Pixel-->
+  <script src="https://js.adsrvr.org/up_loader.1.1.0.js" type="text/javascript"></script>
+  <script type="text/javascript">
+   ttd_dom_ready( function() {
+   if (typeof TTDUniversalPixelApi === 'function') {
+       var universalPixelApi = new TTDUniversalPixelApi();
+       universalPixelApi.init("i4ywu56", ["ahmg7c7"], "https://insight.adsrvr.org/track/up");
+   }
+   });
+   </script>
+
+   <!--FoxTag All Pages Pixel--> 
+   <script src='https://fxctag.com/src/library.js'></script>
+   <script>
+   foxtag = new foxID();
+   foxtag.setAdvertiserID('1048');
+   foxtag.send('pageview');
+   </script>
+</html>

@@ -1,0 +1,162 @@
+{% assign call_to_action = 'products.product.add_to_cart' | t %}
+
+{% unless current_variant.available %}
+  {% assign call_to_action = 'products.product.sold_out' | t %}
+{% endunless %}
+
+<form action="{{ routes.cart_url }}/add" method="post" data-product-form='{ "money_format": {{ shop.money_format | json }}, "enable_history": true, "sold_out": {{ "products.product.sold_out" | t | json }}, "unavailable": {{ "products.product.unavailable" | t | json }}, "button": {{ 'products.product.add_to_cart' | t | json }} }'>
+  <script class="product-json" type="application/json">
+    {{ product | json }}
+  </script>
+
+  <p id="product-price">
+    <span class="product-price" itemprop="price">
+      {{ current_variant.price | money }}
+    </span>
+
+    <span class="was">
+      {% unless current_variant.compare_at_price > current_variant.price %}
+        {{ current_variant.compare_at_price | money }}
+      {% endunless %}
+    </span>
+  </p><div class="clear"></div>
+
+  {% if product.options.size > 1 %}
+    <div class="select">
+      <select id="product-select-{{ product.id }}" name='id'>
+        {% for variant in product.variants %}
+          <option value="{{ variant.id }}" {% if variant == current_variant %}selected="selected"{% endif %}>
+            {{ variant.title }} - {{ variant.price | money }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {% for option in product.options_with_values %}
+      {% render "swatch", option: option, current_variant: current_variant %}
+    {% endfor %}
+  {% elsif product.options.size == 1 and product.variants.size > 1 %}
+    <div class="select">
+      <label>{{ product.options[0] }}</label>
+      <select id="product-select-{{ product.id }}" name='id'>
+        {% for variant in product.variants %}
+          <option data-sku="{{ variant.sku }}" value="{{ variant.id }}" {% if variant == current_variant %}selected="selected"{% endif %}>
+            {{ variant.title }} - {{ variant.price | money }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    {% for option in product.options_with_values %}
+      {% render 'swatch', option: option, current_variant: current_variant %}
+    {% endfor %}
+  {% else %}
+    <div class="what-is-it">
+      {% if product.options.first != 'Title' %}
+        <label>{{ product.options.first }}:</label>
+        {% for variant in product.variants %}
+          <span class="it-is">{{ variant.option1 | escape }}</span>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="product-variants"></div><!-- product variants -->
+    <input  type="hidden" id="{{ variant.id }}" name="id" data-sku="{{ variant.sku }}" value="{{ product.variants[0].id }}" />
+  {% endif %}
+
+  {% if section.settings.show_quantity_selector %}
+    <h5>{{ 'products.product.quantity' | t }}</h5>
+
+    <a class="downer quantity-control-down">
+      <i class="fa fa-minus"></i>
+    </a>
+    <input min="1" type="text" name="quantity" class="quantity" value="1" />
+    <a class="up quantity-control-up">
+      <i class="fa fa-plus"></i>
+    </a>
+  {% endif %}
+
+  <div class="product-add clearfix">
+    <input type="submit" name="button" class="add clearfix" value="{{ call_to_action }}" {% unless current_variant.available %}disabled{% endunless %} />
+  </div>
+
+  {% if section.settings.show_social_share %}
+    <div id="soc">
+      {% render 'social' with product %}
+    </div>
+  {% endif %}
+
+{%- if section.settings.show_product_content -%}
+  {%- if section.settings.use_accordion -%}
+    {% assign list_style = 'vantage-accordion' %}
+  {%- else -%}
+    {% assign list_style = 'no-accordion' %}
+  {%- endif -%}
+
+  <ul class="product-details {{ list_style }}">
+
+    <li>
+      <a href="" class="product-accordion-toggle">
+        <h4>{{ 'products.product.product_description' | t }}</h4>
+      </a>
+      <ul class="product-accordion-content default">
+        <div class="rte">
+          {{ product.description | split: '<!-- split -->' | first }}
+        </div>
+      </ul>
+    </li>
+
+    {% unless section.blocks.size == 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'page' %}
+          {%- assign acc_page = pages[block.settings.page] -%}
+          <li id="{{ block.id }}" class="{{ forloop.index }}-accordion">
+            <a class="product-accordion-toggle" href="#{{ block.id }}">
+              <h4>{{ acc_page.title }}</h4>
+            </a>
+            <ul class="product-accordion-content">
+              <li>
+                <div class="rte">
+                  {{ acc_page.content }}
+                </div>
+              </li>
+            </ul>
+          </li>
+
+        {% elsif block.type == 'reviews' %}
+          <li id="{{ block.id }}" class="{{ forloop.index }}-accordion">
+            <a class="product-accordion-toggle" href="#{{ block.id }}">
+              <h4>{{ block.settings.product_review_title }}</h4>
+            </a>
+            <ul class="product-accordion-content">
+              <li>
+                <div id="shopify-product-reviews" data-id="{{product.id}}">
+                  {{ product.metafields.spr.reviews }}
+                </div>
+              </li>
+            </ul>
+          </li>
+        {% endif %}
+      {% endfor %}
+    {% endunless %}
+
+    {% if section.settings.show_product_type or section.settings.show_product_vendor or section.settings.show_product_collection %}
+      <li>
+        <a href="" class="product-accordion-toggle">
+          <h4>{{ 'products.product.product_details' | t }}</h4>
+        </a>
+        <ul class="product-accordion-content view-more">
+          {% if section.settings.show_product_type %}
+            <div>{{ 'products.product.product_type' | t }}: {{ product.type | link_to_type }}</div>
+          {% endif %}
+          {% if section.settings.show_product_vendor %}
+            <div>{{ 'products.product.brand' | t }}: {{ product.vendor | link_to_vendor }}</div>
+          {% endif %}
+          {% if section.settings.show_product_collection and collection %}
+            <div>{{ 'products.product.collection' | t }} {% capture url %}/collections/{{ collection.handle }}{% endcapture %}{{ collection.title | link_to: url }}</div>
+          {% endif %}
+        </ul>
+      </li>
+    {% endif %}
+  </ul>
+{%- endif -%}
+
+</form>

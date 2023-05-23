@@ -1,0 +1,132 @@
+<h2 class="section-title desktop-12 tablet-6 mobile-3" style="margin-top:60px;">
+  {{ section.settings.video-heading }}
+</h2>
+<div class="containerX" style="margin-top:40px">
+ 
+     <video width="100%" controls poster="https://cdn.shopify.com/s/files/1/0567/9503/7849/files/thumbnail_for_mobile.jpg?v=1678077822">
+       <source src="{{ section.settings.video-url-desktop }}" type="video/mp4" />
+      </video>
+    <div class="overlay">
+        <p>{{ section.settings.video-text1 }}</p>
+        <p>{{ section.settings.video-text2 }}</p>
+        <p>{{ section.settings.video-text3 }}</p>
+    </div>
+     
+</div>
+<div class="containerY" style="margin-top:-30px">
+ 
+     <video width="100%" controls poster="https://cdn.shopify.com/s/files/1/0567/9503/7849/files/thumbnail_for_desktop.jpg?v=1678077808">
+       <source src="{{ section.settings.video-url-mobile }}" type="video/mp4" />
+      </video>
+    <div class="overlay">
+        <p>{{ section.settings.video-text1 }}</p>
+        <p>{{ section.settings.video-text2 }}</p>
+        <p>{{ section.settings.video-text3 }}</p>
+    </div>
+
+</div>
+
+
+<style>
+.containerX { position:relative; }
+.containerX video {
+    position:relative;
+    z-index:0;
+}
+
+.containerY { position:relative; }
+.containerY video {
+    position:relative;
+    z-index:0;
+    height:100%;
+    padding:30px;
+}
+.overlay {
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:1;
+}
+
+  @media only screen and (max-width: 749px) {
+   .containerY{
+      display:none;
+    }
+   .containerX{
+      display:block;
+    }
+}
+
+@media only screen and (min-width: 750px) {
+   .containerY{
+      display:block;
+    }
+   .containerX{
+      display:none;
+    }
+}
+</style>
+
+{% schema %}
+{
+  "name": "New Video Section",
+  "settings": [ 
+     {
+      "id": "video-heading",
+      "type": "text",
+      "label": "Heading"
+    },
+     {
+      "id": "video-poster-desktop",
+      "type": "image_picker",
+      "label": "Desktop thumbnail image"
+    },
+    {
+      "id": "video-url-desktop",
+      "type": "text",
+      "label": "Desktop Video"
+    },
+    {
+      "id": "video-poster-mobile",
+      "type": "image_picker",
+      "label": "Mobile thumbnail image"
+    },
+     {
+      "id": "video-url-mobile",
+      "type": "text",
+      "label": "Mobile Video"
+    },
+    {
+      "id": "video-text1",
+      "type": "text",
+      "label": "Overlay Text 1",
+      "default": "BALANCE"
+    },
+    {
+      "id": "video-text2",
+      "type": "text",
+      "label": "Overlay Text 2",
+      "default": "~RELEASE"
+    },
+    {
+      "id": "video-text3",
+      "type": "text",
+      "label": "Overlay Text 3",
+      "default": "RESTORE"
+    }
+
+  ],
+  "presets": [
+    {
+      "name": "New Video Section",
+      "category": "Video"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

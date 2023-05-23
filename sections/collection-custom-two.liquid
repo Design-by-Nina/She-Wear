@@ -1,0 +1,252 @@
+<div class="collection-template" data-section-id="{{ section.id }}" data-section-type="collection-section">
+  {% render 'custom-collection-blocks' %}
+</div>
+{% schema %}
+  {
+    "name": "Custom Collection Two",
+	  "max_blocks":12,
+    "blocks":[
+      {
+       "type": "image_text_overlay",
+       "name": "Image with Text Overlay",
+       "settings": [
+           {
+             "type": "checkbox",
+             "id": "io_full_width",
+             "label": "Enable full width",
+             "default": true
+           },
+           {
+             "type": "checkbox",
+             "id": "io_no_bottom_margin",
+             "label": "No space after section",
+             "default": false
+           },
+           {
+             "type": "image_picker",
+             "id": "io_image",
+             "label": "Image"
+           },
+           {
+             "type": "range",
+             "id": "io_image_height",
+             "min": 100,
+             "max": 600,
+             "step": 100,
+             "unit": "px",
+             "label": "Image height",
+             "default": 400
+           },
+           {
+             "type": "url",
+             "id": "io_link",
+             "label": "Link",
+             "info": "Optional"
+           },
+           {
+             "type": "text",
+             "id": "io_heading",
+             "label": "Heading",
+             "default": "Image with Text Overlay"
+           },
+           {
+             "type": "range",
+             "id": "io_heading_text_size",
+             "min": 12,
+             "max": 36,
+             "step": 1,
+             "unit": "px",
+             "label": "Heading size",
+             "default": 28
+           },
+           {
+             "type": "color",
+             "id": "io_heading_text_color",
+             "label": "Heading",
+             "default": "#000"
+           },
+           {
+             "type": "textarea",
+             "id": "io_hidden_text",
+             "label": "Text",
+             "default": "Pair text with a large full width image to give focus to areas of your store.",
+             "info": "Shown on hover"
+           },
+           {
+             "type": "range",
+             "id": "io_hidden_text_size",
+             "min": 12,
+             "max": 36,
+             "step": 1,
+             "unit": "px",
+             "label": "Text size",
+             "default": 18
+           },
+           {
+             "type": "color",
+             "id": "io_hidden_text_color",
+             "label": "Text color",
+             "default": "#000"
+           }
+         ]
+      },
+      {
+       "type": "featured_collection",
+       "name": "Featured Collection",
+       "settings": [
+         {
+           "id": "fc_collection",
+           "type": "collection",
+           "label": "Collection"
+         },
+          {
+             "type": "color",
+             "id": "fc_collection_caption_color",
+             "label": "Collection caption color",
+             "default": "#000"
+          },
+         {
+           "type": "image_picker",
+           "id": "fc_image",
+           "label": "Collection Image",
+           "info": "If none selected it will default to the collection image or first available product image."
+         },
+         {
+           "type": "select",
+           "id": "fc_collection_image_position",
+           "label": "Collection image position",
+           "options": [
+              { "value": "left", "label": "Left"},
+              { "value": "right", "label": "Right"}
+           ]
+        },
+         {
+            "type": "color",
+            "id": "fc_product_info_color",
+            "label": "Product info color",
+            "default": "#000"
+         },
+         {
+           "type": "range",
+           "id": "fc_limit",
+           "min": 2,
+           "max": 12,
+           "step": 1,
+           "label": "Products shown",
+           "default": 3
+         },
+         {
+           "id": "fc_collection_border",
+           "type": "checkbox",
+           "label": "Show border below",
+           "default": true
+         }
+       ]
+      },
+      {
+       "type": "collection_list",
+       "name": "Collection List",
+       "settings": [
+         {
+           "type": "text",
+           "id": "cl_title",
+           "label": "Heading",
+           "default": "Collection list"
+         },
+         {
+           "type": "color",
+           "id": "cl_heading_color",
+           "label": "Heading",
+           "default": "#000"
+         },
+         {
+           "type": "range",
+           "id": "cl_collections_per_row",
+           "min": 2,
+           "max": 4,
+           "step": 1,
+           "label": "Collections per row",
+           "default": 3
+         },
+         {
+           "type": "header",
+           "content": "Choose Collections"
+         },
+         {
+           "label": "Collection 1",
+           "id": "cl_collection_1",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 2",
+           "id": "cl_collection_2",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 3",
+           "id": "cl_collection_3",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 4",
+           "id": "cl_collection_4",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 5",
+           "id": "cl_collection_5",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 6",
+           "id": "cl_collection_6",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 7",
+           "id": "cl_collection_7",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 8",
+           "id": "cl_collection_8",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 9",
+           "id": "cl_collection_9",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 10",
+           "id": "cl_collection_10",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 11",
+           "id": "cl_collection_11",
+           "type": "collection"
+         },
+         {
+           "label": "Collection 12",
+           "id": "cl_collection_12",
+           "type": "collection"
+         }
+       ]
+      }
+    ],
+    "default": {
+      "blocks": [
+        {
+          "type": "image_text_overlay"
+        },
+        {
+          "type": "featured_collection"
+        },
+        {
+          "type": "collection_list"
+        }
+      ]
+    }
+  }
+{% endschema %}

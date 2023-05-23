@@ -1,0 +1,168 @@
+<div class="collection-list-template" data-section-id="{{ section.id }}" data-section-type="collection-list-section">
+
+  {% if section.settings.image != blank %}
+    <div class="collection-banner">
+      <div class="background-image lazyload"
+      data-bgset="{% render 'bgset', image: section.settings.image %}"
+      data-sizes="auto"></div>
+      <noscript>
+        <div class="background-image" style="background-image: url({{ section.settings.image | img_url: '1024x' }});"></div>
+      </noscript>
+    </div>
+  {% endif %}
+
+  <div id="content" class="row">
+
+    {% render 'breadcrumb' %}
+
+    <div id="collection-page">
+      <div class="collection-description desktop-12 tablet-6 mobile-3">
+        <h1>{{ 'collections.general.all_collections' | t }}</h1>
+        {% if section.settings.text != blank %}
+      	   <div class="rte">
+             {{ section.settings.text }}
+           </div>
+        {% endif %}
+      </div>
+
+      {% case section.settings.collections_per_row %}
+        {% when 4 %}
+        	{%- assign col_per_row = 'desktop-3 tablet-2' -%}
+        {% when 3 %}
+        	{%- assign col_per_row = 'desktop-4 tablet-2' -%}
+        {% when 2 %}
+        	{%- assign col_per_row = 'desktop-6 tablet-3' -%}
+      {% endcase %}
+
+      {% if section.blocks.size == 0 %}
+        {% paginate collections by 48 %}
+
+        {% if collections.size > 0 %}
+          <div class="product-loop">
+            {% for collection in collections %}
+              {% render 'collection-grid-item', collection: collection, col_per_row: col_per_row %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>{{ 'collections.general.no_matches' | t }}</p>
+        {% endif %}
+
+          <div class="clear"></div>
+          {% render 'pagination', paginate: paginate %}
+
+        {% endpaginate %}
+      {% else %}
+        {% for block in section.blocks %}
+          {%- assign collection = collections[block.settings.collection] -%}
+            {% if collection != blank %}
+              {% render 'collection-grid-item', collection: collection, col_per_row: col_per_row %}
+            {% else %}
+              {% render 'onboard-collection', col_per_row: col_per_row %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.product-loop {
+  width: 100%;
+}
+.collection-banner .background-image {
+  background-size: cover;
+  background-position: center center;
+  height: {{ section.settings.image_height }}px;
+}
+
+  @media screen and ( min-width: 981px ) {
+     .collection-index.desktop-4:nth-child(4n+1) {
+         clear: left;
+     }
+
+     .collection-index.desktop-3:nth-child(5n+1) {
+         clear: left;
+     }
+
+     .collection-index.desktop-6:nth-child(2n+1) {
+         clear: left;
+     }
+  }
+  @media screen and ( min-width: 741px ) and ( max-width: 980px ) {
+     .collection-index.tablet-2:nth-child(4n+1) {
+         clear: left;
+     }
+     .collection-index.tablet-3:nth-child(3n+1) {
+        clear: left;
+    }
+  }
+  @media screen and ( max-width: 740px ) {
+     .collection-index.mobile-half:nth-child(2n+1) {
+       clear: left;
+     }
+  }
+  @supports (display: flex) {
+    .collection-list-template #collection-page {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+  }
+
+</style>
+
+{% schema %}
+{
+  "name": "Collections",
+  "max_blocks": 50,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 100,
+      "max": 600,
+      "step": 100,
+      "unit": "px",
+      "label": "Image height",
+      "default": 400
+    },
+  	{
+      "id": "text",
+      "type": "richtext",
+      "label": "Text",
+      "default": "<p>Add some descriptive text to your all collections page.</p>"
+   	},
+    {
+      "type": "range",
+      "id": "collections_per_row",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Collections per row",
+      "default": 3
+    },
+    {
+      "type": "paragraph",
+      "content": "By default all collections will show in alphabetical order. To over-ride this add collections in the content settings above and reorganize to a preferred order."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "featured_collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "label": "Collection",
+          "id": "collection",
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

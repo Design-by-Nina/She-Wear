@@ -1,0 +1,65 @@
+<section data-section-id="{{ section.id }}" data-section-type="notification-bar">
+
+  {% capture slideshow_config %}{
+        "wrapAround":true,
+        "cellAlign": "center",
+        "dragThreshold":"15",
+        "pauseAutoPlayOnHover":false,
+        "prevNextButtons": false,
+        "pageDots": false,
+        "autoPlay": 4000,
+        "watchCSS": true,
+        "fullscreen": true
+      }
+  {% endcapture %}
+  <div class="gridlock row">
+    <div class="notification-section js-notification-slideshow" data-notification-flickity='{{ slideshow_config }}'>
+      {% for block in section.blocks %}
+        {% if block.type != 'notification_box' %}
+          {% continue %}
+        {% endif %}
+        <div class="notification-block slide--{{ block.id }}" style="background-color: {{ block.settings.box_color}};" data-block-id="{{ block.id }}">
+          <a class="notification_link" href="{{ block.settings.url_link }}">
+            {{ block.settings.notification_text }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+</section>
+
+{% schema %}
+{
+"name": "Notification bar",
+"max_blocks": 3,
+"blocks": [
+  {
+    "type": "notification_box",
+    "name": "Notification Box",
+    "settings": [
+      {
+        "type": "text",
+        "id": "notification_text",
+        "label": "Heading"
+      },
+      {
+        "type": "url",
+        "id": "url_link",
+        "label": "Url for page"
+      },
+      {
+        "type": "color",
+        "id": "box_color",
+        "label": "Background colour",
+        "default": "#e4e4e3"
+      }
+    ]
+  }
+],
+"settings":
+	[
+  ]
+}
+{% endschema %}

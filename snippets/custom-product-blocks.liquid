@@ -1,0 +1,795 @@
+{% for block in section.blocks %}
+<div class="product-sections{% if forloop.first %} first__block{% endif %}" {{ block.shopify_attributes }}>
+  {% case block.type %}
+  {% when 'product_form' %}
+    <section id="section-{{ block.id }}" class="section-product-form row{% if block.settings.pf_no_bottom_margin %} nbm{% endif %} {{ block.id }}">
+    {% render 'product-json', product: product %}
+
+    {% assign gallery_style = 'data-gallery-thumbnails' %}
+
+    {% assign thumbnail_position = 'left' %}
+    {% assign click_to_enlarge = true %}
+    {% assign enable_video_looping = false %}
+    {% capture product_gallery_config %}{
+      "thumbPosition": "left",
+      "thumbsShown": 3,
+      "clickToEnlarge": true,
+      "enableVideoLooping": false,
+      "mainSlider": {% if product.media.size <= 1 %}false{% else %}true{% endif %},
+      "thumbSlider": {% if product.media.size >= 4 %}true{% else %}false{% endif %},
+      "productId": {{ product.id | json }},
+      "isQuick": false
+   }{% endcapture %}
+
+    {% capture 'layout_images' %}
+    <div id="product-photos" {{ gallery_style }} class="product-photos carousel-container js-product-gallery" data-product-single-media-group data-gallery-config='{{ product_gallery_config }}'>
+        {% if product.featured_media %}
+          {% render 'product-image-gallery',
+            product: product,
+            gallery_style: gallery_style,
+            thumbnail_position: thumbnail_position,
+            click_to_enlarge: click_to_enlarge,
+            enable_video_looping: enable_video_looping
+            %}
+        {% else %}
+          {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+          {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+        {% endif %}
+      </div>
+    {% endcapture %}
+
+    <div class="product-top">
+      <div class="desktop-6 tablet-3 mobile-3">
+        {{ layout_images }}
+      </div>
+
+      <div class="product-bottom desktop-4 tablet-3 mobile-3">
+          {% capture product_form_config %}{ "money_format": {{ shop.money_format | json }}, "enable_history": true, "sold_out": {{ "products.product.sold_out" | t | json }}, "unavailable": {{ "products.product.unavailable" | t | json }}, "button": {{ 'products.product.add_to_cart' | t | json }} }{% endcapture %}
+          {% render 'product-form',
+           product: product,
+           current_variant: current_variant
+           type: block,
+           product_form_config: product_form_config %}
+          <div class="clear"></div>
+
+          {% if block.settings.pf_show_specs %}
+          <div class="product-specs" data-product-details>
+            <ul class="product-specs-inner">
+              <h5>{{ block.settings.pf_heading }}</h5>
+              {% assign current_variant =  product.selected_or_first_available_variant %}
+              <li class="detail-item"><strong>{{ 'products.product.variant' | t }}:</strong> <span class="variant_selected">{{ current_variant.title }}</span></li>
+              {% if block.settings.pf_show_sku %}
+              <li class="detail-item"><strong>{{ 'customer.order.details.sku' | t }}:</strong> <span class="variant_sku">{{ current_variant.sku }}</span></li>
+              {% endif %}
+              {% if block.settings.pf_show_product_inventory %}
+              <li class="detail-item"><strong>{{ 'products.product.inventory' | t }}:</strong> <span class="variant_inventory">{{ current_variant.inventory_quantity }}</span></li>
+              {% endif %}
+              {% if block.settings.pf_show_product_weight %}
+              <li class="detail-item"><strong>{{ 'products.product.weight' | t }}:</strong> <span class="variant_weight">{{ current_variant.weight | weight_with_unit: current_variant.weight_unit }}</span></li>
+              {% endif %}
+              {% if block.settings.pf_show_product_type %}
+              <li class="detail-item"><strong>{{ 'products.product.product_type' | t }}:</strong> {{ product.type | link_to_type }}</li>
+              {% endif %}
+              {% if block.settings.pf_show_product_vendor %}
+              <li class="detail-item"><strong>{{ 'products.product.brand' | t }}:</strong> {{ product.vendor | link_to_vendor }}</li>
+              {% endif %}
+              {% if block.settings.pf_show_product_collection %}
+              <li class="detail-item"><strong>{{ 'products.product.collection' | t }}:</strong> {% capture url %}/collections/{{ collection.handle }}{% endcapture %}{{ collection.title | link_to: url }}</li>
+              {% endif %}
+            </ul>
+          </div>
+          {% endif %}
+      </div>
+
+    </div>
+    <style>
+      {% if block.settings.pf_align == 'center' %}
+      .product-bottom, .product-specs-inner {
+        text-align: center;
+      }
+      .product-page .price {
+        align-items: center !important;
+      }
+      .add, .shopify-payment-button,
+	      .shopify-payment-button__button,
+      .product-page .quantity-selector {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      {% elsif block.settings.pf_align == 'left' %}
+      .product-bottom, .product-specs-inner {
+        text-align: left;
+      }
+      .add,
+      .shopify-payment-button {
+        margin-right: auto;
+      }
+      {% elsif block.settings.pf_align == 'right' %}
+      .product-bottom, .product-specs-inner {
+        text-align: right;
+      }
+      .product-page .price {
+        align-items: flex-end !important;
+      }
+      .quantity-selector,
+        input#addToCart,
+        .shopify-payment-button__button {
+            margin-left: auto;
+        }
+      .add,
+      .shopify-payment-button.
+      .product-page .quantity-selector {
+        margin-left: auto;
+      }
+      {% endif %}
+
+
+      .product-specs,
+      .product-specs h5,
+      .product-specs a {
+        background-color: {{ block.settings.pf_background_color}};
+        color: {{ block.settings.pf_text_color}};
+      }
+      .product-specs a {
+        text-decoration: underline;
+      }
+      .product-specs-inner {
+        list-style: none;
+        margin: 0;
+        padding: 30px;
+      }
+
+      .product-bottom {
+        padding-top: 40px;
+      }
+      @media screen and (max-width: 740px) {
+        .product-bottom, .product-specs-inner {
+          text-align: center !important;
+        }
+        .product-page .price {
+          align-items: center !important;
+        }
+        .add, .shopify-payment-button,
+  	      .shopify-payment-button__button,
+        .product-page .quantity-selector {
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .product-modal {
+          width: auto !important;
+        }
+        .product-bottom {
+          padding-top: 0;
+        }
+      }
+
+    </style>
+  </section>
+  {% when 'product_description' %}
+    <section id="section-{{ block.id }}" class="section-product-description{% if block.settings.pd_no_bottom_margin %} nbm{% endif %} {{ block.id }}">
+    <div class="product-description-wrapper">
+      <div class="product-description-inner">
+        {{ product.description }}
+      </div>
+    </div>
+
+    <style>
+      .product-description-wrapper {
+        background-color: {{ block.settings.pd_background_color }};
+      }
+      .product-description-inner {
+        max-width: {{ block.settings.pd_max_width }}px;
+        margin: 0 auto;
+        padding: 50px 30px;
+      }
+      .section-product-description p,
+      .section-product-description a,
+      .section-product-description li {
+        font-size: {{ block.settings.pd_text_size }}px;
+        line-height: calc({{ block.settings.pd_text_size }}px / 0.75);
+        color: {{ block.settings.pd_text_color }} !important;
+      }
+      .section-product-description h2.section-title {
+        color: {{ block.settings.pd_text_color }} !important;
+        margin-top: 0;
+      }
+      .section-product-description .section-title:after {
+        border-color: {{ block.settings.pd_text_color }};
+      }
+      .section-product-description a {
+        opacity: 0.7;
+      }
+      .section-product-description a:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
+    </style>
+  </section>
+  {% when 'product_size_chart' %}
+    <section id="section-{{ block.id }}" class="section-product-size-chart row{% if block.settings.psc_no_bottom_margin %} nbm{% endif %} {{ block.id }}">
+    <h2 class="section-title">{{ block.settings.psc_heading }}</h2>
+    <div class="product-size-chart-wrapper">
+      {% for image in product.images %}
+      {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+
+      {% if image.alt contains 'size-chart' %}
+      {% assign image_name =  image.alt | remove: "size-chart-" %}
+      {% assign image_name =  image_name | capitalize %}
+      <a class="product-size-chart" href="{{ image | img_url: '800x' }}">
+        <div class="product-size-chart-caption">
+          <h2><i class="fas fa-search-plus"></i> {{ image_name }}</h2>
+        </div>
+        <img class="lazyload lazyload-fade"
+             data-src="{{ img_url }}"
+             data-sizes="auto"
+             data-zoom-src="{{ img_url }}"
+             alt="{{ image.alt | escape }}">
+        <noscript>
+          <img
+               src="{{ image | product_img_url: '800x' }}"
+               alt="{{ image.alt | escape }}">
+        </noscript>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <style media="screen">
+      .product-size-chart-wrapper {
+        text-align: center;
+      }
+      .product-size-chart-wrapper h2 {
+        color: white;
+      }
+      .product-size-chart-caption {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+      }
+      .product-size-chart {
+        position: relative;
+        display: inline-block;
+        width: 300px;
+        margin: 0 10px 5px 10px;
+      }
+      .product-size-chart::before {
+        content: "";
+        display: block;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.50);
+      }
+      .product-size-chart:hover::before {
+        background-color: rgba(0, 0, 0, 0.30);
+      }
+      .product-size-chart:hover .product-size-chart-caption {
+        -webkit-transform: translate3d(-50%, -22%, 0);
+        transform: translate3d(-50%, -22%, 0);
+        transition: transform 0.35s;
+      }
+    </style>
+  </section>
+  {% when 'product_reviews' %}
+    <section id="section-{{ block.id }}" class="section-product-reviews row{% if block.settings.prr_no_bottom_margin %} nbm{% endif %} {{ block.id }}">
+    {% if block.settings.prr_product_review_title %}
+      <h2 class="section-title">{{ block.settings.prr_product_review_title }}</h2>
+    {% endif %}
+    <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+    <style>
+      #shopify-product-reviews {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+    </style>
+  </section>
+  {% when 'featured_article' %}
+    <section id="section-{{ block.id }}" class="section-feature-article row {{ block.id }}">
+    {% assign article = articles[block.settings.fa_featured_article] %}
+    {% if article %}
+    <div class="article-section-title desktop-12">
+      <h2 class="section-title">{{ block.settings.fa_heading }}</h2>
+    </div>
+    <div class="article-image desktop-4 desktop-push-2 tablet-3 mobile-3 rte excerpt">
+      {% if article.image %}
+      <a href="{{ article.url }}">
+        {% render 'basic-responsive-image', type: article.image, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+        <noscript>
+          <img src="{{ article.image | img_url: '800x' }}" alt="{{ article.image.alt }}">
+        </noscript>
+      </a>
+      {% endif %}
+      {% if article.excerpt != blank %}
+      {{ article.excerpt }}
+      {% endif %}
+    </div>
+    <div class="article-description desktop-3 tablet-3 mobile-3">
+      <div class="article-description-inner">
+        <span class="post-title"><a href="{{ article.url }}">{{ article.title }}</a></span>
+        {% if block.settings.fa_show_date %}
+        {% assign published_at = article.published_at | date: format: 'month_date_year' %}
+        <p class="posted">{{ 'now' | date: "%a, %b %d, %y" }}</p>
+        {% endif %}
+        <div class="article-headline">
+          <p class="rte">{{ article.content | strip_html | truncatewords: 30 }}</p>
+          {% if blog.comments_enabled? %}
+          <small><a href="{{article.url}}#comments">{{ article.comments_count }} {{ 'blogs.article.comments' | t }}</a>
+            {% endif %}
+            <a href="{{ article.url }}"><strong>{{ 'blogs.article.read_more' | t }}</strong></a>
+          </small>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <style>
+      .section-feature-article {
+        padding: 0 25px;
+        text-align: {{ block.settings.fa_text_align }};
+      }
+      .section-feature-article .section-title {
+        text-align: center;
+        color: {{ block.settings.fa_heading_color }};
+      }
+      .section-feature-article .article-description {
+        position: relative;
+      }
+      .section-feature-article .article-index {
+        text-align: {{ block.settings.fa_text_align }};
+      }
+      @media screen and (min-width: 741px) and (max-width: 900px) {
+        .section-feature-article .article-description-inner {
+          padding-top: 10%;
+        }
+      }
+      @media screen and (max-width: 901px) {
+        .section-feature-article .article-description-inner {
+          padding-top: 20%;
+        }
+      }
+    </style>
+  </section>
+  {% when 'image_text_overlay' %}
+    <section id="section-{{ block.id }}" class="image__text-overlay block-{{ block.id }}{% if block.settings.io_no_bottom_margin %} nbm{% endif %} image__container" data-section-id="{{ block.id }}" data-product-image-carousel>
+      {% if block.settings.io_full_width %}<div class="gridlock-fluid"><div class="row">{% endif %}
+      <div class="row ">
+        {% if block.settings.io_link != blank %}<a class="section-promo-link" href="{{ block.settings.io_link }}">{% endif %}
+        <div class="section-promo centered contained desktop-12 tablet-6 mobile-3">
+          {% if block.settings.io_image %}
+          <div class="background-image lazyload"
+               data-bgset="{% render 'bgset', image: block.settings.io_image %}"
+               data-sizes="auto"></div>
+          <noscript>
+            <div class="background-image" style="background-image: url({{ block.settings.io_image | img_url: '1024x' }});"></div>
+          </noscript>
+          {% else %}
+          <div class="onboard">
+            {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+          {% endif %}
+          <div class="caption centered">
+            {% if block.settings.io_heading != blank %}
+            <h3>{{ block.settings.io_heading }}</h3>
+            {% endif %}
+            {% if block.settings.io_hidden_text != blank %}
+            <p>{{ block.settings.io_hidden_text }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% if block.settings.io_link != blank %}</a>{% endif %}
+      </div>
+      {% if block.settings.io_full_width %}</div></div>{% endif %}
+
+      <div class="clear"></div>
+      <style>
+        .image__text-overlay.block-{{ block.id }} .background-image {
+          height: {{ block.settings.io_image_height }}px;
+        }
+        .image__text-overlay.block-{{ block.id }} .caption h3 {
+          color: {{ block.settings.io_heading_text_color }};
+          font-size: {{ block.settings.io_heading_text_size }}px;
+        }
+        .image__text-overlay.block-{{ block.id }} .caption p {
+          color: {{ block.settings.io_hidden_text_color }};
+          font-size: {{ block.settings.io_hidden_text_size }}px;
+        }
+        @media screen and ( max-width: 740px ) {
+          .image__text-overlay.block-{{ block.id }} .caption h3 {
+            font-size: 18px;
+          }
+          .image__text-overlay.block-{{ block.id }} .caption p {
+            font-size: 14px;
+          }
+        }
+      </style>
+      {% if block.settings.io_scroll_to_add %}
+        <script type="text/javascript">
+          (function Scrolling() {
+            document.addEventListener("DOMContentLoaded", function(){
+              var context = document.getElementById('section-{{ block.id }}');
+              var elements = context.querySelectorAll(".section-promo");
+
+              if ( !elements ) return false;
+
+              elements.forEach(function (element) {
+                element.addEventListener('click', scrollTo);
+                function scrollTo() {
+                  if (!document.querySelector(".section-product-form")) return false;
+                  var scrollPosition = document.querySelector(".section-product-form").offsetTop;
+
+                  window.scroll({
+                    top: scrollPosition,
+                    left: 0,
+                    behavior: 'smooth'
+                  });
+                }
+              });
+
+            });
+          })();
+        </script>
+      {% endif %}
+    </section>
+  {% when 'image_carousel_with_text' %}
+    <section id="section-{{ block.id }}" class="section-image-carousel-with-text-{{ block.id }} {% if block.settings.ic_no_bottom_margin %} nbm{% endif %}" data-block-id="{{ block.id }}" data-section-type="image-carousel">
+    {% if block.settings.ic_full_width %}<div class="gridlock-fluid"><div class="row">{% endif %}
+    {% case block.settings.ic_image_width %}
+    {% when '33%' %}
+    {% assign image_size = '700x' %}
+    {% assign image_width = 'desktop-4 tablet-2' %}
+    {% assign image_offset = 'desktop-8 tablet-4' %}
+    {% when '50%' %}
+    {% assign image_size = '1000x' %}
+    {% assign image_width = 'desktop-6 tablet-3' %}
+    {% assign image_offset = 'desktop-6 tablet-3' %}
+    {% when '66%' %}
+    {% assign image_size = '1400x' %}
+    {% assign image_width = 'desktop-8 tablet-4' %}
+    {% assign image_offset = 'desktop-4 tablet-2' %}
+    {% endcase %}
+    {%- assign is_carousel = true -%}
+    {% capture slideshow_config %}{
+      "wrapAround":true,
+      "cellAlign": "left",
+      "dragThreshold":"15",
+      "pauseAutoPlayOnHover":false,
+      "prevNextButtons":true,
+      "pageDots": false
+     }{% endcapture %}
+    {% capture image_layout %}
+      <div class="{{ image_width }} mobile-3 contained imageCarousel__withText--{% if is_carousel %}carousel flickity__section js-slideshow{% else %}container{% endif %}"{% if is_carousel %} data-flickity='{{ slideshow_config }}'{% endif %}>
+        {% for n in (1..3) %}
+        {% assign ic_image_link = "ic_image_link_" | append: n %}
+        {% assign ic_image_link = block.settings[ic_image_link] | default: false %}
+        {% assign ic_image = "ic_image_" | append: n %}
+        {% assign ic_image = block.settings[ic_image] | default: false %}
+        {% if forloop.first and ic_image == blank %}
+          <div class="onboard imageCarousel__withText--onboard">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {% endif %}
+        {% if ic_image != blank %}
+          <div class="imageCarousel__withText--image" data-slider-index="{{ forloop.index0 }}">
+            {% if ic_image_link %}<a href="{{ ic_image_link }}">{% endif %}
+            {% render 'basic-responsive-image' | type: ic_image %}
+            <noscript>
+              <img src="{{ ic_image | img_url: '800x' }}" alt="{{ ic_image.alt }}">
+            </noscript>
+            {% if ic_image_link %}</a>{% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endcapture %}
+    <div class="row">
+      <div class="imageCarousel__withText--wrapper {% if block.settings.ic_layout == 'right' %}mobile-reverse {% endif %}{% unless block.settings.ic_full_width %}desktop-12 tablet-6 {% endunless %}">
+        {% if block.settings.ic_layout == 'left' %}
+          {{ image_layout }}
+        {% endif %}
+        <div class="{{ image_offset }} mobile-3 contained imageCarousel__withText--caption{% if block.settings.ic_text_align == 'center' %} text-centered{% elsif block.settings.ic_text_align == 'right' %} text-right{% endif %}">
+          <div class="imageCarousel__withText--caption-content">
+            {% if block.settings.ic_title != blank %}
+            <h3>{{ block.settings.ic_title | escape }}</h3>
+            {% endif %}
+            {% if block.settings.ic_text != blank %}
+            <div class="rte">{{ block.settings.ic_text }}</div>
+            {% endif %}
+            {% if block.settings.ic_button != blank and block.settings.ic_link != blank %}
+            <a href="{{ block.settings.ic_link }}" class="button mt20">
+              {{ block.settings.ic_button | escape }}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% if block.settings.ic_layout == 'right' %}
+          {{ image_layout }}
+        {% endif %}
+      </div>
+    </div>
+    {% if block.settings.ic_full_width %}</div></div>{% endif %}
+  </section>
+  {% when 'text_columns_with_images' %}
+    <section id="section-{{ block.id }}" class="section-text-columns-with-images-{{ block.id }}{% if block.settings.txt_no_bottom_margin %} nbm{% endif %}" id="text-promo-{{ block.id }}" data-block-id="{{ block.id }}"}>
+    {% if block.settings.txt_title != blank %}
+    <h2 class="section-title desktop-12 tablet-6 mobile-3">
+      {{ block.settings.txt_title | escape }}
+    </h2>
+    {% endif %}
+    <div class="clear"></div>
+
+    <div class="grid-inline row" style="text-align: center;">
+      {% for n in (1..4) %}
+      {% assign column_link = "txt_link_" | append: n %}
+      {% assign column_link = block.settings[column_link] | default: false %}
+
+      {% assign column_image = "txt_image_" | append: n %}
+      {% assign column_image = block.settings[column_image] | default: false %}
+
+      {% assign column_heading = "txt_title_text_" | append: n %}
+      {% assign column_heading = block.settings[column_heading] | default: false %}
+
+      {% assign column_text = "txt_text_" | append: n %}
+      {% assign column_text = block.settings[column_text] | default: false %}
+
+      {% unless column_heading == blank %}
+      <div class="section-text-promo desktop-3 tablet-3 mobile-3 text-promo-{{ n }}">
+        {% if column_link %}<a href="{{ column_link }}">{% endif %}
+        {% if column_image %}
+        {% render 'basic-responsive-image' | type: column_image, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+        <noscript>
+          <img src="{{ column_image | img_url: '800x' }}" alt="{{ column_image.alt }}">
+        </noscript>
+        {% else %}
+        <div class="onboard">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+        {% endif %}
+        {% if column_link %}</a>{% endif %}
+        <div class="section-text-promo-content">
+          {% if column_heading %}
+          <h3>{{ column_heading | escape }}</h3>
+          {% endif %}
+          {% if column_text %}
+          <p>{{ column_text }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endunless %}
+
+      {% endfor %}
+    </div>
+    <div class="clear"></div>
+
+    <style>
+      #text-promo-{{ block.id }} .section-text-promo  {
+        text-align: {{ block.settings.txt_align_text }};
+        float: none;
+        display: inline-block;
+      }
+    </style>
+  </section>
+  {% when 'featured_video' %}
+    <section id="section-{{ block.id }}" class="section-featured-video-{{ block.id }}{% if block.settings.fv_no_bottom_margin %} nbm{% endif %}" data-block-id="{{ block.id }}">
+
+      {% if block.settings.fv_heading != blank %}
+      <div class="row">
+        <h2 class="section-title desktop-12 tablet-6 mobile-3">{{ block.settings.fv_heading | escape }}</h2>
+      </div>
+      {% endif %}
+
+      {% if block.settings.fv_display_wide == blank %}
+      <div class="row">
+        <div class="desktop-12 tablet-6 mobile-3">
+          {% endif %}
+
+          <div class="videoWrapper">
+            {% if block.settings.fv_video_url == blank %}
+            <iframe src="//www.youtube.com/embed/_9VUPq3SxOc?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+            {% else %}
+            {% if block.settings.fv_video_url.type == "youtube" %}
+            <iframe src="//www.youtube.com/embed/{{ block.settings.fv_video_url.id }}?rel=0&showinfo=0&vq=720" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+            {% endif %}
+            {% if block.settings.fv_video_url.type == "vimeo" %}
+            <iframe src="//player.vimeo.com/video/{{ block.settings.fv_video_url.id }}?byline=0&portrait=0&badge=0" width="850" height="480" frameborder="0" allowfullscreen></iframe>
+            {% endif %}
+            {% endif %}
+          </div>
+
+          {% if block.settings.fv_display_wide == blank %}
+        </div>
+      </div>
+      {% endif %}
+
+    </section>
+  {% when 'featured_collection' %}
+    <section id="section-{{ block.id }}" class="section-featured-collection-{{ block.id }}{% if block.settings.fc_no_bottom_margin %} nbm{% endif %}" data-block-id="{{ block.id }}" data-section-type="featured-collection">
+      {% assign collection = collections[block.settings.fc_collection] %}
+      {% assign prod_limit = block.settings.fc_limit %}
+
+      <article class="row">
+        {% if block.settings.fc_heading != blank %}
+        <h2 class="section-title desktop-12 tablet-6 mobile-3">
+          <a href="{{ collection.url }}">
+            {{ block.settings.fc_heading | escape }}
+          </a>
+        </h2>
+        {% endif %}
+
+        {% case block.settings.fc_grid %}
+        {% when 2 %}
+        {% assign grid_item_width = 'desktop-6 tablet-3' %}
+        {% when 3 %}
+        {% assign grid_item_width = 'desktop-4 tablet-2' %}
+        {% when 4 %}
+        {% assign grid_item_width = 'desktop-3 tablet-2' %}
+        {% endcase %}
+        {% assign product_limit = block.settings.fc_grid | times: block.settings.rows %}
+        <div class="product-loop">
+          {% for product in collection.products limit: prod_limit  %}
+          <div class="product-index {{ grid_item_width }} mobile-half" id="prod-{{ product.id }}" data-alpha="{{ product.title }}" data-price="{{ product.price }}">
+            {% render 'product-listing', product: product %}
+          </div>
+          {% endfor %}
+        </div>
+        {% if block.settings.fc_collection == blank %}
+        {% render 'onboard-product' %}
+        {% endif %}
+      </article>
+      <style>
+        section.section-featured-collection-{{ block.id }} {
+          background: {{ block.settings.fc_background_color }};
+        }
+        section.section-featured-collection-{{ block.id }} h2.section-title a {
+          color: {{ block.settings.fc_heading_color }} !important;
+        }
+        section.section-featured-collection-{{ block.id }} .section-title:after {
+          border-color: {{ block.settings.fc_heading_color }} !important;
+        }
+        section.section-featured-collection-{{ block.id }} .product-info,
+        section.section-featured-collection-{{ block.id }} .product-info a,
+        section.section-featured-collection-{{ block.id }} .product-info .price-item {
+          color: {{ block.settings.fc_product_info_color }} !important;
+        }
+        {% if template contains 'product.custom-' %}
+        .product-index:hover .product-modal {
+          display: none;
+        }
+        {% endif %}
+      </style>
+    </section>
+  {% when 'collection_list' %}
+    <section id="section-{{ block.id }}" class="section-collection-list-{{ block.id }}{% if block.settings.cl_no_bottom_margin %} nbm{% endif %}" data-block-id="{{ block.id }}" data-section-type="collection-list-section">
+    <article class="row">
+      {% if block.settings.cl_title != blank %}
+      <h2 class="section-title desktop-12 tablet-6 mobile-3">
+        {{ block.settings.cl_title | escape }}
+      </h2>
+      {% endif %}
+
+      <div class="collection-loop">
+
+        {% for n in (1..4) %}
+        {% case block.settings.cl_collections_per_row %}
+        {% when 4 %}
+        {% assign col_per_row = 'desktop-3 tablet-2' %}
+        {% when 3 %}
+        {% assign col_per_row = 'desktop-4 tablet-2' %}
+        {% when 2 %}
+        {% assign col_per_row = 'desktop-6 tablet-3' %}
+        {% endcase %}
+
+        {% assign cl_collection = "cl_collection_" | append: n %}
+        {% assign cl_collection = collections[block.settings[cl_collection]] | default: false %}
+
+        {% if cl_collection %}
+        <div class="collection-index {{ col_per_row }} mobile-half" data-alpha="{{ cl_collection.title }}">
+          <div class="collection-image">
+            <a href="{{ cl_collection.url }}" title="{{ cl_collection.title }}">
+              {% if cl_collection.image %}
+              {% render 'basic-responsive-image', type: cl_collection.image, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+              <noscript>
+                <img src="{{ cl_collection.image | img_url: '1024x' }}" alt="{{ cl_collection.alt | escape }}" class="collection__image">
+              </noscript>
+              {% else %}
+              {% render 'basic-responsive-image', type: cl_collection.products.first.featured_media, data_widths: '[180, 360, 540, 720, 900, 1080]' %}
+              <noscript>
+                <img src="{{ cl_collection.products.first.featured_media | img_url: '1024x' }}" alt="{{ cl_collection.products.first.featured_media.alt | escape }}" class="collection__image">
+              </noscript>
+              {% endif %}
+            </a>
+          </div>
+
+          <div class="product-info">
+            <a href="{{ cl_collection.url }}" title="{{ cl_collection.title }}">
+              <span class="product-title">{{ cl_collection.title }}</span>
+            </a>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+    </article>
+    <div class="clear"></div>
+
+    <style>
+      section.section-collection-list-{{ block.id }} {
+        padding: 20px 0;
+      }
+      section.section-collection-list-{{ block.id }} .collection-index .product-title {
+        color: {{ block.settings.cl_heading_color }} !important;
+      }
+      section.section-collection-list-{{ block.id }} {
+        background: {{ block.settings.cl_background_color }};
+      }
+      section.section-collection-list-{{ block.id }} h2,
+      section.section-collection-list-{{ block.id }} h2 a {
+        color: {{ block.settings.cl_heading_color }} !important;
+      }
+    </style>
+  </section>
+  {% when 'accordion' %}
+
+    {% assign unique_id = block.id | slice: 0, 7 %}
+
+    <section
+      id="section-{{ block.id }}"
+      class="section-accordion-{{ block.id }} {%- if block.settings.ac_no_bottom_margin -%}nbm{%- endif -%}"
+      data-block-id="{{ block.id }}">
+
+        {% if block.settings.ac_section_heading != blank %}
+          <div class="row">
+            <h2 class="section-title desktop-12 tablet-6 mobile-3">{{ block.settings.ac_section_heading | escape }}</h2>
+          </div>
+        {% endif %}
+
+        <div
+          class="js-accordion c-accordion c-accordion--vantage c-accordion--default c-accordion--{{ template | handleize }} c-accordion--{{ unique_id }} row"
+          id="c-accordion--{{ unique_id }}"
+          {% if block.settings.allow_multiple %}data-accordion-allow-multiple{% endif %}>
+           {% for n in (1..10) %}
+
+             {% assign accordion_content_class = 'c-accordion__panel--' %}
+             {% assign accordion_content_id = accordion_content_class | append: unique_id | append: '-' | append: n %}
+
+             {% assign heading = "ac_heading_" | append: n %}
+             {% assign heading = block.settings[heading] | default: false %}
+
+             {% assign content = "ac_content_" | append: n %}
+             {% assign content = block.settings[content] | default: false %}
+
+             {% if heading %}
+                <button
+                  class="js-accordion-header c-accordion__header"
+                  aria-expanded="false"
+                  aria-controls="{{ accordion_content_id }}"
+                  data-toggle="accordion">
+                  {{ heading }}
+                    <!-- <span class="dropdown-arrow">
+                      <i class="fa fa-plus"></i>
+                    </span> -->
+                    <div class="c-accordion__header-icons">
+                      {% render 'icon-minus' %}
+                      {% render 'icon-plus' %}
+                    </div>
+                </button>
+                 <div
+                  class="c-accordion__panel {{ accordion_content_id }} rte"
+                  id="{{ accordion_content_id }}"
+                  data-parent="#c-accordion--{{ unique_id }}">
+                  <div class="c-accordion__inner">
+                   {{ content }}
+                  </div>
+                 </div>
+             {% endif %}
+           {% endfor %}
+         </div>
+    </section>
+{% endcase %}
+</div>
+{% endfor %}

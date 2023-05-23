@@ -1,0 +1,583 @@
+{% comment %} <section class="homepage-section-{{ section.id }} feat-images card-gallery section-gallery-{{ section.id }}{% if section.settings.no_bottom_margin %} nbm{% endif %}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %} flickity__section" data-section-id="{{ section.id }}"> {% endcomment %}
+<section class="homepage-section-{{ section.id }} feat-images card-gallery section-gallery-{{ section.id }}{% if section.settings.no_bottom_margin %} nbm{% endif %}{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}" data-section-id="{{ section.id }}">
+
+  {% capture slideshow_config %}{
+  "wrapAround":false,
+  "cellAlign": "center",
+  "dragThreshold":"15",
+  "contain": true,
+  "freeScroll": false,
+  "prevNextButtons": false,
+  "pageDots": false,
+  "watchCSS": true,
+  "cellSelector":".flex-item"
+  }{% endcapture %}
+
+    <div class="flex-container gallery__card-container">
+      {% comment %} <div class="gallery-block" data-flickity='{{ slideshow_config }}'> {% endcomment %}
+      <div class="gallery-block">
+        {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'image' %}
+                {% case block.settings.image_width %}
+                  {% when '25' %}
+                    {%- assign image_width = 'one-quarter' -%}
+                  {% when '33' %}
+                    {%- assign image_width = 'one-third' -%}
+                  {% when '50' %}
+                    {%- assign image_width = 'one-half' -%}
+                  {% when '66' %}
+                    {%- assign image_width = 'two-thirds' -%}
+                  {% when '75' %}
+                    {%- assign image_width = 'three-quarters' -%}
+                  {% when '100' %}
+                    {%- assign image_width = 'one-whole' -%}
+                {% endcase %}
+
+                <div class="promo-{{ block.id }} {{ image_width }} flex-item{% if block.type == 'row_break' %} row__break{% endif %}" {{ block.shopify_attributes }}>
+                  <div class="promo-inner-{{ block.id }} promo-inner">
+                    {% if block.settings.link != blank %}<a href="{{ block.settings.link }}">{% endif %}
+                      {% if block.settings.image != blank %}
+                      <div class="container-{{ block.id }}">
+                        {% render 'simple-responsive-image' | type: block.settings.image %}
+                        <noscript>
+                          <img src="{{ block.settings.image | img_url: '800x' }}" alt="{{ block.settings.image.alt }}">
+                        </noscript>
+                      </div>
+                      {% else %}
+                        <div class="onboard">
+                          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                        </div>
+                      {% endif %}
+                    {% unless block.settings.title and block.settings.hidden_text and block.settings.button_text == blank %}
+                      <div class="caption-card-wrapper-{{ block.id }}">
+                        <div class="caption-card-{{ block.id }} caption">
+                            {% if block.settings.title != blank %}
+                              <h3>{{ block.settings.title | escape }}</h3>
+                            {% endif %}
+                            {% if block.settings.hidden_text != blank %}
+                              <p>{{ block.settings.hidden_text | escape }}</p>
+                            {% endif %}
+                            {% if block.settings.button_text != blank and block.settings.link != blank %}
+                            <a class="button" href="{{ block.settings.link }}">
+                                {{ block.settings.button_text | escape }}
+                                <svg width="18px" height="7px" viewBox="0 0 27 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <g id="Footer" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g transform="translate(-1291.000000, -306.000000)" fill="#353535" fill-rule="nonzero" id="Footer---Light">
+                                            <g transform="translate(0.000000, 120.000000)">
+                                                <g id="Email-input" transform="translate(940.000000, 168.000000)">
+                                                    <path id="Line-2" d="M368.309343,18.8190816 L377.519864,24 L368.309343,29.1809184 L367.819082,28.3093429 L374.589,24.5 L351.5,24.5 L351.5,23.5 L374.593,23.5 L367.819082,19.6906571 L368.309343,18.8190816 Z"></path>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                              </a>
+                              {% endif %}
+                          </div>
+                      </div>
+                    {% endunless %}
+                    {% if block.settings.link != blank %}</a>{% endif %}
+                    </div>
+                  <style>
+                    .caption-card-{{ block.id }}.caption h3 {
+                      color: {{ block.settings.promo_color }};
+                    }
+                    .caption-card-{{ block.id }}.caption p {
+                      color: {{ block.settings.hidden_color }};
+                    }
+                    .promo-{{ block.id }}{
+                      background-color: white;
+                    }
+                    .caption-card-{{ block.id }}{
+                      padding-right: 5%;
+                      padding-left: 5%
+                    }
+                    .caption-card-{{ block.id }} h3 {
+                      margin-bottom: 8px;
+                      margin-top: 20px;
+                    }
+                    .caption-card-{{ block.id }} p {
+                      margin-top: 4px;
+                      margin-bottom: 23px !important;
+                    }
+                    .caption-card-{{ block.id }} button{
+                        margin-bottom: 30px;
+                        display: inline-block;
+                    }
+                    .container-{{ block.id }}{
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      overflow: hidden
+                    }
+                    /* button settings */
+                    {% if block.settings.image_width == "25" %}
+                      .caption-card-{{ block.id }} button{
+                        width: 70%;
+                      }
+                      @media only screen and (max-width: 980px) {
+                        .caption-card-{{ block.id }} button{
+                          width: 85%;
+                        }
+                      }
+
+                    {% elsif block.settings.image_width == "33" %}
+                      .caption-card-{{ block.id }} button{
+                        width: 60%;
+                      }
+
+                    {% elsif block.settings.image_width == "50" %}
+                      .caption-card-{{ block.id }} button{
+                        width: 60%;
+                      }
+                    {% elsif block.settings.image_width == "75" %}
+                      .promo-inner-{{ block.id }} .onboard svg.placeholder-svg {
+                        {% if section.settings.full_width %}
+                          height: 564px;
+                        {% else %}
+                          height: 621px;
+                        {% endif %}
+                      }
+                      @media only screen and (max-width: 980px) {
+                          .caption-card-{{ block.id }} button{
+                          width: 100%;
+                        }
+                      }
+                    {% elsif block.settings.image_width == "100" %}
+                    @media only screen and (max-width: 980px) {
+
+                    }
+                    {% endif %}
+
+                    {% if block.settings.image_width == "25" or block.settings.image_width == "33" or block.settings.image_width == "50" %}
+                      .promo-inner-{{ block.id }} {
+                        display: flex;
+                        flex-direction: column;
+                      }
+                      .caption-card-{{ block.id }} {
+                        text-align: center;
+                        padding-top: {{ block.settings.caption_padding_top }}px;
+                        padding-bottom: 20px;
+                        height: 273px;
+                      }
+                      .container-{{ block.id }} {
+                        height: 236px;
+                        overflow: hidden;
+                      }
+
+                      .container-{{ block.id }} img {
+                        height: 236px;
+                        width: 100%;
+                        object-fit: cover;
+                        object-position: center center;
+                      }
+
+                      @media only screen and (max-width: 980px) {
+                        .container-{{ block.id }} {
+                          height: 326px;
+                        }
+                        .container-{{ block.id }} img {
+                          height: 340px;
+                          width: 100%;
+                          object-fit: cover;
+                          object-position: center center;
+                        }
+                      }
+                    {% elsif block.settings.image_width == "75" or block.settings.image_width == "100" %}
+                      .container-{{ block.id }} {
+                        height: 509px;
+                        width: 509px;
+                        overflow: hidden;
+                      }
+
+                      .container-{{ block.id }} img {
+                        height: 509px;
+                        width: 100%;
+                        object-fit: cover;
+                        object-position: center center;
+                      }
+
+                      .promo-inner-{{ block.id }} {
+                        display: flex;
+                        flex-direction: row;
+                      }
+                      .caption-card-wrapper-{{ block.id }} {
+                        width: 40%
+                      }
+                      .caption-card-{{ block.id }} {
+                          height: auto;
+                          padding-left: 40px;
+                          padding-right: 40px;
+                      }
+                      .promo-inner-{{ block.id }} > div {
+                          align-self: center;
+                      }
+                      @media only screen and (max-width: 980px) {
+                        .container-{{ block.id }} {
+                          height: 326px;
+                        }
+                        .container-{{ block.id }} img {
+                          height: 100%;
+                          width: 782px;
+                          object-fit: cover;
+                          object-position: center center;
+                        }
+                      }
+                    {% endif %}
+                    /* mobile style */
+                    @media only screen and (max-width: 980px) {
+                      .promo-inner-{{ block.id }} {
+                        flex-direction: column;
+                      }
+                      .caption-card-wrapper-{{ block.id }}{
+                        width: 100%;
+                      }
+                      .caption-card-{{ block.id }} {
+                        text-align: center;
+                        padding-top: {{ block.settings.caption_padding_top_mobile }}px;
+                        padding-bottom: 40px;
+                        height: auto;
+                      }
+                      .caption-card-{{ block.id }} button{
+                        width: 60%;
+                      }
+                    }
+
+                  </style>
+                </div>
+              {% when 'row_break' %}
+               <div class="clear"></div>
+            {% endcase %}
+        {% endfor %}
+      </div>
+      {% if section.blocks.size == 0 %}
+        {% render 'no-blocks' %}
+      {% endif %}
+    </div>
+    <div class="clear"></div>
+    <style>
+      .card-gallery .flex-container {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+      .card-gallery .flex-container .flex-item {
+        float: left;
+        margin-bottom: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #shopify-section-{{ section.id }} .promo-inner h3 ,
+      #shopify-section-{{ section.id }} .caption h3 {
+        font-size: {{ section.settings.promo_size }}px;
+        line-height: calc(({{ section.settings.promo_size }}px * 0.40) + {{ section.settings.promo_size }}px) !important;
+      }
+      #shopify-section-{{ section.id }} .promo-inner p,
+      #shopify-section-{{ section.id }} .caption p {
+        font-size: {{ section.settings.hidden_size }}px;
+        line-height: calc(({{ section.settings.hidden_size }}px * 0.40) + {{ section.settings.hidden_size }}px) !important;
+      }
+      .section-gallery-{{ section.id }} .flex-container {
+        margin-top: -10px;
+        margin-bottom: -10px;
+      }
+      .section-gallery-{{ section.id }} .flex-container .flex-item {
+        margin: 10px !important;
+      }
+      {% if section.settings.full_width %}
+        .section-gallery-{{ section.id }} .flex-container {
+          /*width: 102.4%;
+          margin-left: -20px;*/
+        }
+        @media only screen and (max-width: 980px) {
+          .section-gallery-{{ section.id }} .flex-container {
+            width: 105.5%;
+            margin-left: -10px;
+          }
+        }
+      {% else %}
+        .section-gallery-{{ section.id }} .flex-container {
+          width: 90%;
+          margin: 0 auto;
+        }
+      {% endif %}
+      .card-gallery .flex-container .one-quarter {
+        width: calc(25% - 20px);
+      }
+      .card-gallery .flex-container .one-third{
+        width: calc(33.333333% - 20px);
+      }
+      .card-gallery .flex-container .two-thirds{
+        width: calc(66.666666% - 20px);
+      }
+      .card-gallery .flex-container .one-half {
+        width: calc(50% - 20px);
+      }
+      .card-gallery .flex-container .three-quarters {
+        width: calc(75% - 20px);
+      }
+      .card-gallery .flex-container .one-whole {
+        width: calc(100% - 20px);
+      }
+      @media (max-width: 980px) {
+        .card-gallery .flex-container .one-quarter {
+          width: calc(33.333333% - 20px);
+        }
+        .card-gallery .flex-container .three-quarters {
+          width: calc(66.66666% - 20px);
+        }
+      }
+      @media (min-width: 742px) {
+        .card-gallery .button svg {
+          display: none;
+        }
+      }
+     /* global mobile style */
+     @media (max-width: 646px) {
+      .card-gallery .flex-container {
+        width: 100%;
+        margin: 0 auto;
+      }
+      .card-gallery .flex-container .one-quarter,
+      .card-gallery .flex-container .one-third,
+      .card-gallery .flex-container .two-thirds,
+      .card-gallery .flex-container .one-half,
+      .card-gallery .flex-container .three-quarters,
+      .card-gallery .flex-container .one-whole {
+        width: calc(100% - 20px);
+      }
+    }
+    @media screen and (max-width: 740px) {
+      #shopify-section-{{ section.id }} .caption h3 {
+        font-size: calc({{ section.settings.promo_size }}px - ({{ section.settings.promo_size }}px * 0.15));
+      }
+      #shopify-section-{{ section.id }} .promo-inner p,
+      #shopify-section-{{ section.id }} .caption p {
+        font-size: calc({{ section.settings.hidden_size }}px - ({{ section.settings.hidden_size }}px * 0.15));
+      }
+    }
+    @media screen and ( max-width: 740px ) {
+      #shopify-section-{{ section.id }} .gallery-block:after {
+        content: 'flickity';
+        display: none; /* hide :after */
+      }
+      #shopify-section-{{ section.id }} .gallery-block.flickity-enabled .flex-item {
+        width: 100%;
+      }
+      #shopify-section-{{ section.id }} .flex-item.row__break {
+          display: none !important;
+          width: 0 !important;
+      }
+    }
+    @media screen and ( min-width: 741px ) {
+      /* disable Flickity for large devices */
+      #shopify-section-{{ section.id }} .gallery-block:after {
+        content: '';
+      }
+    }
+    </style>
+</section>
+<div class="clear"></div>
+{% schema %}
+{
+    "name": "Gallery Cards",
+    "max_blocks": 16,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "full_width",
+        "label": "Enable full width",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "no_bottom_margin",
+        "label": "No space after section",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "promo_size",
+        "min": 12,
+        "max": 36,
+        "step": 1,
+        "unit": "px",
+        "label": "Heading size",
+        "default": 32
+      },
+      {
+        "type": "range",
+        "id": "hidden_size",
+        "min": 12,
+        "max": 36,
+        "step": 1,
+        "unit": "px",
+        "label": "Subheading size",
+        "default": 14
+      }
+    ],
+    "blocks": [
+      {
+        "type": "image",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "select",
+            "id": "image_width",
+            "label": "Container width",
+            "default": "33",
+            "options": [
+             {
+                 "value":"25",
+                 "label":"25%"
+              },
+              {
+                 "value":"33",
+                 "label":"33%"
+              },
+              {
+                 "value":"50",
+                 "label":"50%"
+              },
+              {
+                 "value":"66",
+                 "label":"66%"
+              },
+              {
+                 "value":"75",
+                 "label":"75%"
+              },
+              {
+                 "value":"100",
+                 "label":"100%"
+              }
+            ]
+          },
+          {
+            "type": "range",
+            "id": "caption_padding_top",
+            "min": 0,
+            "max": 80,
+            "step": 1,
+            "unit": "px",
+            "label": "Caption top padding",
+            "default": 40
+          },
+          {
+            "type": "range",
+            "id": "caption_padding_top_mobile",
+            "min": 0,
+            "max": 80,
+            "step": 1,
+            "unit": "px",
+            "label": "Caption top padding (mobile)",
+            "default": 40
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "info": "Optional"
+          },
+           {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Collection"
+           },
+           {
+            "type": "text",
+            "id": "hidden_text",
+            "label": "Subheading",
+            "default": "Share a little information about this collection or product"
+           },
+           {
+              "type": "text",
+              "id": "button_text",
+              "label": "Button text",
+              "default": "View Product"
+          },
+          {
+            "type": "color",
+            "id": "promo_color",
+            "label": "Heading",
+            "default": "#000"
+          },
+          {
+            "type": "color",
+            "id": "hidden_color",
+            "label": "Subheading",
+            "default": "#000"
+          }
+        ]
+      },
+      {
+        "type": "row_break",
+        "name": "Row Break",
+        "settings": []
+      }
+    ],
+    "presets": [
+      {
+        "name": "Gallery Cards",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "25"
+            }
+          },
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "75"
+            }
+          },
+          {
+            "type": "row_break"
+          },
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "75"
+            }
+          },
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "25"
+            }
+          },
+          {
+            "type": "row_break"
+          },
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "33"
+            }
+          },
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "33"
+            }
+          },
+          {
+            "type": "image",
+            "settings": {
+              "image_width": "33"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

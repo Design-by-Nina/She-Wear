@@ -1,0 +1,111 @@
+<style>
+  .announcement-bar {
+    background-color: {{ section.settings.announcement_bar_color }};
+    text-align: center;
+    text-decoration: none;
+      display: flex;
+    margin-top:30px;
+  }
+  .announcement-bar__message {
+    font-size: 14px;
+    margin-top:10px;
+    color: {{ section.settings.announcement_bar_text_color }};
+    flex-basis: 33.33%;
+    
+  }
+
+  @media (max-width: 680px) {
+     .announcement-bar {
+  display:none;
+       visibility: hidden;
+  }
+    .announcement-bar__message {
+     display:none;
+       visibility: hidden;
+  }
+ }
+</style>  
+
+{%- if section.settings.show_announcement -%}
+  {%- if section.settings.home_page_only == false or template.name == 'index' -%}
+
+    
+      <div class="announcement-bar" style="margin-top:-10px;">
+      <p class="announcement-bar__message"><a href="{{ section.settings.link-1 | escape }}" style="text-decoration:none;">{{ section.settings.text-1 | escape }}</a></p>
+         <p class="announcement-bar__message"><a href="{{ section.settings.link-2 | escape }}" style="text-decoration:none;">{{ section.settings.text-2 | escape }}</p>
+         <p class="announcement-bar__message"><a>{{ section.settings.text-3 | escape }}</p>
+      </div>
+        
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show announcement",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "home_page_only",
+      "label": "Home page only",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "announcement_bar_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+	{
+      "type": "color",
+      "id": "announcement_bar_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "text-1",
+      "label": "Announcement text 1",
+      "default": "Announce something here"
+    },
+    {
+      "type": "url",
+      "id": "link-1",
+      "label": "link 1"
+    },
+    {
+      "type": "text",
+      "id": "text-2",
+      "label": "Announcement text 2",
+      "default": "Announce something here"
+    },
+    {
+      "type": "url",
+      "id": "link-2",
+      "label": "link 2"
+    },
+    {
+      "type": "text",
+      "id": "text-3",
+      "label": "Announcement text 3",
+      "default": "Announce something here"
+    },
+    {
+      "type": "url",
+      "id": "link-3",
+      "label": "Link 3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Announcement Bar",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

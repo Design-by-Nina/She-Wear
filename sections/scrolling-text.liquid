@@ -1,0 +1,175 @@
+{{ 'scrolling-text.css' | asset_url | stylesheet_tag }}
+{%- liquid
+	assign section_heading = section.settings.heading
+	assign section_description = section.settings.description
+	assign speed = section.settings.speed
+	assign direction = section.settings.direction
+	assign outline_text = section.settings.outline_text
+	assign color_bg = section.settings.color_bg
+	assign color_text = section.settings.color_text
+	assign font_size = section.settings.text_size | append: 'px'
+-%}
+
+{%- unless section.blocks[index].settings.text -%}
+	<style>
+		@media screen and (max-width: 980px) {
+			.scrolling-text {
+				min-height: 0;
+			}
+		}
+	</style>
+{%- endunless -%}
+
+<div class="sticky scrolling-text section-spacing outline-text-{{ outline_text }}" id="scrolling-text-{{ section.id }}" style="--color-bg:{{ color_bg }};--color-text:{{ color_text }};--font-size:{{ font_size }}">
+	<div class="scrolling-text_inner direction-{{ direction }}" style="--marquee-speed: {{ speed }}">
+		{% capture scrolling_text %}
+		<div>
+			{%- for i in (1..5) -%}
+				{%- liquid
+					if i <= section.blocks.size
+						assign index = i | minus: 1
+					else
+					  assign index = i | minus: section.blocks.size | minus: 1
+					endif
+				-%}
+				{%- if section.blocks[index].settings.text -%}
+					<div class="scrolling-text__item">
+						{%- if section.blocks[index].settings.link -%}
+							<a href="{{ section.blocks[index].settings.link }}" target="_blank">
+						{%- endif -%}
+						{{ section.blocks[index].settings.text }}
+						{%- if section.blocks[index].settings.link -%}
+							</a>
+						{%- endif -%}
+					</div>
+				{% endif %}
+			{%- endfor -%}
+		</div>
+		{% endcapture %}
+		{{ scrolling_text }}{{ scrolling_text }}
+	</div>
+</div>
+
+<script>
+	$(window).resize(function(){
+		sectionHeight = $('.scrolling-text').outerHeight(true);
+		sectionWidth = $('#top-bar').outerWidth(true) + 10;
+		$('<style>.scrolling-text {min-height: ' + sectionHeight + ' }; .scrolling-text::after {height: ' + sectionHeight + 'px; width: ' +  sectionWidth + 'px;}</style>').appendTo('head');
+	});
+</script>
+
+{% schema %}
+  {
+    "name": "Scrolling text",
+	"class": "section-scrolling-text",
+	"max_blocks": 5,
+	"settings": [
+
+			{
+				"type": "select",
+				"id": "direction",
+				"options": [
+					{
+						"value": "left",
+						"label": "Left"
+					},
+					{
+						"value": "right",
+						"label": "Right"
+					}
+				],
+				"default": "left",
+				"label": "Direction"
+			},
+			{
+				"type": "select",
+				"id": "speed",
+				"options": [
+					{
+						"value": "10s",
+						"label": "Fast"
+					},
+					{
+						"value": "20s",
+						"label": "Normal"
+					},
+					{
+						"value": "30s",
+						"label": "Slow"
+					},
+					{
+						"value": "50s",
+						"label": "Very slow"
+					}
+				],
+				"default": "20s",
+				"label": "Speed"
+			},
+			{
+        "type": "range",
+        "id": "text_size",
+        "min": 10,
+        "max": 140,
+        "step": 2,
+        "unit": "px",
+        "label": "Text size",
+        "default": 24
+      },
+			{
+        "type": "checkbox",
+        "id": "outline_text",
+        "label": "Make text outline",
+        "default": false
+      },
+			{
+	      "type": "header",
+	      "content": "Colors"
+	    },
+			{
+        "type": "color",
+        "id": "color_bg",
+        "label": "Background"
+      },
+			{
+        "type": "color",
+        "id": "color_text",
+        "label": "Text"
+      }
+    ],
+		"blocks": [
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "text",
+            "label": "Content",
+						"default": "Add campaign text here."
+          },
+					{
+						"id": "link",
+						"type": "url",
+						"label": "Link"
+					}
+				]
+			}
+		],
+    "presets": [
+      {
+        "name": "Scrolling text",
+				"blocks": [
+					{
+						"type": "text"
+					},
+					{
+						"type": "text"
+					},
+					{
+						"type": "text"
+					}
+				]
+      }
+    ]
+  }
+{% endschema %}

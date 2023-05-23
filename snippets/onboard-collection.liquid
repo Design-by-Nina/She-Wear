@@ -1,0 +1,14 @@
+{% comment %}Used for home page sections only when featured collections is chosen but no content has been selected{% endcomment %}
+{% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+{%- assign placeholder = 'collection-' | append: current -%}
+<div class="collection-index {{ col_per_row }} mobile-half" data-alpha="{{ collection.title }}">  
+  <div class="collection-image onboard">
+    {{ placeholder | placeholder_svg_tag }}     
+  </div>
+
+  <div class="collection-info">
+    <a href="#">
+      <span class="product-title">Collection {{ forloop.index }}</span>
+    </a>
+  </div>
+</div>

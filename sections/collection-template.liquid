@@ -1,0 +1,432 @@
+
+{%- liquid
+
+assign collection_link = ''
+
+if collection.handle
+assign collection_link = '/collections/' | append: collection.handle
+elsif collection.products.first.type == collection.title
+assign collection_link = collection.title | url_for_type
+elsif collection.products.first.vendor == collection.title
+assign collection_link = collection.title | url_for_vendor
+endif
+
+-%}
+<div class="collection-template" data-section-id="{{ section.id }}" data-section-type="collection-section" data-collection-link="{{ collection_link }}">
+{% assign number = section.settings.products_per_page %}
+{% paginate collection.products by number %}
+  <div id="collection-page">
+
+    <div class="collection-description desktop-12 tablet-6 mobile-3">
+      <h1>{{ collection.title }}</h1>
+      {% unless section.settings.description_bottom %}
+      <div class="rte">
+        {{ collection.description | remove: "[banner]" }}
+      </div>
+      {% endunless %}
+    </div>
+    {% if section.settings.sidebar %}
+      <div id="full-width-filter" class="desktop-12 tablet-6 mobile-3">
+        {% if section.settings.layout_options %}
+        <ul class="grid-layout">
+          <li class="grid-icon active" data-grid-type="grid">
+            <svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desk---Collections---Side-Filters" transform="translate(-817.000000, -662.000000)" fill="#222222">
+                        <g id="Grid-Icon" transform="translate(817.000000, 662.000000)">
+                            <rect id="Rectangle-Copy-4" x="0" y="0" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-8" x="4" y="0" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-9" x="8" y="0" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-12" x="0" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-11" x="4" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-10" x="8" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-15" x="0" y="8" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-14" x="4" y="8" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-13" x="8" y="8" width="2" height="2"></rect>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+          </li>
+          <li class="list-icon" data-grid-type="list">
+            <svg width="14px" height="10px" viewBox="0 0 14 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desk---Collections---Side-Filters" transform="translate(-831.000000, -662.000000)">
+                        <g id="List-Icon" transform="translate(831.000000, 662.000000)">
+                            <rect id="Rectangle-Copy-4" fill="#222222" x="0" y="8" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-6" fill="#222222" x="0" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-7" fill="#222222" x="0" y="0" width="2" height="2"></rect>
+                            <line x1="4" y1="9" x2="14" y2="9" id="Line-6" stroke="#222222" stroke-width="2"></line>
+                            <line x1="4" y1="5" x2="14" y2="5" id="Line-6-Copy" stroke="#222222" stroke-width="2"></line>
+                            <line x1="4" y1="1" x2="14" y2="1" id="Line-6-Copy-2" stroke="#222222" stroke-width="2"></line>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+          </li>
+        </ul>
+        {% endif %}
+        <div class="sorting">
+          {% for block in section.blocks %}
+            {% if block.type == 'sort_by' %}
+              <div class="filter-wrapper" {{ block.shopify_attributes }}>
+                <input id="styled-select-trigger" class="visually-hidden filter-control" type="checkbox" value="enabled-SORT">
+                <label for="styled-select-trigger" id="filter-{{ forloop.index0 }}" data-id="filter-{{ forloop.index0 }}"  class="main-label">
+                  {{ block.settings.sort_by_title }}
+                    <svg width="12px" height="8px" viewBox="0 0 12 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Desk---Collections" transform="translate(-654.000000, -1670.000000)" stroke="#353535">
+                                <g id="Pagination-1" transform="translate(640.000000, 1660.000000)">
+                                    <polyline id="Previous-Icon" points="25 10 15 20 25 30"></polyline>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                 </label>
+                <ul id="sort-by" class="styled-select coll-filter" style="display: none;">
+                  <li class="manual"><a href="{{ collection.url | append: share_permalink }}?sort_by=manual">{{ 'collections.sorting.featured' | t }}</a></li>
+                  <li class="price-ascending"><a href="{{ collection.url | append: share_permalink }}?sort_by=price-ascending">{{ 'collections.sorting.price_ascending' | t }}</a></li>
+                  <li class="price-descending"><a href="{{ collection.url | append: share_permalink }}?sort_by=price-descending">{{ 'collections.sorting.price_descending' | t }}</a></li>
+                  <li class="title-ascending"><a href="{{ collection.url | append: share_permalink }}?sort_by=title-ascending">{{ 'collections.sorting.az' | t }}</a></li>
+                  <li class="title-descending"><a href="{{ collection.url | append: share_permalink }}?sort_by=title-descending">{{ 'collections.sorting.za' | t }}</a></li>
+                  <li class="created-ascending"><a href="{{ collection.url | append: share_permalink }}?sort_by=created-ascending">{{ 'collections.sorting.date_ascending' | t }}</a></li>
+                  <li class="created-descending"><a href="{{ collection.url | append: share_permalink }}?sort_by=created-descending">{{ 'collections.sorting.date_descending' | t }}</a></li>
+                  <li class="best-selling"><a href="{{ collection.url | append: share_permalink }}?sort_by=best-selling">{{ 'collections.sorting.best_selling' | t }}</a></li>
+                </ul>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="clear"></div>
+
+    {% if section.settings.sidebar %}
+      {% render 'collection-sidebar'
+        collection: collection %}
+    {% else %}
+
+      {% assign filter_block_detected = false %}
+      {% for block in section.blocks %}
+          {% if block.type == 'filter' %}
+              {% assign filter_block_detected = true %}
+          {% endif %}
+      {% endfor %}
+
+      <div id="full-width-filter" class="desktop-12 tablet-6 mobile-3">
+        {% for block in section.blocks %}
+          {% if block.type == 'filter' %}
+            <div class="mobile-filter-trigger js-filter-trigger desktop-hide tablet-6 mobile-3">
+              {{ 'collections.filter.filters' | t }}
+              <svg width="12px" height="8px" viewBox="0 0 12 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                      <g id="Desk---Collections" transform="translate(-654.000000, -1670.000000)" stroke="#353535">
+                          <g id="Pagination-1" transform="translate(640.000000, 1660.000000)">
+                              <polyline id="Previous-Icon" points="25 10 15 20 25 30"></polyline>
+                          </g>
+                      </g>
+                  </g>
+              </svg>
+            </div>
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        <div class="sidebar-filters tablet-6 mobile-3 js-sidebar-filters">
+          {% for block in section.blocks %}
+            {% render 'filter', collection: collection, block: block, forloop: forloop %}
+          {% endfor %}
+          {% if current_tags.size >= 1 %}
+            <a class="clear-tags" href="{{ collection.url }}">{{ 'collections.general.clear_all' | t }}</a>
+          {% endif %}
+        </div>
+        <div class="sorting tablet-6 mobile-3">
+          {% for block in section.blocks %}
+            {% if block.type == 'sort_by' %}
+              <div class="filter-wrapper" {{ block.shopify_attributes }}>
+                <input id="styled-select-trigger" class="visually-hidden filter-control" type="checkbox" value="enabled-SORT">
+                <label for="styled-select-trigger" id="filter-{{ forloop.index0 }}" data-id="filter-{{ forloop.index0 }}"  class="main-label">
+                  {{ block.settings.sort_by_title }}
+                    <svg width="12px" height="8px" viewBox="0 0 12 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="Desk---Collections" transform="translate(-654.000000, -1670.000000)" stroke="#353535">
+                                <g id="Pagination-1" transform="translate(640.000000, 1660.000000)">
+                                    <polyline id="Previous-Icon" points="25 10 15 20 25 30"></polyline>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                 </label>
+                <ul id="sort-by" class="styled-select coll-filter" style="display: none;">
+                  <li class="manual"><a href="{{ collection.url | append: share_permalink }}?sort_by=manual">{{ 'collections.sorting.featured' | t }}</a></li>
+                  <li class="price-ascending"><a href="{{ collection.url | append: share_permalink }}?sort_by=price-ascending">{{ 'collections.sorting.price_ascending' | t }}</a></li>
+                  <li class="price-descending"><a href="{{ collection.url | append: share_permalink }}?sort_by=price-descending">{{ 'collections.sorting.price_descending' | t }}</a></li>
+                  <li class="title-ascending"><a href="{{ collection.url | append: share_permalink }}?sort_by=title-ascending">{{ 'collections.sorting.az' | t }}</a></li>
+                  <li class="title-descending"><a href="{{ collection.url | append: share_permalink }}?sort_by=title-descending">{{ 'collections.sorting.za' | t }}</a></li>
+                  <li class="created-ascending"><a href="{{ collection.url | append: share_permalink }}?sort_by=created-ascending">{{ 'collections.sorting.date_ascending' | t }}</a></li>
+                  <li class="created-descending"><a href="{{ collection.url | append: share_permalink }}?sort_by=created-descending">{{ 'collections.sorting.date_descending' | t }}</a></li>
+                  <li class="best-selling"><a href="{{ collection.url | append: share_permalink }}?sort_by=best-selling">{{ 'collections.sorting.best_selling' | t }}</a></li>
+                </ul>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% if section.settings.layout_options %}
+        <ul class="grid-layout">
+          <li class="grid-icon active" data-grid-type="grid">
+            <svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desk---Collections---Side-Filters" transform="translate(-817.000000, -662.000000)" fill="#222222">
+                        <g id="Grid-Icon" transform="translate(817.000000, 662.000000)">
+                            <rect id="Rectangle-Copy-4" x="0" y="0" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-8" x="4" y="0" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-9" x="8" y="0" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-12" x="0" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-11" x="4" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-10" x="8" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-15" x="0" y="8" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-14" x="4" y="8" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-13" x="8" y="8" width="2" height="2"></rect>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+          </li>
+          <li class="list-icon" data-grid-type="list">
+            <svg width="14px" height="10px" viewBox="0 0 14 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g id="Collections-+-Pagination-&amp;-Breadcrumbs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Desk---Collections---Side-Filters" transform="translate(-831.000000, -662.000000)">
+                        <g id="List-Icon" transform="translate(831.000000, 662.000000)">
+                            <rect id="Rectangle-Copy-4" fill="#222222" x="0" y="8" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-6" fill="#222222" x="0" y="4" width="2" height="2"></rect>
+                            <rect id="Rectangle-Copy-7" fill="#222222" x="0" y="0" width="2" height="2"></rect>
+                            <line x1="4" y1="9" x2="14" y2="9" id="Line-6" stroke="#222222" stroke-width="2"></line>
+                            <line x1="4" y1="5" x2="14" y2="5" id="Line-6-Copy" stroke="#222222" stroke-width="2"></line>
+                            <line x1="4" y1="1" x2="14" y2="1" id="Line-6-Copy-2" stroke="#222222" stroke-width="2"></line>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="product-loop{% if section.settings.sidebar %} desktop-10 tablet-4 mobile-3{% endif %}" data-grid-type="grid">
+      {% for product in collection.products %}
+{% if product.handle contains "docapp-free-gift-" %}{% continue %}{% endif %}
+
+        {% assign products_per_row = section.settings.products_per_row %}
+    	  <div class="product-index {% if products_per_row == 4 %}desktop-3{% cycle ' first', '', '', ' last' %}{% elsif products_per_row == 3 %}medium_grid desktop-4{% cycle ' first', '', ' last' %}{% elsif products_per_row == 2 %}large_grid desktop-6{% cycle ' first', ' last' %}{% endif %} tablet-half mobile-half{% if settings.animation != 'none' %} animate {{ settings.animation }}{% endif %}" data-alpha="{{ product.title }}" data-price="{{ product.price }}" data-product-id="{{ product.id }}">
+          {% render 'product-listing',
+            product: product %}
+        </div>
+      {% endfor %}
+    </div>
+
+  <div class="clear"></div>
+
+    {% if section.settings.description_bottom %}
+    <div class="lower-collection-description desktop-12 tablet-6 mobile-3">
+      <div class="rte">
+        {{ collection.description | remove: "[banner]" }}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  <div class="clear"></div>
+  {% render 'pagination', paginate: paginate %}
+  {% endpaginate %}
+</div>
+
+<style>
+{% if section.settings.layout_options %}
+  .grid-layout li {
+    list-style: none;
+    display: inline-block;
+    line-height: 26px;
+    padding: 5px 13px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .grid-layout li.active,
+  .grid-layout li:hover {
+    background: {{ settings.background }};
+    border: 1px solid {{ settings.dotted_color }};
+  }
+  [data-grid-type~="list"] .product-index {
+    width: 100% !important;
+    border-bottom: 1px solid {{ settings.dotted_color }};
+    padding-bottom: 24px;
+  }
+  [data-grid-type~="list"] .product-index .product-index-inner {
+    width: 20%;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  [data-grid-type~="list"] .product-index .product-info {
+    width: 74%;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  [data-grid-type~="list"] .product-index .product-info .product-info-inner {
+    padding-left: 40px;
+  }
+{% endif %}
+@media screen and ( min-width: 981px ) {
+   .product.first, .product-index.first { clear: none; }
+   .product.desktop-4:nth-child(3n+1), .product-index.desktop-4:nth-child(3n+1) {
+       clear: left;
+   }
+   .product.desktop-3:nth-child(4n+1), .product-index.desktop-3:nth-child(4n+1) {
+       clear: left;
+   }
+   .product.desktop-6:nth-child(2n+1), .product-index.desktop-6:nth-child(2n+1) {
+       clear: left;
+   }
+}
+@media screen and ( min-width: 741px ) and ( max-width: 980px ) {
+   .product.first, .product-index.first { clear: none; }
+   .product.tablet-2:nth-child(3n+1), .product-index.tablet-2:nth-child(3n+1) {
+       clear: left;
+   }
+   .product.tablet-half:nth-child(2n+1), .product-index.tablet-half:nth-child(2n+1) {
+       clear: left;
+   }
+}
+@media screen and ( max-width: 740px ) {
+   .product.first, .product-index.first { clear: none; }
+   .product.mobile-half:nth-child(2n+1), .product-index.mobile-half:nth-child(2n+1) {
+       clear: left;
+   }
+   .product.mobile-1:nth-child(3n+1), .product-index.mobile-1:nth-child(3n+1) {
+       clear: left;
+   }
+}
+</style>
+
+{% schema %}
+  {
+    "name": "Collection",
+	  "max_blocks":10,
+    "settings": [
+      {
+        "type": "range",
+        "id": "products_per_page",
+        "min": 2,
+        "max": 48,
+        "step": 1,
+        "label": "Products per page",
+        "default": 24
+      },
+      {
+        "type": "range",
+        "id": "products_per_row",
+        "min": 2,
+        "max": 4,
+        "step": 1,
+        "label": "Products per row",
+        "default": 3
+      },
+      {
+        "type": "checkbox",
+        "id": "description_bottom",
+        "label": "Place description below products",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "sidebar",
+        "label": "Show sidebar"
+      },
+      {
+        "type": "checkbox",
+        "id": "layout_options",
+        "label": "Show grid/list layout options",
+        "default": true
+      }
+	],
+   "blocks":[
+      {
+         "type":"menu",
+         "name":"Menu",
+         "settings":[
+          {
+             "type": "link_list",
+             "id": "side_nav",
+             "label": "Sidebar menu",
+             "info":"This menu has limited support for dropdown items"
+          },
+           {
+            "type": "text",
+            "id": "title",
+            "label": "Menu title",
+            "default": "Explore"
+           }
+         ]
+      },
+      {
+         "type":"vendor_list",
+         "name":"Vendor list",
+		     "limit": 1,
+         "settings":[
+          {
+          "type": "text",
+          "id": "shop_by_designer_title",
+          "label": "Vendor list title",
+          "default": "Shop by Designer"
+          }
+         ]
+      },
+      {
+         "type":"sort_by",
+         "name":"Sort by",
+		     "limit": 1,
+         "settings":[
+          {
+          "type": "text",
+          "id": "sort_by_title",
+          "label": "Sort by title",
+          "default": "Sort"
+          }
+         ]
+      },
+      {
+         "type":"filter",
+         "name":"Filter",
+		     "limit": 3,
+         "settings":[
+          {
+          "type": "text",
+          "id": "filter_by_title",
+          "label": "Filter by title",
+          "default": "Filter by"
+          },
+          {
+          "type": "textarea",
+          "id": "filter_by",
+          "label": "Tag filter"
+          }
+         ]
+      },
+      {
+        "type": "image",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "info": "Optional"
+          }
+        ]
+      }
+   ]
+  }
+{% endschema %}

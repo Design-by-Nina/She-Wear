@@ -1,0 +1,113 @@
+{% style %}
+{%- assign main_font = settings.main_font -%}
+{%- assign nav_font = settings.nav_font -%}
+{%- assign heading_font = settings.heading_font -%}
+  :root {
+    --main-family: {{ settings.main_font.family }};
+    --main-weight: {{ settings.main_font.weight }};
+    --nav-family: {{ settings.nav_font.family }};
+    --nav-weight: {{ settings.nav_font.weight }};
+    --heading-family: {{ settings.heading_font.family }};
+    --heading-weight: {{ settings.heading_font.weight }};
+
+    --font-size: {{ settings.font_size }}px;
+    --h1-size: {{ settings.h1_size }}px;
+    --h2-size: {{ settings.h2_size }}px;
+    --h3-size: {{ settings.h3_size }}px;
+    --nav-size: {{ settings.nav_size }}px;
+
+    --section-title-border: {{ settings.section_title_border }};
+    --heading-border-weight: {{ settings.heading_border_weight }}px;
+
+    --announcement-bar-background: {{ settings.announcement_bar_background }};
+    --announcement-bar-text-color: {{ settings.announcement_bar_text_color }};
+    --top-bar-links: {{ settings.top_bar_links }};
+    --top-bar-links-hover: {{ settings.top_bar_links_hover }};
+    --top-bar-links-bg-hover: {{ settings.top_bar_links_bg_hover }};
+    --top-bar-links-active: {{ settings.top_bar_links_active }};
+    --top-bar-links-bg-active: {{ settings.top_bar_links_bg_active }};
+    --header-wrapper-background: {{ settings.header_wrapper_background }};
+    --logo-color: {{ settings.logo_color }};
+    --header-text-color: {{ settings.header_text_color }};
+    --header-text-color-dark: {{ settings.header_text_color | color_darken: 30 }};
+    --navigation: {{ settings.navigation }};
+    --nav-color: {{ settings.nav_color }};
+    --nav-hover-color: {{ settings.nav_hover_color }};
+    --nav-hover-link-color: {{ settings.nav_hover_link_color }};
+    --nav-dropdown-color: {{ settings.nav_dropdown_color }};
+    --dropdown-background-color: {{ settings.dropdown_background_color }};
+    --dropdown-hover-link-color: {{ settings.dropdown_hover_link_color }};
+    --nav-border-color: {{ settings.nav_border_color }};
+    --background: {{ settings.background }};
+    --heading-color: {{ settings.heading_color }};
+    --text-color: {{ settings.text_color }};
+    --link-color: {{ settings.link_color }};
+    --dotted-color: {{ settings.dotted_color }};
+    --sale-color: {{ settings.sale_color }};
+    --accent-color: {{ settings.accent_color }};
+    --button-color: {{ settings.button_color }};
+    --button-text: {{ settings.button_text }};
+    --button-hover: {{ settings.button_hover }};
+    --button-hover-text: {{ settings.button_hover_text }};
+    --secondary-button-color: {{ settings.secondary_button_color }};
+    --secondary-button-text: {{ settings.secondary_button_text }};
+    --secondary-button-hover: {{ settings.secondary_button_hover }};
+    --secondary-button-hover-text: {{ settings.secondary_button_hover_text }};
+    --directional-background: {{ settings.directional_background }};
+    --directional-hover-background: {{ settings.directional_hover_background }};
+    --directional-color: {{ settings.directional_color }};
+    --directional-hover-color: {{ settings.directional_hover_color }};
+    --accordion-header-bg: {{ settings.accordion_header_bg }};
+    --accordion-header-text: {{ settings.accordion_header_text }};
+    --accordion-content-text: {{ settings.accordion_content_text }};
+    --swatch-color: {{ settings.swatch_color }};
+    --swatch-background: {{ settings.swatch_background }};
+    --swatch-border: {{ settings.swatch_border }};
+    --swatch-selected-color: {{ settings.swatch_selected_color }};
+    --swatch-selected-background: {{ settings.swatch_selected_background }};
+    --swatch-selected-border: {{ settings.swatch_selected_border }};
+    --swatch-width: 40px;
+    --swatch-height: 34px;
+    --swatch-tooltip-left: {{ '40px' | remove: 'px' | to_number | divided_by: 2 | minus: 50 | plus: 2 }}px;
+    --footer-background: {{ settings.footer_background }};
+    --footer-border-color: {{ settings.footer_border_color }};
+    --footer-header-color: {{ settings.footer_header_color }};
+    --footer-text-color: {{ settings.footer_text_color }};
+    --icon-color: {{ settings.icon_color }};
+    --icon-border-color: {{ settings.text_color | color_lighten: 90 }};
+    --keyboard-focus: {{ settings.keyboard_focus }};
+    --focus-border-style: {{ settings.focus_border_style }};
+    --focus-border-weight: {{ settings.focus_border_weight }}px;
+    --index-padding: {{ settings.index_padding }}px;
+    --grid-text-alignment: {{ settings.grid_text_alignment }};
+    --posted-color: {{ settings.text_color | color_lighten: 20 }};
+    --article-title-color: {{ settings.heading_color | color_lighten: 30 }};
+    --article-caption-color: {{ settings.font_color | color_darken: 30 }};
+    --close-color: {{ settings.footer_text_color | color_darken: 30 }};
+    --text-color-darken-30: {{ settings.text_color | color_darken: 30 }};
+    --unit-price-color: {{ settings.text_color | color_lighten: 60 }};
+    --thumbnail-outline-color: {{ settings.text_color | color_lighten: 40 }};
+    --select-arrow-bg: url({{ 'select-arrow.png' | asset_url }});
+    --free-shipping-bg: {{ settings.free_shipping_bg }};
+    --free-shipping-text: {{ settings.free_shipping_text }};
+    --color-filter-size: 32px;
+
+    --error-msg-dark: #e81000;
+    --error-msg-light: {{ '#e81000' | color_lighten: 50 }};
+    --success-msg-dark: #007f5f;
+    --success-msg-light: {{ '#007f5f' | color_lighten: 70 }};
+
+    --color-body-text: var(--text-color);
+    --color-body: var(--background);
+    --color-bg: var(--background);
+  }
+  @media (max-width: 740px) {
+    :root {
+      --font-size: calc({{ settings.font_size }}px - ({{ settings.font_size }}px * 0.15));
+      --nav-size: calc({{ settings.nav_size }}px - ({{ settings.nav_size }}px * 0.15));
+      --h1-size: calc({{ settings.h1_size }}px - ({{ settings.h1_size }}px * 0.15));
+      --h2-size: calc({{ settings.h2_size }}px - ({{ settings.h2_size }}px * 0.15));
+      --h3-size: calc({{ settings.h3_size }}px - ({{ settings.h3_size }}px * 0.15));
+    }
+  }
+{% endstyle %}
