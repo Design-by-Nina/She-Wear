@@ -5404,39 +5404,17 @@
           "03f028b9-7e59-4a41-8c1a-b7fca1328c3f": {
             "type": "image",
             "settings": {
-              "image": "shopify:\/\/shop_images\/SHE_WEAR_-_HOMEPAGE_WEB_BANNER_LANDSCAPE.png",
+              "image": "shopify:\/\/shop_images\/SHE_WEAR_-_HOMEPAGE_WEB_BANNER_LANDSCAPE_2.png",
               "overlay": false,
               "text_align": "left",
               "caption_horizontal": 50,
               "caption_vertical": 50,
-              "mobile_image": "shopify:\/\/shop_images\/SHE_WEAR_-_MOBILE_BANNER_PORTRAIT_1.gif",
+              "mobile_image": "shopify:\/\/shop_images\/SHE_WEAR_-_MOBILE_BANNER_PORTRAIT_1.png",
               "hide_caption_background": false,
               "caption_below": false,
               "heading": "",
               "subheading": "",
-              "link": "shopify:\/\/collections\/all-sale",
-              "button_text": "",
-              "slide_text_color": "#000000",
-              "cta_color": "#ffffff",
-              "cta_background": "#000000",
-              "caption_background": "rgba(0,0,0,0)",
-              "caption_background_opacity": 20
-            }
-          },
-          "61114b64-e9fa-417c-8ceb-13c34d739c0b": {
-            "type": "image",
-            "settings": {
-              "image": "shopify:\/\/shop_images\/SHE_WEAR_-_HOMEPAGE_WEB_BANNER_LANDSCAPE_-_SOCKS_RESTOCK.jpg",
-              "overlay": false,
-              "text_align": "left",
-              "caption_horizontal": 0,
-              "caption_vertical": 0,
-              "mobile_image": "shopify:\/\/shop_images\/SHE_WEAR_-_MOBILE_BANNER_PORTRAIT_-_SOCKS_RESTOCK.gif",
-              "hide_caption_background": true,
-              "caption_below": false,
-              "heading": "",
-              "subheading": "",
-              "link": "shopify:\/\/collections\/socks",
+              "link": "https:\/\/www.shewear.com.au\/products\/she-achieves-womens-safety-work-boots-zip-lace-up?variant=43817425273068",
               "button_text": "",
               "slide_text_color": "#000000",
               "cta_color": "#ffffff",
@@ -5459,6 +5437,28 @@
               "heading": "",
               "subheading": "",
               "link": "shopify:\/\/collections\/womens-sneakers",
+              "button_text": "",
+              "slide_text_color": "#000000",
+              "cta_color": "#ffffff",
+              "cta_background": "#000000",
+              "caption_background": "rgba(0,0,0,0)",
+              "caption_background_opacity": 20
+            }
+          },
+          "61114b64-e9fa-417c-8ceb-13c34d739c0b": {
+            "type": "image",
+            "settings": {
+              "image": "shopify:\/\/shop_images\/SHE_WEAR_-_HOMEPAGE_WEB_BANNER_LANDSCAPE_-_SOCKS_RESTOCK.jpg",
+              "overlay": false,
+              "text_align": "left",
+              "caption_horizontal": 0,
+              "caption_vertical": 0,
+              "mobile_image": "shopify:\/\/shop_images\/SHE_WEAR_-_MOBILE_BANNER_PORTRAIT_-_SOCKS_RESTOCK.gif",
+              "hide_caption_background": true,
+              "caption_below": false,
+              "heading": "",
+              "subheading": "",
+              "link": "shopify:\/\/collections\/socks",
               "button_text": "",
               "slide_text_color": "#000000",
               "cta_color": "#ffffff",
@@ -5493,8 +5493,8 @@
         },
         "block_order": [
           "03f028b9-7e59-4a41-8c1a-b7fca1328c3f",
-          "61114b64-e9fa-417c-8ceb-13c34d739c0b",
           "e5b384a0-4337-4401-9419-72783eae750d",
+          "61114b64-e9fa-417c-8ceb-13c34d739c0b",
           "0efda111-8780-4418-95c3-7cef6526a407"
         ],
         "settings": {
@@ -5565,11 +5565,19 @@
               "text": "30 day easy returns",
               "link": "shopify:\/\/pages\/returns"
             }
+          },
+          "5a0fc561-6117-45b9-a163-755c949609cd": {
+            "type": "text",
+            "settings": {
+              "text": "Global shipping",
+              "link": "shopify:\/\/pages\/shipping"
+            }
           }
         },
         "block_order": [
           "f146f5c4-06b3-4c70-95c5-80097ac145c5",
-          "88981fc0-6b97-4bd7-a3ae-a9b100fc7e1b"
+          "88981fc0-6b97-4bd7-a3ae-a9b100fc7e1b",
+          "5a0fc561-6117-45b9-a163-755c949609cd"
         ],
         "settings": {
           "direction": "left",

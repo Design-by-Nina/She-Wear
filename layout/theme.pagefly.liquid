@@ -40,6 +40,9 @@ If you plan to remove PageFly, please see the guide in our help center first: ht
   {% render 'social-media-tags' %}
   {% render 'structured-data' %}
   {% render 'css-variables' %}
+
+  <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
   <link rel="stylesheet" href="{{ 'stylesheet.css' | asset_url }}" type="text/css">
   <style>
     {{ main_font | font_face: font_display: 'swap' }}
@@ -60,11 +63,7 @@ If you plan to remove PageFly, please see the guide in our help center first: ht
   {{ shop.metafields.okendo.StyleCustomizations }}
 
   {% render 'productwiz-rio', product: product, shop: shop %}
-
-
-         {% render 'digismoothie-candyrack' %}
-  
- 
+  {% render 'digismoothie-candyrack' %}
   {% render 'analyzify-product-datalayer.liquid' %}
   
 <!-- One Tag Conditional Container: SheWear AU (25232) | SheWear_OneTag (14225) | Export Date: Apr. 27, 2022 @ 2:14am UTC -->
