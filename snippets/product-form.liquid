@@ -290,15 +290,20 @@
 <div class="qty-cart">
   {% if settings.show_quantity %}
     <!-- <p class="option-label">{{ 'products.product.quantity' | t }}</p> -->
-     {% if product.title != "Signature Bio Mechanical inner sole" and product.title != "Organic cotton women's crew socks" %}  
-      <div class="quantity-selector mb20">
-        <a class="quantity-control-down">-</a>
-        <input type="text" name="quantity" class="product-qty quantity" {% if current_variant.inventory_management == 'shopify' %}{% unless current_variant.inventory_policy == 'continue' %}data-limit="{{ current_variant.inventory_quantity }}"{% endunless %}{% endif %} value="1" style="max-width: 50px; text-align: center; margin: 0 auto 10px; "/>
-        <a class="quantity-control-up">+</a>
-      </div>
+     {% if product.title != "Signature Bio Mechanical inner sole" %}  
+       {% unless product.tags contains "not-for-sale" %} 
+          <div class="quantity-selector mb20">
+            <a class="quantity-control-down">-</a>
+            <input type="text" name="quantity" class="product-qty quantity" {% if current_variant.inventory_management == 'shopify' %}{% unless current_variant.inventory_policy == 'continue' %}data-limit="{{ current_variant.inventory_quantity }}"{% endunless %}{% endif %} value="1" style="max-width: 50px; text-align: center; margin: 0 auto 10px; "/>
+            <a class="quantity-control-up">+</a>
+          </div>
+        {% endunless %}
     {% endif %}
   {% endif %}
- {% if product.title != "Organic cotton women's crew socks" %} 
+
+
+  {% unless product.tags contains "not-for-sale" %} 
+
   <input id="addToCart" type="submit" name="button" class="add AddtoCart js-ajax-submit {% if settings.show_payment_button and product.selling_plan_groups.size == 0 %} secondary-button{% endif %}" value="{{ call_to_action }}" 
   {%- if current_variant.available == false  -%}
     disabled
@@ -321,7 +326,7 @@
 });" />
      {% else %}
    <input class="button" style="width:100%;" value="Exclusive - Not for sale" disabled>
-   {%- endif -%}
+   {%- endunless -%}
 
 </div>
  
